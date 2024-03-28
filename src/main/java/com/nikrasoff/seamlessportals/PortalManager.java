@@ -50,7 +50,7 @@ public class PortalManager {
     public void renderPortals(Camera playerCamera){
         for (Portal portal : this.createdPortals){
             BoundingBox portalBB = portal.getGlobalBoundingBox();
-            if (playerCamera.frustum.boundsInFrustum(portalBB)){
+            if (playerCamera.frustum.boundsInFrustum(portalBB) && portal.position.dst(playerCamera.position) < 50){
                 portal.render(playerCamera);
             }
         }

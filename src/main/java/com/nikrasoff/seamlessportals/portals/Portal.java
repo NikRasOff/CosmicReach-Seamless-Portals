@@ -55,6 +55,7 @@ public class Portal extends Entity {
         this.ignorePortals = true;
         this.portalCamera = new PerspectiveCamera(GraphicsSettings.fieldOfView.getValue(), (float)Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight());
         endingAnimationSequence.add(new FloatAnimation(1, 0, 0.5F, this.animModelScale));
+        endingAnimationSequence.add(new ColorAnimation(new Color(1, 0, 0, 0), new Color(1, 0, 0, 1), 0.25F, this.colorOverlay));
         startingAnimationSequence.finish();
     }
 

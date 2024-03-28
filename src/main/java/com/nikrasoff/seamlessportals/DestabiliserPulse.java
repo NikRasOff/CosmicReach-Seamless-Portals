@@ -8,8 +8,8 @@ public class DestabiliserPulse extends PulseEffect{
     public float destroyRadius;
 
     public DestabiliserPulse(Vector3 position, float size){
-        super(position, new Vector3(0, 0, 0), new Vector3(size, size, size), new Color(1, 0, 0, 0),
-                new Color(1, 0, 0, 0.5f), 1, new Vector3(size, size, size), new Color(1, 0, 0, 0), 0.5f);
+        super(position, new Vector3(0, 0, 0), new Vector3(size, size, size).scl(2), new Color(1, 0, 0, 0),
+                new Color(1, 0, 0, 0.5f), 1, new Vector3(size, size, size).scl(2), new Color(1, 0, 0, 0), 0.5f);
         this.destroyRadius = size;
     }
 

@@ -2,7 +2,7 @@
     "cuboids":
     [
         {
-            "localBounds": [8,16,8, -8,0.05,-8],
+            "localBounds": [8,8,8, -8,-7.95,-8],
             "faces":
             {
                 "localNegX": {"uv": [ 0, 0, 16, 16 ], "texture": "all"},
@@ -16,7 +16,7 @@
             }
         },
         {
-            "localBounds": [-8,0,-8, 8,16,8],
+            "localBounds": [-8,-8,-8, 8,8,8],
             "faces":
             {
                 "localNegX": {"uv": [ 0, 0, 16, 16 ], "texture": "all"},

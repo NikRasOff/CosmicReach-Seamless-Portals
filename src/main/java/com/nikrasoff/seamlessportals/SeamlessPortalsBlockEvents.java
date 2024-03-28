@@ -1,5 +1,9 @@
 package com.nikrasoff.seamlessportals;
 
+import com.nikrasoff.seamlessportals.blockevents.BlockEventActionDeregisterPortalGen;
+import com.nikrasoff.seamlessportals.blockevents.BlockEventActionDestroyPortalsInRadius;
+import com.nikrasoff.seamlessportals.blockevents.BlockEventActionFaceAwayFromPlayer;
+import com.nikrasoff.seamlessportals.blockevents.BlockEventActionRegisterPortalGen;
 import finalforeach.cosmicreach.world.blockevents.BlockEvents;
 
 public class SeamlessPortalsBlockEvents {

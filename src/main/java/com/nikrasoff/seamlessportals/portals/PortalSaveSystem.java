@@ -1,11 +1,10 @@
-package com.nikrasoff.seamlessportals;
+package com.nikrasoff.seamlessportals.portals;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
-import finalforeach.cosmicreach.gamestates.InGame;
+import com.nikrasoff.seamlessportals.SeamlessPortals;
 import finalforeach.cosmicreach.io.SaveLocation;
 import finalforeach.cosmicreach.world.World;
-import finalforeach.cosmicreach.world.entities.Player;
 
 import java.io.File;
 import java.io.FileInputStream;

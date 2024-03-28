@@ -1,5 +1,6 @@
-package com.nikrasoff.seamlessportals;
+package com.nikrasoff.seamlessportals.portals;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -12,6 +13,8 @@ import finalforeach.cosmicreach.world.chunks.Chunk;
 public class PortalManager {
     public Vector3 prevPortalGen;
     public Array<Portal> createdPortals = new Array<>(Portal.class);
+
+    public boolean shouldUpdatePortalArray = false;
 
     public PortalManager(){}
     
@@ -48,9 +51,11 @@ public class PortalManager {
     }
 
     public void renderPortals(Camera playerCamera){
+        if (this.shouldUpdatePortalArray) this.updatePortalArray();
         for (Portal portal : this.createdPortals){
+            portal.updateAnimations(Gdx.graphics.getDeltaTime());
             BoundingBox portalBB = portal.getGlobalBoundingBox();
-            if (playerCamera.frustum.boundsInFrustum(portalBB) && portal.position.dst(playerCamera.position) < 50){
+            if (!portal.isPortalDestroyed && playerCamera.frustum.boundsInFrustum(portalBB) && portal.position.dst(playerCamera.position) < 50){
                 portal.render(playerCamera);
             }
         }

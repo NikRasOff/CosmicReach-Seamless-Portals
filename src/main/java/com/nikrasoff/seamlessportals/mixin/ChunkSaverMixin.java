@@ -1,6 +1,6 @@
 package com.nikrasoff.seamlessportals.mixin;
 
-import com.nikrasoff.seamlessportals.PortalSaveSystem;
+import com.nikrasoff.seamlessportals.portals.PortalSaveSystem;
 import finalforeach.cosmicreach.io.ChunkSaver;
 import finalforeach.cosmicreach.world.World;
 import org.spongepowered.asm.mixin.Mixin;

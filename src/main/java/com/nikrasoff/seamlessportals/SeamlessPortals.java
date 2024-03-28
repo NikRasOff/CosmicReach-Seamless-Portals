@@ -1,5 +1,6 @@
 package com.nikrasoff.seamlessportals;
 
+import com.nikrasoff.seamlessportals.portals.PortalManager;
 import net.fabricmc.api.ModInitializer;
 
 import java.util.logging.Logger;

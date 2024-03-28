@@ -1,8 +1,7 @@
 package com.nikrasoff.seamlessportals.mixin;
 
 import com.badlogic.gdx.graphics.Camera;
-import com.nikrasoff.seamlessportals.PortalManager;
-import com.nikrasoff.seamlessportals.PulseEffect;
+import com.nikrasoff.seamlessportals.effects.PulseEffect;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import finalforeach.cosmicreach.gamestates.InGame;
 import org.spongepowered.asm.mixin.Mixin;

@@ -1,5 +1,6 @@
-package com.nikrasoff.seamlessportals;
+package com.nikrasoff.seamlessportals.blockevents;
 
+import com.nikrasoff.seamlessportals.SeamlessPortals;
 import finalforeach.cosmicreach.world.BlockPosition;
 import finalforeach.cosmicreach.world.World;
 import finalforeach.cosmicreach.world.blockevents.BlockEventTrigger;

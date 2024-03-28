@@ -1,8 +1,9 @@
-package com.nikrasoff.seamlessportals;
+package com.nikrasoff.seamlessportals.blockevents;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
+import com.nikrasoff.seamlessportals.SeamlessPortals;
 import finalforeach.cosmicreach.world.BlockPosition;
 import finalforeach.cosmicreach.world.BlockSetter;
 import finalforeach.cosmicreach.world.World;

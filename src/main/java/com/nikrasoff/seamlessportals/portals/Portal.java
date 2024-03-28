@@ -1,15 +1,16 @@
-package com.nikrasoff.seamlessportals;
+package com.nikrasoff.seamlessportals.portals;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.animations.ColorAnimation;
+import com.nikrasoff.seamlessportals.animations.FloatAnimation;
+import com.nikrasoff.seamlessportals.animations.SPAnimationSequence;
+import com.nikrasoff.seamlessportals.extras.FloatContainer;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.MeshData;
 import finalforeach.cosmicreach.rendering.RenderOrder;
@@ -38,13 +39,23 @@ public class Portal extends Entity {
     static GameMesh mesh = createModel();
     static GameShader shader = new GameShader("portal.vert.glsl", "portal.frag.glsl");
 
+    public boolean isDestroyAnimationPlaying = false;
+
     private transient FrameBuffer portalFrameBuffer;
 
     private transient final PerspectiveCamera portalCamera;
 
+    private transient final SPAnimationSequence startingAnimationSequence = new SPAnimationSequence(false);
+    private transient final SPAnimationSequence endingAnimationSequence = new SPAnimationSequence(true);
+
+    private transient final FloatContainer animModelScale = new FloatContainer(1);
+    private transient final Color colorOverlay = Color.CLEAR;
+
     public Portal(){
         this.ignorePortals = true;
         this.portalCamera = new PerspectiveCamera(GraphicsSettings.fieldOfView.getValue(), (float)Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight());
+        endingAnimationSequence.add(new FloatAnimation(1, 0, 0.5F, this.animModelScale));
+        startingAnimationSequence.finish();
     }
 
     public Portal(Vector2 size, String viewDir, Vector3 portalPos){
@@ -54,30 +65,37 @@ public class Portal extends Entity {
         switch (viewDir){
             case "negZ":
                 viewDirection = new Vector3(0, 0, -1);
-                this.localBoundingBox.min.set(-size.x/2, 0F, -1F);
-                this.localBoundingBox.max.set(size.x/2, size.y, 1F);
+                this.localBoundingBox.min.set(-size.x/2, -size.y / 2, -1F);
+                this.localBoundingBox.max.set(size.x/2, size.y / 2, 1F);
                 break;
             case "posX":
                 viewDirection = new Vector3(1, 0, 0);
-                this.localBoundingBox.min.set(-1F, 0F, -size.x/2);
-                this.localBoundingBox.max.set(1F, size.y, size.x/2);
+                this.localBoundingBox.min.set(-1F, -size.y / 2, -size.x/2);
+                this.localBoundingBox.max.set(1F, size.y / 2, size.x/2);
                 break;
             case "negX":
                 viewDirection = new Vector3(-1, 0, 0);
-                this.localBoundingBox.min.set(-1F, 0F, -size.x/2);
-                this.localBoundingBox.max.set(1F, size.y, size.x/2);
+                this.localBoundingBox.min.set(-1F, -size.y / 2, -size.x/2);
+                this.localBoundingBox.max.set(1F, size.y / 2, size.x/2);
                 break;
             default:
                 viewDirection = new Vector3(0, 0, 1);
-                this.localBoundingBox.min.set(-size.x/2, 0F, -1F);
-                this.localBoundingBox.max.set(size.x/2, size.y, 1F);
+                this.localBoundingBox.min.set(-size.x/2, -size.y / 2, -1F);
+                this.localBoundingBox.max.set(size.x/2, size.y / 2, 1F);
                 break;
         }
-        setPosition(portalPos.x + 0.5F, portalPos.y, portalPos.z + 0.5F);
+        setPosition(portalPos.x + 0.5F, portalPos.y + size.y / 2, portalPos.z + 0.5F);
         this.portalSize = size;
         this.viewPositionOffset = new Vector3(0, 0, 0);
         this.portalCamera = new PerspectiveCamera(GraphicsSettings.fieldOfView.getValue(), (float)Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight());
         portalFrameBuffer = new FrameBuffer(Pixmap.Format.RGB888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+
+        startingAnimationSequence.add(new FloatAnimation(0, 1, 0.5F, this.animModelScale));
+        startingAnimationSequence.add(new ColorAnimation(new Color(0, 0, 1, 1), new Color(0, 0, 1,0), 0.5F, this.colorOverlay));
+        this.colorOverlay.set(0, 0, 1, 1);
+
+        endingAnimationSequence.add(new FloatAnimation(1, 0, 0.5F, this.animModelScale));
+        endingAnimationSequence.add(new ColorAnimation(new Color(1, 0, 0, 0), new Color(1, 0, 0, 1), 0.25F, this.colorOverlay));
     }
 
     public static Portal fromBlockPos(Vector2 size, BlockPosition blPos){
@@ -218,9 +236,17 @@ public class Portal extends Entity {
         float halfWidth = halfHeight * (playerCamera.viewportWidth / playerCamera.viewportHeight);
 
         float portalThickness = (new Vector3(halfWidth, halfHeight, playerCamera.near)).len();
+
+        Plane portalPlane = new Plane(this.viewDirection, this.position);
+        float camDistToPortalPlane = Math.abs(portalPlane.distance(playerCamera.position));
+
         if (this.isPortalBeingUsed){
-            Plane portalPlane = new Plane(this.viewDirection, this.position);
-            portalThickness += Math.abs(portalPlane.distance(playerCamera.position));
+            portalThickness += camDistToPortalPlane;
+        }
+        else{
+            if ((camDistToPortalPlane > portalThickness) || (this.position.dst(playerCamera.position) > (this.portalSize.len() / 2))){
+                portalThickness = 0;
+            }
         }
 
         this.portalMeshScale = new Vector3(this.portalSize.x, this.portalSize.y, portalThickness);
@@ -228,6 +254,9 @@ public class Portal extends Entity {
 
         if (this.isPortalBeingUsed) this.setPortalMeshLocalOffset(this.portalEndPosition, portalThickness);
         else this.setPortalMeshLocalOffset(playerCamera.position, portalThickness);
+
+        this.portalMeshScale.scl(this.animModelScale.getValue());
+        this.portalMeshLocalOffset.scl(this.animModelScale.getValue());
     }
 
     public void setPortalMeshLocalOffset(Vector3 pos, float width){
@@ -268,6 +297,20 @@ public class Portal extends Entity {
         return getPortalSide(pos1) == getPortalSide(pos2);
     }
 
+    public void updateAnimations(float deltaTime){
+        if (!this.startingAnimationSequence.isFinished()){
+            this.startingAnimationSequence.update(deltaTime);
+        }
+        if (this.isDestroyAnimationPlaying){
+            if (!this.startingAnimationSequence.isFinished() || this.endingAnimationSequence.isFinished()){
+                this.destroyPortal();
+                SeamlessPortals.portalManager.shouldUpdatePortalArray = true;
+                return;
+            }
+            this.endingAnimationSequence.update(deltaTime);
+        }
+    }
+
     public void render (Camera playerCamera){
         if (mesh != null) {
             Texture portalTexture = createPortalTexture(playerCamera);
@@ -281,6 +324,14 @@ public class Portal extends Entity {
             tmpVec[0] = screenSize.x;
             tmpVec[1] = screenSize.y;
             shader.shader.setUniform2fv("screenSize", tmpVec, 0, 2);
+
+            float[] tmpVec4 = new float[4];
+            tmpVec4[0] = this.colorOverlay.r;
+            tmpVec4[1] = this.colorOverlay.g;
+            tmpVec4[2] = this.colorOverlay.b;
+            tmpVec4[3] = this.colorOverlay.a;
+
+            shader.shader.setUniform4fv("overlayColor", tmpVec4, 0, 4);
 
             shader.bindOptionalTexture("screenTex", portalTexture, 1);
             shader.bindOptionalUniform3f("posOffset", this.position);
@@ -328,11 +379,19 @@ public class Portal extends Entity {
         SharedQuadIndexData.unbind();
     }
 
+    public void startDestruction(){
+        this.isDestroyAnimationPlaying = true;
+        this.linkedPortal.isDestroyAnimationPlaying = true;
+    }
+
     public void destroyPortal(){
         if (this.portalFrameBuffer != null){
             this.portalFrameBuffer.dispose();
         }
         isPortalDestroyed = true;
-        linkedPortal.isPortalDestroyed = true;
+    }
+
+    public boolean isPortalStable(){
+        return this.startingAnimationSequence.isFinished() && !this.isDestroyAnimationPlaying;
     }
 }

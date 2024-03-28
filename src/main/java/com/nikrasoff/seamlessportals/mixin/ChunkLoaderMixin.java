@@ -1,7 +1,7 @@
 package com.nikrasoff.seamlessportals.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import com.nikrasoff.seamlessportals.PortalSaveSystem;
+import com.nikrasoff.seamlessportals.portals.PortalSaveSystem;
 import finalforeach.cosmicreach.io.ChunkLoader;
 import finalforeach.cosmicreach.world.World;
 import org.spongepowered.asm.mixin.Mixin;

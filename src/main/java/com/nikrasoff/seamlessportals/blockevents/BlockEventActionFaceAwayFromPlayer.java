@@ -1,4 +1,4 @@
-package com.nikrasoff.seamlessportals;
+package com.nikrasoff.seamlessportals.blockevents;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Queue;

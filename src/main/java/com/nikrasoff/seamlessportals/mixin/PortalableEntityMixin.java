@@ -1,13 +1,10 @@
 package com.nikrasoff.seamlessportals.mixin;
 
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
-import com.nikrasoff.seamlessportals.Portal;
-import com.nikrasoff.seamlessportals.PortalManager;
+import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
-import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.world.World;
 import finalforeach.cosmicreach.world.entities.Entity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -68,7 +65,7 @@ public abstract class PortalableEntityMixin {
         Vector3 targetPosition = (new Vector3(this.position)).add(posDiff);
 
         for (Portal portal : this.nearbyPortals){
-            if (portal.isPortalDestroyed) {
+            if (portal.isPortalDestroyed || !portal.isPortalStable()) {
                 continue;
             }
             if (!portal.isOnSameSideOfPortal(prevPos, targetPosition)){

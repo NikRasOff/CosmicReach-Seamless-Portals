@@ -23,7 +23,7 @@
                 "parameters":
                 {
                     "sound": "block_switch.ogg",
-                    "volume": 1,
+                    "volume": -6,
                     "pitch": 1,
                     "pan": 0
                 }

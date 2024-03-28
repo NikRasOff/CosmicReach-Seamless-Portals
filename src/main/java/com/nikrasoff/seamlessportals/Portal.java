@@ -193,8 +193,10 @@ public class Portal extends Entity {
             this.portalFrameBuffer = new FrameBuffer(Pixmap.Format.RGB888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         }
         else if (Gdx.graphics.getWidth() != portalFrameBuffer.getWidth() || Gdx.graphics.getHeight() != portalFrameBuffer.getHeight()){
-            this.portalFrameBuffer.dispose();
-            this.portalFrameBuffer = new FrameBuffer(Pixmap.Format.RGB888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+            if (Gdx.graphics.getWidth() > 0 && Gdx.graphics.getHeight() > 0){
+                this.portalFrameBuffer.dispose();
+                this.portalFrameBuffer = new FrameBuffer(Pixmap.Format.RGB888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+            }
         }
         this.portalFrameBuffer.begin();
         ScreenUtils.clear(Sky.skyColor, true);
@@ -327,6 +329,9 @@ public class Portal extends Entity {
     }
 
     public void destroyPortal(){
+        if (this.portalFrameBuffer != null){
+            this.portalFrameBuffer.dispose();
+        }
         isPortalDestroyed = true;
         linkedPortal.isPortalDestroyed = true;
     }

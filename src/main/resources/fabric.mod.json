@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "${modid}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "description": "A mod that adds seamless portals to Cosmic Reach!",
+  "authors": [
+    "NikRasOff"
+  ],
+  "license": "CC0-1.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.nikrasoff.seamlessportals.SeamlessPortals"
+    ]
+  },
+  "mixins": [
+    "seamlessportals.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "cosmic_reach": ">=${cosmicreach_version}",
+    "resourceloader": ">=1.0.2"
+  }
+}

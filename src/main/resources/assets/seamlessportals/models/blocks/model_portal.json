@@ -1,0 +1,42 @@
+{
+    "cuboids":
+    [
+        {
+            "localBounds": [8,16,8, -8,0.05,-8],
+            "faces":
+            {
+                "localNegX": {"uv": [ 0, 0, 16, 16 ], "texture": "all"},
+                "localPosX": {"uv": [ 0, 0, 16, 16 ], "texture": "all"},
+
+                "localNegY": {"uv": [ 0, 0, 16, 16 ], "texture": "all"},
+                "localPosY": {"uv": [ 0, 0, 16, 16 ], "texture": "all"},
+
+                "localNegZ": {"uv": [ 0, 0, 16, 16 ], "texture": "all"},
+                "localPosZ": {"uv": [ 0, 0, 16, 16 ], "texture": "all"}
+            }
+        },
+        {
+            "localBounds": [-8,0,-8, 8,16,8],
+            "faces":
+            {
+                "localNegX": {"uv": [ 0, 0, 16, 16 ], "texture": "all"},
+                "localPosX": {"uv": [ 0, 0, 16, 16 ], "texture": "all"},
+
+                "localNegY": {"uv": [ 0, 0, 16, 16 ], "texture": "all"},
+                "localPosY": {"uv": [ 0, 0, 16, 16 ], "texture": "all"},
+
+                "localNegZ": {"uv": [ 0, 0, 16, 16 ], "texture": "all"},
+                "localPosZ": {"uv": [ 0, 0, 16, 16 ], "texture": "all"}
+            }
+        }
+    ],
+
+    "textures":
+    {
+        "all":
+        {
+            "uv": [0, 0]
+        }
+    }
+
+}

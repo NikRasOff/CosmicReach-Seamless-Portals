@@ -1,0 +1,117 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id "de.undercouch.download" version "5.6.0"
+}
+
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = "$mod_name-CR-$cosmicreach_version"
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://jitpack.io'
+    }
+    maven {
+        url "https://repo.spongepowered.org/maven/"
+    }
+    maven {
+        url "https://maven.fabricmc.net/"
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'run/', include: ['*.jar'])
+    implementation fileTree(dir: 'run/deps', include: ['*.jar'])
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "loader_version", project.loader_version
+    inputs.property "cosmicreach_version", project.cosmicreach_version
+    inputs.property "mod_name", project.mod_name
+    inputs.property "modid", project.modid
+    filteringCharset "UTF-8"
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version,
+                "loader_version": project.loader_version,
+                "cosmicreach_version": project.cosmicreach_version,
+                "mod_name": project.mod_name,
+                "modid": project.modid
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    // ensure that the encoding is set to UTF-8, no matter what the system default is
+    // this fixes some edge cases with special characters not displaying correctly
+    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+    // If Javadoc is generated, this must be specified in that task too.
+    it.options.encoding = "UTF-8"
+    it.options.release = 17
+}
+
+tasks.register('buildAndCopy', Copy) {
+    group 'build'
+    dependsOn 'assemble'
+    from "build/libs/"
+    into "run/mods"
+}
+
+
+tasks.register('downloadModLoader', Download) {
+    group 'fabric'
+    src "https://github.com/ForwarD-NerN/CosmicReach-Mod-Loader/releases/download/latest/cosmicreach-fabric-modloader.zip"
+    dest "run/"
+}
+
+tasks.register('downloadJars', Download) {
+    dependsOn downloadModLoader
+    group 'fabric'
+    src "https://github.com/CRModders/CosmicArchive/raw/main/Cosmic%20Reach-${cosmicreach_version}.jar"
+    dest "run/"
+}
+
+tasks.register('createRunFolder') {
+    group 'fabric'
+    doFirst {
+        mkdir("run/")
+    }
+}
+
+tasks.register('setupEnvironment', Copy) {
+    group 'fabric'
+    dependsOn createRunFolder
+    dependsOn downloadJars
+
+    from zipTree(file(new File("run/cosmicreach-fabric-modloader.zip")))
+    into "run/"
+    exclude("launch.sh", "launch.bat")
+
+    doLast {
+        var gameJar = fileTree("${project.rootDir}/run/").filter { file ->
+            return file.name.startsWith("Cosmic Reach-") || file.name.startsWith("Cosmic%20Reach-")
+        }
+        if(!gameJar.getFiles().isEmpty()) {
+            gameJar.getSingleFile().renameTo("run/cosmic-reach.jar")
+        }
+        delete("run/cosmicreach-fabric-modloader.zip")
+    }
+}
+
+

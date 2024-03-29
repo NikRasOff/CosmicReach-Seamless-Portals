@@ -41,6 +41,7 @@ public class PortalManager {
     }
 
     public void updatePortalArray(){
+        this.shouldUpdatePortalArray = false;
         Array<Portal> newPortalArray = new Array<>(Portal.class);
         for (Portal portal : this.createdPortals){
             if (!portal.isPortalDestroyed){

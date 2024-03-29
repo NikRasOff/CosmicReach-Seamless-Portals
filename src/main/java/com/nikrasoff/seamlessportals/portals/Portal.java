@@ -49,7 +49,7 @@ public class Portal extends Entity {
     private transient final SPAnimationSequence endingAnimationSequence = new SPAnimationSequence(true);
 
     private transient final FloatContainer animModelScale = new FloatContainer(1);
-    private transient final Color colorOverlay = Color.CLEAR;
+    private transient final Color colorOverlay = Color.CLEAR.cpy();
 
     public Portal(){
         this.ignorePortals = true;

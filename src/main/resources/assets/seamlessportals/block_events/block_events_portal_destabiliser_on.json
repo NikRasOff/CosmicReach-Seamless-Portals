@@ -1,6 +1,6 @@
 {
     "parent":"base:block_events_default",
-    "stringId": "seamlessportals:block_events_portal_destabiliser_off",
+    "stringId": "seamlessportals:block_events_portal_destabiliser_on",
     "triggers":
     {
         "onInteract":

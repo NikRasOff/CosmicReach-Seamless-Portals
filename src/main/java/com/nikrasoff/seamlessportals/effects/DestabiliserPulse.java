@@ -6,12 +6,13 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import finalforeach.cosmicreach.world.Zone;
 
 public class DestabiliserPulse extends PulseEffect{
     public float destroyRadius;
 
-    public DestabiliserPulse(Vector3 position, float size){
-        super(position, new Vector3(0, 0, 0), new Vector3(size, size, size).scl(2), new Color(1, 0, 0, 0),
+    public DestabiliserPulse(Vector3 position, float size, Zone zone){
+        super(position, zone, new Vector3(0, 0, 0), new Vector3(size, size, size).scl(2), new Color(1, 0, 0, 0),
                 new Color(1, 0, 0, 0.5f), 1, new Vector3(size, size, size).scl(2), new Color(1, 0, 0, 0), 0.5f);
         this.destroyRadius = size;
     }

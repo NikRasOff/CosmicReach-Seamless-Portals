@@ -22,7 +22,7 @@
                 "actionId": "base:play_sound_2d",
                 "parameters":
                 {
-                    "sound": "block_switch.ogg",
+                    "sound": "seamlessportals:block_switch.ogg",
                     "volume": -6,
                     "pitch": 1,
                     "pan": 0

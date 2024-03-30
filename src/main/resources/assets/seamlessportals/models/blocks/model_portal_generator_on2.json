@@ -1,19 +1,19 @@
 {
-    "parent": "directional_cube2",
+    "parent": "seamlessportals:directional_cube2",
 
     "textures":
     {
         "front":
         {
-            "fileName": "portal_generator_front_on.png"
+            "fileName": "seamlessportals:portal_generator_front_on.png"
         },
         "back":
         {
-            "fileName": "portal_generator_back_on.png"
+            "fileName": "seamlessportals:portal_generator_back_on.png"
         },
         "side":
         {
-            "fileName": "portal_generator_side_on.png"
+            "fileName": "seamlessportals:portal_generator_side_on.png"
         }
     }
     

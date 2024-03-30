@@ -3,13 +3,13 @@ package com.nikrasoff.seamlessportals.blockevents;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Queue;
 import finalforeach.cosmicreach.gamestates.InGame;
-import finalforeach.cosmicreach.world.BlockPosition;
+import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.world.BlockSetter;
-import finalforeach.cosmicreach.world.World;
-import finalforeach.cosmicreach.world.blockevents.BlockEventTrigger;
-import finalforeach.cosmicreach.world.blockevents.IBlockEventAction;
-import finalforeach.cosmicreach.world.blocks.BlockState;
-import finalforeach.cosmicreach.world.entities.Entity;
+import finalforeach.cosmicreach.blockevents.BlockEventTrigger;
+import finalforeach.cosmicreach.blockevents.IBlockEventAction;
+import finalforeach.cosmicreach.blocks.BlockState;
+import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.world.Zone;
 
 import java.util.Map;
 
@@ -20,11 +20,11 @@ public class BlockEventActionFaceAwayFromPlayer implements IBlockEventAction {
     }
 
     @Override
-    public void act(BlockState blockState, BlockEventTrigger blockEventTrigger, World world, Map<String, Object> map) {
-        this.act(blockState, blockEventTrigger, world, (BlockPosition) map.get("blockPos"));
+    public void act(BlockState blockState, BlockEventTrigger blockEventTrigger, Zone zone, Map<String, Object> map) {
+        this.act(blockState, zone, (BlockPosition) map.get("blockPos"));
     }
 
-    public void act(BlockState blockState, BlockEventTrigger blockEventTrigger, World world, BlockPosition targetBlockPosition) {
+    public void act(BlockState blockState, Zone zone, BlockPosition targetBlockPosition) {
         Entity playerEntity = InGame.getLocalPlayer().getEntity();
         Vector3 playerEntityViewDir = playerEntity.viewDirection;
         String directionString = "";
@@ -71,6 +71,6 @@ public class BlockEventActionFaceAwayFromPlayer implements IBlockEventAction {
 
         String newSaveKey = blockState.getBlockId() + "[" + newBlockStateID + "]";
         BlockState newBlockState = BlockState.getInstance(newSaveKey);
-        BlockSetter.replaceBlock(world, newBlockState, targetBlockPosition, new Queue<>());
+        BlockSetter.replaceBlock(zone, newBlockState, targetBlockPosition, new Queue<>());
     }
 }

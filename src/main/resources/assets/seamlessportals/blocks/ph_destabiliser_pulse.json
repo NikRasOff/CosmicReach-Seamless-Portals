@@ -3,7 +3,7 @@
     "blockStates":
     {
         "default": {
-            "modelName": "model_destabiliser_pulse",
+            "modelName": "seamlessportals:model_destabiliser_pulse",
             "catalogHidden": true
         }
     }

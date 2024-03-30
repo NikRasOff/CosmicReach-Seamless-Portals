@@ -20,6 +20,6 @@
   "depends": {
     "fabricloader": ">=${loader_version}",
     "cosmic_reach": ">=${cosmicreach_version}",
-    "resourceloader": ">=1.0.2"
+    "fluxapi": ">=0.5.2"
   }
 }

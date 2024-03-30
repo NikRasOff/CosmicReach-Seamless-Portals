@@ -14,5 +14,6 @@ public class SeamlessPortals implements ModInitializer {
     public void onInitialize() {
         LOGGER.info("Initializing Seamless Portals!");
         SeamlessPortalsBlockEvents.registerSeamlessPortalsBlockEvents();
+        SeamlessPortalsCustomBlocks.registerCustomBlocks();
     }
 }

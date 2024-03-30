@@ -25,7 +25,7 @@
                 "actionId": "base:play_sound_2d",
                 "parameters":
                 {
-                    "sound": "block_switch.ogg",
+                    "sound": "seamlessportals:block_switch.ogg",
                     "volume": 1,
                     "pitch": 1,
                     "pan": 0
@@ -35,7 +35,7 @@
                 "actionId": "base:play_sound_2d",
                 "parameters":
                 {
-                    "sound": "portal_generator_power_down.ogg",
+                    "sound": "seamlessportals:portal_generator_power_down.ogg",
                     "volume": 1,
                     "pitch": 1,
                     "pan": 0
@@ -60,7 +60,7 @@
                 "actionId": "base:play_sound_2d",
                 "parameters":
                 {
-                    "sound": "portal_gen_break_on.ogg",
+                    "sound": "seamlessportals:portal_gen_break_on.ogg",
                     "volume": 1,
                     "pitch": 1,
                     "pan": 0

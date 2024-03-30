@@ -1,15 +1,15 @@
 package com.nikrasoff.seamlessportals.blockevents;
 
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Queue;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
-import finalforeach.cosmicreach.world.BlockPosition;
+import finalforeach.cosmicreach.blocks.BlockPosition;
+import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.world.BlockSetter;
-import finalforeach.cosmicreach.world.World;
-import finalforeach.cosmicreach.world.blockevents.BlockEventTrigger;
-import finalforeach.cosmicreach.world.blockevents.IBlockEventAction;
-import finalforeach.cosmicreach.world.blocks.BlockState;
+import finalforeach.cosmicreach.blockevents.BlockEventTrigger;
+import finalforeach.cosmicreach.blockevents.IBlockEventAction;
+import finalforeach.cosmicreach.blocks.BlockState;
+import finalforeach.cosmicreach.world.Zone;
 
 import java.util.Map;
 
@@ -20,23 +20,26 @@ public class BlockEventActionRegisterPortalGen implements IBlockEventAction {
     }
 
     @Override
-    public void act(BlockState blockState, BlockEventTrigger blockEventTrigger, World world, Map<String, Object> map) {
-        this.act(blockState, blockEventTrigger, world, (BlockPosition) map.get("blockPos"));
+    public void act(BlockState blockState, BlockEventTrigger blockEventTrigger, Zone zone, Map<String, Object> map) {
+        this.act(zone, (BlockPosition) map.get("blockPos"));
     }
 
-    public void act(BlockState blockState, BlockEventTrigger blockEventTrigger, World world, BlockPosition blockPos) {
-        if (SeamlessPortals.portalManager.prevPortalGen == null) {
-            SeamlessPortals.portalManager.prevPortalGen = new Vector3(blockPos.getGlobalX(), blockPos.getGlobalY(), blockPos.getGlobalZ());
+    public void act(Zone zone, BlockPosition blockPos) {
+        if (SeamlessPortals.portalManager.prevPortalGenPos == null) {
+            SeamlessPortals.portalManager.prevPortalGenPos = new Vector3(blockPos.getGlobalX(), blockPos.getGlobalY(), blockPos.getGlobalZ());
+            SeamlessPortals.portalManager.prevPortalGenZone = zone.zoneId;
         }
         else {
-            if (blockPos.toString().equals(SeamlessPortals.portalManager.getPrevGenBlockPos().toString())){
-                SeamlessPortals.portalManager.prevPortalGen = null;
+            if (blockPos.toString().equals(SeamlessPortals.portalManager.getPrevGenBlockPos().toString()) && SeamlessPortals.portalManager.prevPortalGenZone.equals(zone.zoneId)){
+                SeamlessPortals.portalManager.prevPortalGenPos = null;
+                SeamlessPortals.portalManager.prevPortalGenZone = null;
                 return;
             }
-            SeamlessPortals.portalManager.createPortalPair(SeamlessPortals.portalManager.getPrevGenBlockPos(), blockPos);
-            BlockSetter.replaceBlock(world, BlockState.getInstance("base:air[default]"), SeamlessPortals.portalManager.getPrevGenBlockPos(), new Queue<>());
-            BlockSetter.replaceBlock(world, BlockState.getInstance("base:air[default]"), blockPos, new Queue<>());
-            SeamlessPortals.portalManager.prevPortalGen = null;
+            SeamlessPortals.portalManager.createPortalPair(SeamlessPortals.portalManager.getPrevGenBlockPos(), blockPos, InGame.world.getZone(SeamlessPortals.portalManager.prevPortalGenZone), zone);
+            BlockSetter.replaceBlock(zone, BlockState.getInstance("base:air[default]"), SeamlessPortals.portalManager.getPrevGenBlockPos(), new Queue<>());
+            BlockSetter.replaceBlock(zone, BlockState.getInstance("base:air[default]"), blockPos, new Queue<>());
+            SeamlessPortals.portalManager.prevPortalGenPos = null;
+            SeamlessPortals.portalManager.prevPortalGenZone = null;
         }
     }
 }

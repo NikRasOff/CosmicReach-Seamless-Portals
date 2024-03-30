@@ -5,8 +5,9 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
-import finalforeach.cosmicreach.world.World;
-import finalforeach.cosmicreach.world.entities.Entity;
+import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.gamestates.InGame;
+import finalforeach.cosmicreach.world.Zone;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -31,7 +32,7 @@ public abstract class PortalableEntityMixin {
     private transient final boolean ignorePortals = false;
 
     @Inject(method = "updatePositions", at = @At("HEAD"))
-    private void onEntityUpdate(World world, double deltaTime, CallbackInfo ci) {
+    private void onEntityUpdate(Zone zone, double deltaTime, CallbackInfo ci) {
         if (this.ignorePortals) return;
         if (this.teleportingPortal != null){
 //            this.teleportingPortal.linkedPortal.thicknessMult = 1;
@@ -39,8 +40,11 @@ public abstract class PortalableEntityMixin {
             this.teleportingPortal = null;
         }
         this.nearbyPortals.clear();
+        // A bit of a hack since entities don't keep track of the zones they're in
+        // And since for now there's only one entity - the player
+        // TODO: Fix when more entities/multiplayer gets added
         for (Portal curPortal : SeamlessPortals.portalManager.createdPortals) {
-            if (this.tmpEntityBoundingBox.intersects(curPortal.getGlobalBoundingBox())) {
+            if (InGame.getLocalPlayer().zoneId.equals(curPortal.zoneID) && this.tmpEntityBoundingBox.intersects(curPortal.getGlobalBoundingBox())) {
                 this.nearbyPortals.add(curPortal);
             }
         }
@@ -78,6 +82,8 @@ public abstract class PortalableEntityMixin {
 
     @Unique
     public void teleportThroughPortal(Portal portal) {
+        // TODO: Fix when more entities/multiplayer gets added
+        InGame.getLocalPlayer().zoneId = new String(portal.linkedPortal.zoneID);
         this.viewDirection = portal.getPortaledVector(this.viewDirection);
         this.position = portal.getPortaledPos(this.position);
         this.velocity = portal.getPortaledVector(this.velocity);

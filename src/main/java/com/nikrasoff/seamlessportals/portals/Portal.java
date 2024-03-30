@@ -11,6 +11,7 @@ import com.nikrasoff.seamlessportals.animations.ColorAnimation;
 import com.nikrasoff.seamlessportals.animations.FloatAnimation;
 import com.nikrasoff.seamlessportals.animations.SPAnimationSequence;
 import com.nikrasoff.seamlessportals.extras.FloatContainer;
+import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.MeshData;
 import finalforeach.cosmicreach.rendering.RenderOrder;
@@ -19,10 +20,11 @@ import finalforeach.cosmicreach.rendering.meshes.GameMesh;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.settings.GraphicsSettings;
-import finalforeach.cosmicreach.world.BlockPosition;
+import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.world.Sky;
-import finalforeach.cosmicreach.world.blocks.BlockState;
-import finalforeach.cosmicreach.world.entities.Entity;
+import finalforeach.cosmicreach.blocks.BlockState;
+import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.world.Zone;
 
 public class Portal extends Entity {
     public transient boolean isPortalDestroyed = false;
@@ -37,9 +39,11 @@ public class Portal extends Entity {
     private transient Vector3 portalMeshLocalOffset = new Vector3(0, 0, 0);
 
     static GameMesh mesh = createModel();
-    static GameShader shader = new GameShader("portal.vert.glsl", "portal.frag.glsl");
+    static GameShader shader = new GameShader("seamlessportals:portal.vert.glsl", "seamlessportals:portal.frag.glsl");
 
     public boolean isDestroyAnimationPlaying = false;
+
+    public String zoneID;
 
     private transient FrameBuffer portalFrameBuffer;
 
@@ -57,11 +61,13 @@ public class Portal extends Entity {
         endingAnimationSequence.add(new FloatAnimation(1, 0, 0.5F, this.animModelScale));
         endingAnimationSequence.add(new ColorAnimation(new Color(1, 0, 0, 0), new Color(1, 0, 0, 1), 0.25F, this.colorOverlay));
         startingAnimationSequence.finish();
+        this.zoneID = "base:moon";
     }
 
-    public Portal(Vector2 size, String viewDir, Vector3 portalPos){
+    public Portal(Vector2 size, String viewDir, Vector3 portalPos, Zone zone){
         this.hasGravity = false;
         this.ignorePortals = true;
+
 
         switch (viewDir){
             case "negZ":
@@ -86,6 +92,7 @@ public class Portal extends Entity {
                 break;
         }
         setPosition(portalPos.x + 0.5F, portalPos.y + size.y / 2, portalPos.z + 0.5F);
+        this.zoneID = zone.zoneId;
         this.portalSize = size;
         this.viewPositionOffset = new Vector3(0, 0, 0);
         this.portalCamera = new PerspectiveCamera(GraphicsSettings.fieldOfView.getValue(), (float)Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight());
@@ -99,7 +106,7 @@ public class Portal extends Entity {
         endingAnimationSequence.add(new ColorAnimation(new Color(1, 0, 0, 0), new Color(1, 0, 0, 1), 0.25F, this.colorOverlay));
     }
 
-    public static Portal fromBlockPos(Vector2 size, BlockPosition blPos){
+    public static Portal fromBlockPos(Vector2 size, BlockPosition blPos, Zone zone){
         String[] strId = blPos.getBlockState().stringId.split(",");
         String dirString = "";
         for (String id : strId){
@@ -111,7 +118,7 @@ public class Portal extends Entity {
             }
         }
 
-        return new Portal(size, dirString, new Vector3(blPos.getGlobalX(), blPos.getGlobalY(), blPos.getGlobalZ()));
+        return new Portal(size, dirString, new Vector3(blPos.getGlobalX(), blPos.getGlobalY(), blPos.getGlobalZ()), zone);
     }
 
     private static GameMesh createModel(){
@@ -132,6 +139,13 @@ public class Portal extends Entity {
         globalBB.max.add(this.position);
         globalBB.update();
         return globalBB;
+    }
+
+    public BoundingBox getMeshBoundingBox(){
+        BoundingBox meshBB = new BoundingBox();
+        meshBB.min.set(this.portalMeshScale).scl(-0.5F).add(this.position);
+        meshBB.max.set(this.portalMeshScale).scl(0.5F).add(this.position);
+        return meshBB;
     }
 
     public float getPortalYaw(){
@@ -220,7 +234,7 @@ public class Portal extends Entity {
         this.portalFrameBuffer.begin();
         ScreenUtils.clear(Sky.skyColor, true);
         Sky.drawStars(this.portalCamera);
-        InGame.world.render(this.portalCamera);
+        GameSingletons.zoneRenderer.render(InGame.world.getZone(this.zoneID), this.portalCamera);
         if (this.isPortalBeingUsed && !this.isOnSameSideOfPortal(playerCamera.position, this.portalEndPosition)) {
             this.linkedPortal.renderToFrameBuffer(this.portalCamera, portalFrameBuffer);
             portalFrameBuffer.bind();
@@ -305,7 +319,6 @@ public class Portal extends Entity {
         if (this.isDestroyAnimationPlaying){
             if (!this.startingAnimationSequence.isFinished() || this.endingAnimationSequence.isFinished()){
                 this.destroyPortal();
-                SeamlessPortals.portalManager.shouldUpdatePortalArray = true;
                 return;
             }
             this.endingAnimationSequence.update(deltaTime);
@@ -314,8 +327,9 @@ public class Portal extends Entity {
 
     public void render (Camera playerCamera){
         if (mesh != null) {
-            Texture portalTexture = createPortalTexture(playerCamera);
-            updatePortalMeshScale((PerspectiveCamera) playerCamera);
+            Texture portalTexture = this.createPortalTexture(playerCamera);
+            this.updatePortalMeshScale((PerspectiveCamera) playerCamera);
+
 
             SharedQuadIndexData.bind();
             shader.bind(playerCamera);
@@ -343,14 +357,6 @@ public class Portal extends Entity {
             mesh.render(shader.shader, 4);
             mesh.unbind(shader.shader);
             SharedQuadIndexData.unbind();
-
-//            ShapeRenderer sr = new ShapeRenderer();
-//            sr.setProjectionMatrix(playerCamera.combined);
-//            sr.begin(ShapeRenderer.ShapeType.Line);
-//            sr.setColor(1, 0, 0, 1);
-//            BoundingBox bb = this.getGlobalBoundingBox();
-//            sr.box(bb.min.x, bb.min.y, bb.min.z, bb.getWidth(), bb.getHeight(), -bb.getDepth());
-//            sr.end();
         }
     }
 
@@ -390,6 +396,7 @@ public class Portal extends Entity {
             this.portalFrameBuffer.dispose();
         }
         isPortalDestroyed = true;
+        SeamlessPortals.portalManager.shouldUpdatePortalArray = true;
     }
 
     public boolean isPortalStable(){

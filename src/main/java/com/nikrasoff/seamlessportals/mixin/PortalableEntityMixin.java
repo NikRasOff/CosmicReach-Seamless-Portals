@@ -44,7 +44,7 @@ public abstract class PortalableEntityMixin {
         // And since for now there's only one entity - the player
         // TODO: Fix when more entities/multiplayer gets added
         for (Portal curPortal : SeamlessPortals.portalManager.createdPortals) {
-            if (InGame.getLocalPlayer().zoneId.equals(curPortal.zoneID) && this.tmpEntityBoundingBox.intersects(curPortal.getGlobalBoundingBox())) {
+            if (InGame.getLocalPlayer().zoneId.equals(curPortal.zoneID) && curPortal.getGlobalBoundingBox().intersects(this.tmpEntityBoundingBox)) {
                 this.nearbyPortals.add(curPortal);
             }
         }

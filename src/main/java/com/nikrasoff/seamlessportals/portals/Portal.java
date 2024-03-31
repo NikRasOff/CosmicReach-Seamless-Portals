@@ -72,30 +72,70 @@ public class Portal extends Entity {
         this.hasGravity = false;
         this.ignorePortals = true;
 
+        this.localBoundingBox.min.set(-size.x/2, -size.y / 2, -1F);
+        this.localBoundingBox.max.set(size.x/2, size.y / 2, 1F);
+
+        setPosition(portalPos.x + 0.5F, portalPos.y, portalPos.z + 0.5F);
 
         switch (viewDir){
             case "negZ":
-                viewDirection = new Vector3(0, 0, -1);
-                this.localBoundingBox.min.set(-size.x/2, -size.y / 2, -1F);
-                this.localBoundingBox.max.set(size.x/2, size.y / 2, 1F);
+                this.viewDirection = new Vector3(0, 0, -1);
+                this.position.y += size.y / 2;
                 break;
             case "posX":
-                viewDirection = new Vector3(1, 0, 0);
-                this.localBoundingBox.min.set(-1F, -size.y / 2, -size.x/2);
-                this.localBoundingBox.max.set(1F, size.y / 2, size.x/2);
+                this.viewDirection = new Vector3(1, 0, 0);
+                this.position.y += size.y / 2;
                 break;
             case "negX":
-                viewDirection = new Vector3(-1, 0, 0);
-                this.localBoundingBox.min.set(-1F, -size.y / 2, -size.x/2);
-                this.localBoundingBox.max.set(1F, size.y / 2, size.x/2);
+                this.viewDirection = new Vector3(-1, 0, 0);
+                this.position.y += size.y / 2;
+                break;
+            case "posYposZ":
+                this.viewDirection = new Vector3(0, 1, 0);
+                this.upVector = new Vector3(0, 0, -1);
+                break;
+            case "posYnegX":
+                this.viewDirection = new Vector3(0, 1, 0);
+                this.upVector = new Vector3(1, 0, 0);
+                this.position.y += 0.5F;
+                break;
+            case "posYnegZ":
+                this.viewDirection = new Vector3(0, 1, 0);
+                this.upVector = new Vector3(0, 0, 1);
+                this.position.y += 0.5F;
+                break;
+            case "posYposX":
+                this.viewDirection = new Vector3(0, 1, 0);
+                this.upVector = new Vector3(-1, 0, 0);
+                this.position.y += 0.5F;
+                break;
+            case "negYposZ":
+                this.viewDirection = new Vector3(0, -1, 0);
+                this.upVector = new Vector3(0, 0, 1);
+                this.position.y += 0.5F;
+                break;
+            case "negYnegX":
+                this.viewDirection = new Vector3(0, -1, 0);
+                this.upVector = new Vector3(-1, 0, 0);
+                this.position.y += 0.5F;
+                break;
+            case "negYnegZ":
+                this.viewDirection = new Vector3(0, -1, 0);
+                this.upVector = new Vector3(0, 0, -1);
+                this.position.y += 0.5F;
+                break;
+            case "negYposX":
+                this.viewDirection = new Vector3(0, -1, 0);
+                this.upVector = new Vector3(1, 0, 0);
+                this.position.y += 0.5F;
                 break;
             default:
-                viewDirection = new Vector3(0, 0, 1);
-                this.localBoundingBox.min.set(-size.x/2, -size.y / 2, -1F);
-                this.localBoundingBox.max.set(size.x/2, size.y / 2, 1F);
+                this.viewDirection = new Vector3(0, 0, 1);
+                this.position.y += size.y / 2;
+                this.position.y += 0.5F;
                 break;
         }
-        setPosition(portalPos.x + 0.5F, portalPos.y + size.y / 2, portalPos.z + 0.5F);
+        this.localBoundingBox.update();
         this.zoneID = zone.zoneId;
         this.portalSize = size;
         this.viewPositionOffset = new Vector3(0, 0, 0);
@@ -136,21 +176,21 @@ public class Portal extends Entity {
         linkedPortal = to;
     }
 
-    public BoundingBox getGlobalBoundingBox(){
+    public OrientedBoundingBox getGlobalBoundingBox(){
         BoundingBox globalBB = new BoundingBox();
         globalBB.set(this.localBoundingBox);
-        globalBB.min.add(this.position);
-        globalBB.max.add(this.position);
         globalBB.update();
-        return globalBB;
+
+        return new OrientedBoundingBox(globalBB, this.getPortalTransformationMatrix().inv());
     }
 
     public OrientedBoundingBox getMeshBoundingBox(){
         BoundingBox meshBB = new BoundingBox();
-        meshBB.min.set(this.portalMeshScale).scl(-0.5F).add(this.position);
-        meshBB.max.set(this.portalMeshScale).scl(0.5F).add(this.position);
+        meshBB.min.set(this.portalMeshScale).scl(-0.5F);
+        meshBB.max.set(this.portalMeshScale).scl(0.5F);
+        meshBB.update();
 
-        return new OrientedBoundingBox(meshBB);
+        return new OrientedBoundingBox(meshBB, this.getPortalTransformationMatrix().inv());
     }
 
     public Matrix4 getPortalTransformationMatrix(){
@@ -221,7 +261,7 @@ public class Portal extends Entity {
         this.portalCamera.position.z = newPortalCamPos.z;
         this.portalCamera.position.add(this.viewPositionOffset);
         this.portalCamera.direction.set(newPortalCamDir);
-        this.portalCamera.up.set(0.0F, 1.0F, 0.0F);
+        this.portalCamera.up.set(this.getPortaledVector(new Vector3(0, 1, 0)));
         this.portalCamera.update();
 
         if (!this.isPortalBeingUsed) setCameraNearClipPlane(playerCamera);
@@ -243,7 +283,7 @@ public class Portal extends Entity {
         Sky.drawStars(this.portalCamera);
         GameSingletons.zoneRenderer.render(InGame.world.getZone(this.zoneID), this.portalCamera);
         if (this.isPortalBeingUsed && !this.isOnSameSideOfPortal(playerCamera.position, this.portalEndPosition)) {
-            this.linkedPortal.renderToFrameBuffer(this.portalCamera, portalFrameBuffer);
+            this.linkedPortal.renderRecursively(this.portalCamera, this.portalFrameBuffer);
             portalFrameBuffer.bind();
         }
         portalFrameBuffer.end();
@@ -368,7 +408,7 @@ public class Portal extends Entity {
         }
     }
 
-    public void renderToFrameBuffer(Camera playerCamera, FrameBuffer frameBuffer){
+    public void renderRecursively(Camera playerCamera, FrameBuffer frameBuffer){
         Texture portalTexture = createPortalTexture(playerCamera);
         updatePortalMeshScale((PerspectiveCamera) playerCamera);
 

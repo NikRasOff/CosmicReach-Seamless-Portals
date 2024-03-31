@@ -28,27 +28,39 @@ public class BlockEventActionFaceAwayFromPlayer implements IBlockEventAction {
         Entity playerEntity = InGame.getLocalPlayer().getEntity();
         Vector3 playerEntityViewDir = playerEntity.viewDirection;
         String directionString = "";
+        String horDirString = "";
         float highestDot = -90;
 
         float curDitDot = playerEntityViewDir.dot(new Vector3(1, 0, 0));
         if (curDitDot > highestDot) {
             highestDot = curDitDot;
-            directionString = "posX";
+            horDirString = "posX";
         }
         curDitDot = playerEntityViewDir.dot(new Vector3(-1, 0, 0));
         if (curDitDot > highestDot) {
             highestDot = curDitDot;
-            directionString = "negX";
+            horDirString = "negX";
         }
         curDitDot = playerEntityViewDir.dot(new Vector3(0, 0, 1));
         if (curDitDot > highestDot) {
             highestDot = curDitDot;
-            directionString = "posZ";
+            horDirString = "posZ";
         }
         curDitDot = playerEntityViewDir.dot(new Vector3(0, 0, -1));
         if (curDitDot > highestDot) {
-            directionString = "negZ";
+            highestDot = curDitDot;
+            horDirString = "negZ";
         }
+        curDitDot = playerEntityViewDir.dot(new Vector3(0, 1, 0));
+        if (curDitDot > highestDot) {
+            highestDot = curDitDot;
+            directionString = "posY";
+        }
+        curDitDot = playerEntityViewDir.dot(new Vector3(0, -1, 0));
+        if (curDitDot > highestDot) {
+            directionString = "negY";
+        }
+        directionString += horDirString;
 
         String[] blockStateID = blockState.stringId.split(",");
         StringBuilder newBlockStateID = new StringBuilder();

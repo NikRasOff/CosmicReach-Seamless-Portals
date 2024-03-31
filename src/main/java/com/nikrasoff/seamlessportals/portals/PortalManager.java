@@ -2,6 +2,8 @@ package com.nikrasoff.seamlessportals.portals;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -20,6 +22,7 @@ public class PortalManager {
 
     public boolean shouldUpdatePortalArray = false;
 
+    private static ShapeRenderer shapeRenderer = new ShapeRenderer();
 
     public PortalManager(){}
     
@@ -59,9 +62,16 @@ public class PortalManager {
     public void renderPortals(Camera playerCamera){
         if (this.shouldUpdatePortalArray) this.updatePortalArray();
         Player player = InGame.getLocalPlayer();
+        shapeRenderer.setColor(1, 0, 0, 1);
+        shapeRenderer.setProjectionMatrix(playerCamera.combined);
         for (Portal portal : this.createdPortals){
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             portal.updateAnimations(Gdx.graphics.getDeltaTime());
             OrientedBoundingBox portalBB = portal.getMeshBoundingBox();
+            OrientedBoundingBox portalBigBB = portal.getGlobalBoundingBox();
+            shapeRenderer.setTransformMatrix(portalBigBB.transform);
+            shapeRenderer.box(portalBigBB.getBounds().min.x, portalBigBB.getBounds().min.y, portalBigBB.getBounds().min.z, portalBigBB.getBounds().getWidth(), portalBigBB.getBounds().getHeight(), -portalBigBB.getBounds().getDepth());
+            shapeRenderer.end();
             if (portal.zoneID.equals(player.zoneId) && !portal.isPortalDestroyed && playerCamera.frustum.boundsInFrustum(portalBB) && portal.position.dst(playerCamera.position) < 50){
                 portal.render(playerCamera);
             }

@@ -9,7 +9,7 @@
         "active=false":
         {
             "modelName": "seamlessportals:model_portal_destabiliser_off",
-            "blockEventsId": "seamlessportals:block_events_portal_destabiliser_off",
+            "blockEventsId": "seamlessportals:block_events_portal_destabiliser_off"
         },
         "active=true": {
             "modelName": "seamlessportals:model_portal_destabiliser_on",

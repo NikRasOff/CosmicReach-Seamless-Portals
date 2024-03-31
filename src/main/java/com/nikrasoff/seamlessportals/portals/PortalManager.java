@@ -60,10 +60,12 @@ public class PortalManager {
         Player player = InGame.getLocalPlayer();
         for (Portal portal : this.createdPortals){
             portal.updateAnimations(Gdx.graphics.getDeltaTime());
-            BoundingBox portalBB = portal.getMeshBoundingBox();
-            if (portal.zoneID.equals(player.zoneId) && !portal.isPortalDestroyed && playerCamera.frustum.boundsInFrustum(portalBB) && portal.position.dst(playerCamera.position) < 50){
-                portal.render(playerCamera);
-            }
+//            BoundingBox portalBB = portal.getMeshBoundingBox();
+//            if (portal.zoneID.equals(player.zoneId) && !portal.isPortalDestroyed && playerCamera.frustum.boundsInFrustum(portalBB) && portal.position.dst(playerCamera.position) < 50){
+//                portal.render(playerCamera);
+//                System.out.println("yes");
+//            }
+            portal.render(playerCamera);
         }
     }
 }

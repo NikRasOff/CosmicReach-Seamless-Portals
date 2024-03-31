@@ -3,6 +3,7 @@ package com.nikrasoff.seamlessportals.portals;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -34,6 +35,8 @@ public class Portal extends Entity {
 
     public transient Portal linkedPortal;
     private Vector2 portalSize;
+
+    public Vector3 upVector = new Vector3(0, 1,0 );
 
     private transient Vector3 portalMeshScale = new Vector3();
     private transient Vector3 portalMeshLocalOffset = new Vector3(0, 0, 0);
@@ -134,7 +137,7 @@ public class Portal extends Entity {
 
     public BoundingBox getGlobalBoundingBox(){
         BoundingBox globalBB = new BoundingBox();
-        globalBB.set(localBoundingBox);
+        globalBB.set(this.localBoundingBox);
         globalBB.min.add(this.position);
         globalBB.max.add(this.position);
         globalBB.update();
@@ -148,8 +151,10 @@ public class Portal extends Entity {
         return meshBB;
     }
 
-    public float getPortalYaw(){
-        return (float) Math.toDegrees(Math.acos(viewDirection.z)) + (viewDirection.x < 0 ? 180 : 0);
+    public Matrix4 getPortalTransformationMatrix(){
+        Matrix4 trMat = new Matrix4();
+        trMat.setToLookAt(this.position, this.position.cpy().add(this.viewDirection), this.upVector);
+        return trMat;
     }
 
     private Matrix4 calculateObliqueMatrix(PerspectiveCamera playerCamera, Vector4 newNearPlane){
@@ -245,8 +250,6 @@ public class Portal extends Entity {
     }
 
     public void updatePortalMeshScale(PerspectiveCamera playerCamera){
-        float thisPortalYaw = this.getPortalYaw();
-
         float halfHeight = (float) (playerCamera.near * Math.tan(Math.toRadians(playerCamera.fieldOfView * 0.5)));
         float halfWidth = halfHeight * (playerCamera.viewportWidth / playerCamera.viewportHeight);
 
@@ -265,7 +268,6 @@ public class Portal extends Entity {
         }
 
         this.portalMeshScale = new Vector3(this.portalSize.x, this.portalSize.y, portalThickness);
-        this.portalMeshScale.rotate(thisPortalYaw, 0, 1, 0);
 
         if (this.isPortalBeingUsed) this.setPortalMeshLocalOffset(this.portalEndPosition, portalThickness);
         else this.setPortalMeshLocalOffset(playerCamera.position, portalThickness);
@@ -275,17 +277,14 @@ public class Portal extends Entity {
     }
 
     public void setPortalMeshLocalOffset(Vector3 pos, float width){
-        boolean camFacingSameDirAsPortal = this.viewDirection.dot(pos.cpy().sub(this.position)) < 0;
+        boolean camFacingSameDirAsPortal = this.viewDirection.dot(pos.cpy().sub(this.position)) > 0;
         this.portalMeshLocalOffset = new Vector3(0, 0, width * (camFacingSameDirAsPortal ? 0.5f : -0.5f));
-        this.portalMeshLocalOffset.rotate(this.getPortalYaw(), 0, 1, 0);
     }
 
     public Vector3 getPortaledPos(Vector3 pos){
         Vector3 newPos = pos.cpy();
-        Matrix4 thisPort = new Matrix4();
-        thisPort.setToLookAt(this.position, this.position.cpy().add(this.viewDirection), new Vector3(0, 1, 0));
-        Matrix4 linkedPort = new Matrix4();
-        linkedPort.setToLookAt(this.linkedPortal.position, this.linkedPortal.position.cpy().add(this.linkedPortal.viewDirection.cpy()), new Vector3(0, 1, 0));
+        Matrix4 thisPort = this.getPortalTransformationMatrix();
+        Matrix4 linkedPort = this.linkedPortal.getPortalTransformationMatrix();
         linkedPort.inv();
         newPos.mul(thisPort);
         newPos.mul(linkedPort);
@@ -349,7 +348,7 @@ public class Portal extends Entity {
             shader.shader.setUniform4fv("overlayColor", tmpVec4, 0, 4);
 
             shader.bindOptionalTexture("screenTex", portalTexture, 1);
-            shader.bindOptionalUniform3f("posOffset", this.position);
+            shader.shader.setUniformMatrix("transMatrix", this.getPortalTransformationMatrix().inv());
             shader.bindOptionalUniform3f("localOffset", this.portalMeshLocalOffset);
             shader.bindOptionalUniform3f("portScale", this.portalMeshScale);
             shader.shader.setUniformMatrix("u_projViewTrans", playerCamera.combined);
@@ -357,6 +356,13 @@ public class Portal extends Entity {
             mesh.render(shader.shader, 4);
             mesh.unbind(shader.shader);
             SharedQuadIndexData.unbind();
+
+//            ShapeRenderer sr = new ShapeRenderer();
+//            sr.begin(ShapeRenderer.ShapeType.Line);
+//            sr.setColor(1, 0, 0, 1);
+//            BoundingBox bb = this.getGlobalBoundingBox();
+//            sr.box(bb.min.x, bb.min.y, bb.min.z, bb.getWidth(), bb.getHeight(), bb.getDepth());
+//            sr.end();
         }
     }
 
@@ -374,7 +380,6 @@ public class Portal extends Entity {
         shader.shader.setUniform2fv("screenSize", tmpVec, 0, 2);
 
         shader.bindOptionalTexture("screenTex", portalTexture, 1);
-        shader.bindOptionalUniform3f("posOffset", this.position);
         shader.bindOptionalUniform3f("localOffset", this.portalMeshLocalOffset);
         shader.bindOptionalUniform3f("portScale", this.portalMeshScale);
         shader.shader.setUniformMatrix("u_projViewTrans", playerCamera.combined);

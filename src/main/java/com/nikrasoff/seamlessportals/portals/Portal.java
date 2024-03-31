@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.animations.ColorAnimation;
@@ -144,11 +145,12 @@ public class Portal extends Entity {
         return globalBB;
     }
 
-    public BoundingBox getMeshBoundingBox(){
+    public OrientedBoundingBox getMeshBoundingBox(){
         BoundingBox meshBB = new BoundingBox();
         meshBB.min.set(this.portalMeshScale).scl(-0.5F).add(this.position);
         meshBB.max.set(this.portalMeshScale).scl(0.5F).add(this.position);
-        return meshBB;
+
+        return new OrientedBoundingBox(meshBB);
     }
 
     public Matrix4 getPortalTransformationMatrix(){
@@ -380,6 +382,7 @@ public class Portal extends Entity {
         shader.shader.setUniform2fv("screenSize", tmpVec, 0, 2);
 
         shader.bindOptionalTexture("screenTex", portalTexture, 1);
+        shader.shader.setUniformMatrix("transMatrix", this.getPortalTransformationMatrix().inv());
         shader.bindOptionalUniform3f("localOffset", this.portalMeshLocalOffset);
         shader.bindOptionalUniform3f("portScale", this.portalMeshScale);
         shader.shader.setUniformMatrix("u_projViewTrans", playerCamera.combined);

@@ -85,9 +85,13 @@ public abstract class PortalableEntityMixin {
         // TODO: Fix when more entities/multiplayer gets added
         InGame.getLocalPlayer().zoneId = new String(portal.linkedPortal.zoneID);
         this.viewDirection = portal.getPortaledVector(this.viewDirection);
+        this.velocity.sub(portal.velocity);
+        this.velocity.sub(portal.onceVelocity);
         this.position = portal.getPortaledPos(this.position);
         this.velocity = portal.getPortaledVector(this.velocity);
         this.onceVelocity = portal.getPortaledVector(this.onceVelocity);
+        this.velocity.add(portal.linkedPortal.velocity);
+        this.velocity.add(portal.linkedPortal.onceVelocity);
         portal.linkedPortal.isPortalBeingUsed = true;
         this.teleportingPortal = portal.linkedPortal;
     }

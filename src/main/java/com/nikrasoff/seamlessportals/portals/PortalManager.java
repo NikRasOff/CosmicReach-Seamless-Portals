@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.badlogic.gdx.utils.Array;
 import finalforeach.cosmicreach.entities.Player;
 import finalforeach.cosmicreach.gamestates.InGame;
@@ -60,12 +61,10 @@ public class PortalManager {
         Player player = InGame.getLocalPlayer();
         for (Portal portal : this.createdPortals){
             portal.updateAnimations(Gdx.graphics.getDeltaTime());
-//            BoundingBox portalBB = portal.getMeshBoundingBox();
-//            if (portal.zoneID.equals(player.zoneId) && !portal.isPortalDestroyed && playerCamera.frustum.boundsInFrustum(portalBB) && portal.position.dst(playerCamera.position) < 50){
-//                portal.render(playerCamera);
-//                System.out.println("yes");
-//            }
-            portal.render(playerCamera);
+            OrientedBoundingBox portalBB = portal.getMeshBoundingBox();
+            if (portal.zoneID.equals(player.zoneId) && !portal.isPortalDestroyed && playerCamera.frustum.boundsInFrustum(portalBB) && portal.position.dst(playerCamera.position) < 50){
+                portal.render(playerCamera);
+            }
         }
     }
 }

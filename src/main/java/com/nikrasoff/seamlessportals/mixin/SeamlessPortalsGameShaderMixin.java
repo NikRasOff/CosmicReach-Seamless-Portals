@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(GameShader.class)
 public abstract class SeamlessPortalsGameShaderMixin {
-    // This exists solely because of whatever the fuck flux is doing with shaders
+    // This exists solely because shaders in flux are still broken
     @Redirect(method = "loadShaderFile", at = @At(value = "INVOKE", target = "Ljava/lang/String;replaceAll(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"))
     private String fixShaderName(String instance, String regex, String replacement){
 

@@ -2,6 +2,7 @@ package com.nikrasoff.seamlessportals.portals;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -72,9 +73,16 @@ public class PortalManager {
             shapeRenderer.setTransformMatrix(portalBigBB.transform);
             shapeRenderer.box(portalBigBB.getBounds().min.x, portalBigBB.getBounds().min.y, portalBigBB.getBounds().min.z, portalBigBB.getBounds().getWidth(), portalBigBB.getBounds().getHeight(), -portalBigBB.getBounds().getDepth());
             shapeRenderer.end();
-            if (portal.zoneID.equals(player.zoneId) && !portal.isPortalDestroyed && playerCamera.frustum.boundsInFrustum(portalBB) && portal.position.dst(playerCamera.position) < 50){
-                portal.render(playerCamera);
+            if (!portal.isPortalMeshGenerated){
+                portal.updatePortalMeshScale((PerspectiveCamera) playerCamera);
             }
+            if (!portal.zoneID.equals(player.zoneId) || portal.isPortalDestroyed || portal.position.dst(playerCamera.position) > 50){
+                continue;
+            }
+            if (!playerCamera.frustum.boundsInFrustum(portalBB) && !portal.isInterpProtectionActive){
+                continue;
+            }
+            portal.render(playerCamera);
         }
     }
 }

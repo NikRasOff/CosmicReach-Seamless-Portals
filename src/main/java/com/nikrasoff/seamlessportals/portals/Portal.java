@@ -3,7 +3,6 @@ package com.nikrasoff.seamlessportals.portals;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
@@ -13,7 +12,9 @@ import com.nikrasoff.seamlessportals.animations.ColorAnimation;
 import com.nikrasoff.seamlessportals.animations.FloatAnimation;
 import com.nikrasoff.seamlessportals.animations.SPAnimationSequence;
 import com.nikrasoff.seamlessportals.extras.FloatContainer;
+import com.nikrasoff.seamlessportals.extras.IPortalableEntity;
 import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.MeshData;
 import finalforeach.cosmicreach.rendering.RenderOrder;
@@ -30,9 +31,9 @@ import finalforeach.cosmicreach.world.Zone;
 
 public class Portal extends Entity {
     public transient boolean isPortalDestroyed = false;
-    public transient boolean isPortalBeingUsed = false;
+    public transient boolean isInterpProtectionActive = false;
     public transient Vector3 portalEndPosition = new Vector3();
-    private transient final boolean ignorePortals;
+    public transient boolean isPortalMeshGenerated = false;
 
     public transient Portal linkedPortal;
     private Vector2 portalSize;
@@ -60,7 +61,7 @@ public class Portal extends Entity {
     private transient final Color colorOverlay = Color.CLEAR.cpy();
 
     public Portal(){
-        this.ignorePortals = true;
+        IPortalableEntity.setIgnorePortals((IPortalableEntity) this, true);
         this.portalCamera = new PerspectiveCamera(GraphicsSettings.fieldOfView.getValue(), (float)Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight());
         endingAnimationSequence.add(new FloatAnimation(1, 0, 0.5F, this.animModelScale));
         endingAnimationSequence.add(new ColorAnimation(new Color(1, 0, 0, 0), new Color(1, 0, 0, 1), 0.25F, this.colorOverlay));
@@ -70,7 +71,7 @@ public class Portal extends Entity {
 
     public Portal(Vector2 size, String viewDir, Vector3 portalPos, Zone zone){
         this.hasGravity = false;
-        this.ignorePortals = true;
+        IPortalableEntity.setIgnorePortals((IPortalableEntity) this, true);
 
         this.localBoundingBox.min.set(-size.x/2, -size.y / 2, -1F);
         this.localBoundingBox.max.set(size.x/2, size.y / 2, 1F);
@@ -253,18 +254,13 @@ public class Portal extends Entity {
         this.portalCamera.near = playerCamera.near;
         this.portalCamera.far = playerCamera.far;
 
-        Vector3 newPortalCamPos = getPortaledPos(playerCamera.position);
-        Vector3 newPortalCamDir = getPortaledVector(playerCamera.direction);
-
-        this.portalCamera.position.x = newPortalCamPos.x;
-        this.portalCamera.position.y = newPortalCamPos.y;
-        this.portalCamera.position.z = newPortalCamPos.z;
+        this.portalCamera.position.set(getPortaledPos(playerCamera.position));
         this.portalCamera.position.add(this.viewPositionOffset);
-        this.portalCamera.direction.set(newPortalCamDir);
-        this.portalCamera.up.set(this.getPortaledVector(new Vector3(0, 1, 0)));
+        this.portalCamera.direction.set(getPortaledVector(playerCamera.direction));
+        this.portalCamera.up.set(this.getPortaledVector(playerCamera.up));
         this.portalCamera.update();
 
-        if (!this.isPortalBeingUsed) setCameraNearClipPlane(playerCamera);
+        if (!this.shouldDoGoThroughEffects()) setCameraNearClipPlane(playerCamera);
     }
 
     private Texture createPortalTexture(Camera playerCamera){
@@ -282,7 +278,7 @@ public class Portal extends Entity {
         ScreenUtils.clear(Sky.skyColor, true);
         Sky.drawStars(this.portalCamera);
         GameSingletons.zoneRenderer.render(InGame.world.getZone(this.zoneID), this.portalCamera);
-        if (this.isPortalBeingUsed && !this.isOnSameSideOfPortal(playerCamera.position, this.portalEndPosition)) {
+        if (this.shouldDoGoThroughEffects() && !this.isOnSameSideOfPortal(playerCamera.position, this.portalEndPosition)) {
             this.linkedPortal.renderRecursively(this.portalCamera, this.portalFrameBuffer);
             portalFrameBuffer.bind();
         }
@@ -292,6 +288,7 @@ public class Portal extends Entity {
     }
 
     public void updatePortalMeshScale(PerspectiveCamera playerCamera){
+        this.isPortalMeshGenerated = true;
         float halfHeight = (float) (playerCamera.near * Math.tan(Math.toRadians(playerCamera.fieldOfView * 0.5)));
         float halfWidth = halfHeight * (playerCamera.viewportWidth / playerCamera.viewportHeight);
 
@@ -300,18 +297,19 @@ public class Portal extends Entity {
         Plane portalPlane = new Plane(this.viewDirection, this.position);
         float camDistToPortalPlane = Math.abs(portalPlane.distance(playerCamera.position));
 
-        if (this.isPortalBeingUsed){
+        if (this.shouldDoGoThroughEffects()){
+            System.out.println(this.position);
             portalThickness += camDistToPortalPlane;
         }
         else{
-            if ((camDistToPortalPlane > portalThickness) || (this.position.dst(playerCamera.position) > (this.portalSize.len() / 2))){
+            if ((camDistToPortalPlane > portalThickness) || (!this.getGlobalBoundingBox().contains(playerCamera.position))){
                 portalThickness = 0;
             }
         }
 
         this.portalMeshScale = new Vector3(this.portalSize.x, this.portalSize.y, portalThickness);
 
-        if (this.isPortalBeingUsed) this.setPortalMeshLocalOffset(this.portalEndPosition, portalThickness);
+        if (this.shouldDoGoThroughEffects()) this.setPortalMeshLocalOffset(this.portalEndPosition, portalThickness);
         else this.setPortalMeshLocalOffset(playerCamera.position, portalThickness);
 
         this.portalMeshScale.scl(this.animModelScale.getValue());
@@ -449,5 +447,9 @@ public class Portal extends Entity {
 
     public boolean isPortalStable(){
         return this.startingAnimationSequence.isFinished() && !this.isDestroyAnimationPlaying;
+    }
+
+    private boolean shouldDoGoThroughEffects(){
+        return (this.isInterpProtectionActive);
     }
 }

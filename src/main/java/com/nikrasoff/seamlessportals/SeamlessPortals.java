@@ -9,10 +9,11 @@ public class SeamlessPortals implements ModInitializer {
     public static PortalManager portalManager = new PortalManager();
     public static final String MOD_ID = "seamlessportals";
     public static final Logger LOGGER = Logger.getLogger(MOD_ID);
+    public static boolean debugMode = true;
 
     @Override
     public void onInitialize() {
-        LOGGER.info("Initializing Seamless Portals!");
+        System.out.println("Initialising Seamless Portals!");
         SeamlessPortalsBlockEvents.registerSeamlessPortalsBlockEvents();
         SeamlessPortalsCustomBlocks.registerCustomBlocks();
     }

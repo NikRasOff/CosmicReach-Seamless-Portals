@@ -25,7 +25,7 @@ public class BlockEventActionRegisterPortalGen implements IBlockEventAction {
     }
 
     public void act(Zone zone, BlockPosition blockPos) {
-        if (SeamlessPortals.portalManager.prevPortalGenPos == null) {
+        if (SeamlessPortals.portalManager.prevPortalGenPos == null || SeamlessPortals.portalManager.getPrevGenBlockPos() == null) {
             SeamlessPortals.portalManager.prevPortalGenPos = new Vector3(blockPos.getGlobalX(), blockPos.getGlobalY(), blockPos.getGlobalZ());
             SeamlessPortals.portalManager.prevPortalGenZone = zone.zoneId;
         }

@@ -17,10 +17,11 @@ public class BlockEventActionDeregisterPortalGen implements IBlockEventAction {
 
     @Override
     public void act(BlockState blockState, BlockEventTrigger blockEventTrigger, Zone zone, Map<String, Object> map) {
-        this.act(zone, (BlockPosition) map.get("blockPos"));
+        this.act((BlockPosition) map.get("blockPos"));
     }
-    public void act(Zone zone, BlockPosition blockPos) {
+    public void act(BlockPosition blockPos) {
         if (SeamlessPortals.portalManager.prevPortalGenPos == null) return;
+        if (SeamlessPortals.portalManager.getPrevGenBlockPos() == null) return;
         if (blockPos.toString().equals(SeamlessPortals.portalManager.getPrevGenBlockPos().toString())){
             SeamlessPortals.portalManager.prevPortalGenPos = null;
             SeamlessPortals.portalManager.prevPortalGenZone = null;

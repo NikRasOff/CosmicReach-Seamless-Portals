@@ -133,7 +133,6 @@ public class Portal extends Entity {
             default:
                 this.viewDirection = new Vector3(0, 0, 1);
                 this.position.y += size.y / 2;
-                this.position.y += 0.5F;
                 break;
         }
         this.localBoundingBox.update();

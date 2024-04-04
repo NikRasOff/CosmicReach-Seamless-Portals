@@ -10,11 +10,15 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.badlogic.gdx.utils.Array;
+import com.nikrasoff.seamlessportals.SeamlessPortals;
 import finalforeach.cosmicreach.entities.Player;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.blocks.BlockPosition;
+import finalforeach.cosmicreach.io.ChunkLoader;
 import finalforeach.cosmicreach.world.Chunk;
+import finalforeach.cosmicreach.world.WorldLoader;
 import finalforeach.cosmicreach.world.Zone;
+import finalforeach.cosmicreach.worldgen.ChunkColumn;
 
 public class PortalManager {
     public String prevPortalGenZone;
@@ -23,13 +27,19 @@ public class PortalManager {
 
     public boolean shouldUpdatePortalArray = false;
 
-    private static ShapeRenderer shapeRenderer = new ShapeRenderer();
+    public static boolean debugReady = false;
+    private static ShapeRenderer shapeRenderer;
 
     public PortalManager(){}
     
     public BlockPosition getPrevGenBlockPos(){
         if (this.prevPortalGenPos == null) return null;
-        Chunk c = InGame.world.getZone(this.prevPortalGenZone).getChunkAtBlock((int) this.prevPortalGenPos.x, (int) this.prevPortalGenPos.y, (int) this.prevPortalGenPos.z);
+        Zone cur_zone = InGame.world.getZone(this.prevPortalGenZone);
+        Chunk c = cur_zone.getChunkAtBlock((int) this.prevPortalGenPos.x, (int) this.prevPortalGenPos.y, (int) this.prevPortalGenPos.z);
+        if (c == null){
+            // Doesn't work in unloaded chunks, sadly.
+            return null;
+        }
         return new BlockPosition(c, (int) (this.prevPortalGenPos.x - c.blockX), (int) (this.prevPortalGenPos.y - c.blockY), (int) (this.prevPortalGenPos.z - c.blockZ));
     }
 
@@ -60,19 +70,42 @@ public class PortalManager {
         this.createdPortals = newPortalArray;
     }
 
+    private void initialiseDebug(){
+        shapeRenderer = new ShapeRenderer();
+        debugReady = true;
+    }
+
+    private void disableDebug(){
+        if (shapeRenderer != null){
+            shapeRenderer.dispose();
+            shapeRenderer = null;
+        }
+        debugReady = false;
+    }
+
     public void renderPortals(Camera playerCamera){
+        if (SeamlessPortals.debugMode){
+            if (!debugReady) initialiseDebug();
+        }
+        else if (debugReady){
+            disableDebug();
+        }
         if (this.shouldUpdatePortalArray) this.updatePortalArray();
         Player player = InGame.getLocalPlayer();
-        shapeRenderer.setColor(1, 0, 0, 1);
-        shapeRenderer.setProjectionMatrix(playerCamera.combined);
+        if (debugReady){
+            shapeRenderer.setColor(1, 0, 0, 1);
+            shapeRenderer.setProjectionMatrix(playerCamera.combined);
+        }
         for (Portal portal : this.createdPortals){
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             portal.updateAnimations(Gdx.graphics.getDeltaTime());
             OrientedBoundingBox portalBB = portal.getMeshBoundingBox();
             OrientedBoundingBox portalBigBB = portal.getGlobalBoundingBox();
-            shapeRenderer.setTransformMatrix(portalBigBB.transform);
-            shapeRenderer.box(portalBigBB.getBounds().min.x, portalBigBB.getBounds().min.y, portalBigBB.getBounds().min.z, portalBigBB.getBounds().getWidth(), portalBigBB.getBounds().getHeight(), -portalBigBB.getBounds().getDepth());
-            shapeRenderer.end();
+            if (debugReady){
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+                shapeRenderer.setTransformMatrix(portalBigBB.transform);
+                shapeRenderer.box(portalBigBB.getBounds().min.x, portalBigBB.getBounds().min.y, portalBigBB.getBounds().min.z, portalBigBB.getBounds().getWidth(), portalBigBB.getBounds().getHeight(), -portalBigBB.getBounds().getDepth());
+                shapeRenderer.end();
+            }
             if (!portal.isPortalMeshGenerated){
                 portal.updatePortalMeshScale((PerspectiveCamera) playerCamera);
             }

@@ -1,5 +1,6 @@
 package com.nikrasoff.seamlessportals.mixin;
 
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
@@ -7,6 +8,7 @@ import com.nikrasoff.seamlessportals.extras.IPortalableEntity;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.world.Zone;
 import org.spongepowered.asm.mixin.Mixin;
@@ -84,10 +86,12 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
                     if (portal.isOnSameSideOfPortal(prevPos, prevCameraPos)){
                         this.cameraInterpolatePortal = portal.linkedPortal;
                         portal.linkedPortal.isInterpProtectionActive = true;
+                        portal.linkedPortal.portalEndPosition = portal.getPortaledPos(nextCameraPos);
                     }
                     else {
                         this.cameraInterpolatePortal = portal;
                         portal.isInterpProtectionActive = true;
+                        portal.portalEndPosition = nextCameraPos;
                     }
                 }
             }
@@ -111,6 +115,9 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
         this.onceVelocity = portal.getPortaledVector(this.onceVelocity);
         this.velocity.add(portal.linkedPortal.velocity);
         this.velocity.add(portal.linkedPortal.onceVelocity);
+        if (this.isLocalPlayer()){
+            portal.linkedPortal.updatePortalMeshScale((PerspectiveCamera) GameState.IN_GAME.getWorldCamera());
+        }
         if (!this.nearbyPortals.contains(portal.linkedPortal, true)){
             this.nearbyPortals.add(portal.linkedPortal);
         }

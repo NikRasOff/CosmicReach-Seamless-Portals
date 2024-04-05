@@ -1,15 +1,22 @@
 package com.nikrasoff.seamlessportals.mixin;
 
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.badlogic.gdx.utils.Array;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.nikrasoff.seamlessportals.extras.IPortalableEntity;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import finalforeach.cosmicreach.blocks.BlockPosition;
+import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.InGame;
+import finalforeach.cosmicreach.world.Chunk;
 import finalforeach.cosmicreach.world.Zone;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,6 +35,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
     @Shadow public Vector3 onceVelocity;
     @Shadow private Vector3 acceleration;
     @Shadow public Vector3 viewPositionOffset;
+    @Shadow public BoundingBox localBoundingBox;
     @Unique
     private transient final Array<Portal> nearbyPortals = new Array<>();
     @Unique
@@ -37,6 +45,15 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
     @Unique
     private transient boolean ignorePortals = false;
 
+    @Unique
+    private transient Array<BlockPosition> nonCollideBlocks = new Array<>();
+    @Unique
+    private transient Array<BlockPosition> tmpCollidedBlocks = new Array<>();
+    @Unique
+    private transient OrientedBoundingBox tmpPortaledBoundingBox = new OrientedBoundingBox();
+    @Unique
+    private transient BoundingBox tmpPortalCheckBlockBoundingBox = new BoundingBox();
+
     @Inject(method = "updatePositions", at = @At("HEAD"))
     private void onEntityUpdate(Zone zone, double deltaTime, CallbackInfo ci) {
         if (this.ignorePortals) return;
@@ -44,6 +61,10 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
             this.cameraInterpolatePortal.isInterpProtectionActive = false;
             this.cameraInterpolatePortal = null;
         }
+        this.nonCollideBlocks.clear();
+        this.nonCollideBlocks.addAll(this.tmpCollidedBlocks);
+        this.tmpCollidedBlocks.clear();
+        this.tmpPortaledBoundingBox.setBounds(this.localBoundingBox);
         this.justTeleported = false;
         this.nearbyPortals.clear();
         // A bit of a hack since entities don't keep track of the zones they're in
@@ -103,6 +124,32 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
         }
     }
 
+    @WrapOperation(method = "updateConstraints", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/Zone;getBlockState(III)Lfinalforeach/cosmicreach/blocks/BlockState;"))
+    private BlockState updateConstraintsMixin(Zone instance, int x, int y, int z, Operation<BlockState> original){
+        return this.checkIfShouldCollidePortal(instance, x, y, z, original);
+    }
+
+    public BlockState checkIfShouldCollidePortal(Zone instance, int x, int y, int z, Operation<BlockState> original){
+        Chunk c = instance.getChunkAtBlock(x, y, z);
+        BlockPosition curBlockPos = new BlockPosition(c, x - c.blockX, y - c.blockY, z - c.blockZ);
+        if (this.nonCollideBlocks.contains(curBlockPos, false)){
+            if (!this.tmpCollidedBlocks.contains(curBlockPos, false)){
+                this.tmpCollidedBlocks.add(curBlockPos);
+            }
+            return null;
+        }
+        BlockState orBlockState = original.call(instance, x, y, z);
+        if (this.isJustTeleported() && orBlockState != null && !orBlockState.walkThrough){
+            orBlockState.getBoundingBox(this.tmpPortalCheckBlockBoundingBox, x, y, z);
+            if (!this.tmpPortaledBoundingBox.intersects(this.tmpPortalCheckBlockBoundingBox) && this.tmpEntityBoundingBox.intersects(this.tmpPortalCheckBlockBoundingBox)){
+                this.nonCollideBlocks.add(curBlockPos);
+                this.tmpCollidedBlocks.add(curBlockPos);
+                return null;
+            }
+        }
+        return orBlockState;
+    }
+
     @Unique
     public void teleportThroughPortal(Portal portal) {
         // TODO: Fix when more entities/multiplayer gets added
@@ -122,6 +169,8 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
             this.nearbyPortals.add(portal.linkedPortal);
         }
         this.justTeleported = true;
+        Vector3 orPos = this.position.cpy().add(portal.getPortaledPos(new Vector3(0, 0.05F, 0)));
+        this.tmpPortaledBoundingBox.setTransform(new Matrix4().setToLookAt(orPos, portal.linkedPortal.getPortaledVector(orPos.cpy().add(this.viewDirection)), portal.linkedPortal.getPortaledVector(new Vector3(0, 1, 0))).inv());
     }
 
     @Unique

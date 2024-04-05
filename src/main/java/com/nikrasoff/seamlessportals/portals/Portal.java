@@ -297,7 +297,6 @@ public class Portal extends Entity {
         float camDistToPortalPlane = Math.abs(portalPlane.distance(playerCamera.position));
 
         if (this.shouldDoGoThroughEffects()){
-            System.out.println(this.position);
             portalThickness += camDistToPortalPlane;
         }
         else{

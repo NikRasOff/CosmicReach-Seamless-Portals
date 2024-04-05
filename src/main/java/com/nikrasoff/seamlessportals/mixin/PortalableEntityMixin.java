@@ -36,6 +36,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
     @Shadow private Vector3 acceleration;
     @Shadow public Vector3 viewPositionOffset;
     @Shadow public BoundingBox localBoundingBox;
+    @Shadow public boolean isOnGround;
     @Unique
     private transient final Array<Portal> nearbyPortals = new Array<>();
     @Unique
@@ -168,9 +169,19 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
         if (!this.nearbyPortals.contains(portal.linkedPortal, true)){
             this.nearbyPortals.add(portal.linkedPortal);
         }
+        Vector3 orPos = portal.linkedPortal.getPortaledPos(this.position);
+        if (this.isOnGround){
+            this.tmpPortaledBoundingBox.setTransform(new Matrix4().setToLookAt(orPos, orPos.cpy().add(portal.linkedPortal.getPortaledVector(this.viewDirection)), portal.linkedPortal.getPortaledVector(new Vector3(0, 1, 0))).inv());
+            float lowestPoint = 0;
+            for (Vector3 v : this.tmpPortaledBoundingBox.getVertices()){
+                if (v.y - orPos.y < lowestPoint) lowestPoint = v.y - orPos.y;
+            }
+            this.position.add(portal.getPortaledVector(new Vector3(0, -lowestPoint, 0)));
+        }
+
         this.justTeleported = true;
-        Vector3 orPos = this.position.cpy().add(portal.getPortaledPos(new Vector3(0, 0.05F, 0)));
-        this.tmpPortaledBoundingBox.setTransform(new Matrix4().setToLookAt(orPos, portal.linkedPortal.getPortaledVector(orPos.cpy().add(this.viewDirection)), portal.linkedPortal.getPortaledVector(new Vector3(0, 1, 0))).inv());
+        orPos.set(this.position).add(portal.getPortaledPos(new Vector3(0, 0.05F, 0)));
+        this.tmpPortaledBoundingBox.setTransform(new Matrix4().setToLookAt(orPos, orPos.cpy().add(portal.linkedPortal.getPortaledVector(this.viewDirection)), portal.linkedPortal.getPortaledVector(new Vector3(0, 1, 0))).inv());
     }
 
     @Unique

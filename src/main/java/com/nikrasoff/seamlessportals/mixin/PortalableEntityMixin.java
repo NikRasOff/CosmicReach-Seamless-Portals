@@ -164,6 +164,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
 
     @Unique
     public void teleportThroughPortal(Portal portal) {
+        System.out.println("Old position: " + this.position);
         // TODO: Fix when more entities/multiplayer gets added
         InGame.getLocalPlayer().zoneId = new String(portal.linkedPortal.zoneID);
         this.tmpPortalNextPosition.set(portal.getPortaledPos(this.tmpPortalNextPosition));
@@ -194,6 +195,8 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
         orPos.set(this.position);
         this.tmpPortalTransformMatrix.setToLookAt(orPos, orPos.cpy().add(portal.linkedPortal.getPortaledVector(new Vector3(0, 0, 1))), portal.linkedPortal.getPortaledVector(new Vector3(0, 1, 0))).inv();
         this.tmpPortaledBoundingBox.setTransform(this.tmpPortalTransformMatrix);
+        this.acceleration.set(portal.getPortaledVector(this.acceleration));
+        System.out.println("New position: " + this.position);
     }
 
     @Unique

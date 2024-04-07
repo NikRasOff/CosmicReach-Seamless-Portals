@@ -6,9 +6,7 @@ uniform mat4 u_projViewTrans;
 uniform vec3 posOffset;
 uniform vec3 modelScale;
 
-out vec3 worldPos;
-
 void main(){
-    worldPos = (a_position * modelScale) + posOffset;
+    vec3 worldPos = (a_position * modelScale) + posOffset;
     gl_Position = (u_projViewTrans * vec4(worldPos, 1.0));
 }

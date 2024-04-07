@@ -117,7 +117,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
                 continue;
             }
             if (this.isLocalPlayer()){
-                if (!portal.isOnSameSideOfPortal(prevCameraPos, nextCameraPos) && Intersector.intersectRayOrientedBounds(cameraPosChange, portal.getMeshBoundingBox(), new Vector3())){
+                if (portal.zoneID.equals(InGame.getLocalPlayer().zoneId) && !portal.isOnSameSideOfPortal(prevCameraPos, nextCameraPos) && Intersector.intersectRayOrientedBounds(cameraPosChange, portal.getMeshBoundingBox(), new Vector3())){
                     if (portal.isOnSameSideOfPortal(prevPos, prevCameraPos)){
                         this.cameraInterpolatePortal = portal.linkedPortal;
                         portal.linkedPortal.isInterpProtectionActive = true;
@@ -130,7 +130,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
                     }
                 }
             }
-            if (!portal.isOnSameSideOfPortal(prevPos, targetPosition) && Intersector.intersectRayOrientedBounds(posChange, portal.getMeshBoundingBox(), new Vector3())){
+            if (portal.zoneID.equals(InGame.getLocalPlayer().zoneId) && !portal.isOnSameSideOfPortal(prevPos, targetPosition) && Intersector.intersectRayOrientedBounds(posChange, portal.getMeshBoundingBox(), new Vector3())){
                 portal.linkedPortal.portalEndPosition = portal.getPortaledPos(targetPosition);
                 this.teleportThroughPortal(portal);
                 break;
@@ -158,12 +158,26 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
             }
             return null;
         }
-        if (this.isJustTeleported() && orBlockState != null && !orBlockState.walkThrough){
+
+        if (orBlockState != null && !orBlockState.walkThrough){
             orBlockState.getBoundingBox(this.tmpPortalCheckBlockBoundingBox, x, y, z);
-            if (!this.tmpPortaledBoundingBox.intersects(this.tmpPortalCheckBlockBoundingBox) && this.tmpEntityBoundingBox.intersects(this.tmpPortalCheckBlockBoundingBox)){
-                this.tmpNonCollideBlocks.add(curBlockPos);
-                this.tmpCollidedBlocks.add(curBlockPos);
-                return null;
+            Vector3 checkCenter = new Vector3();
+            this.tmpPortalCheckBlockBoundingBox.getCenter(checkCenter);
+            Ray ray = new Ray(this.position, checkCenter.cpy().sub(this.position));
+            for (Portal portal : SeamlessPortals.portalManager.createdPortals){
+                if (portal.zoneID.equals(InGame.getLocalPlayer().zoneId) && !portal.isOnSameSideOfPortal(this.position, checkCenter) && Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3())){
+                    if (!portal.getMeshBoundingBox().intersects(this.tmpPortalCheckBlockBoundingBox)){
+                        return null;
+                    }
+                }
+            }
+
+            if (this.isJustTeleported()){
+                if (!this.tmpPortaledBoundingBox.intersects(this.tmpPortalCheckBlockBoundingBox) && this.tmpEntityBoundingBox.intersects(this.tmpPortalCheckBlockBoundingBox)){
+                    this.tmpNonCollideBlocks.add(curBlockPos);
+                    this.tmpCollidedBlocks.add(curBlockPos);
+                    return null;
+                }
             }
         }
         return orBlockState;
@@ -171,7 +185,6 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
 
     @Unique
     public void teleportThroughPortal(Portal portal) {
-        System.out.println("Old position: " + this.position);
         // TODO: Fix when more entities/multiplayer gets added
         InGame.getLocalPlayer().zoneId = new String(portal.linkedPortal.zoneID);
         this.tmpPortalNextPosition.set(portal.getPortaledPos(this.tmpPortalNextPosition));
@@ -208,7 +221,6 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
         orPos.set(this.position);
         this.tmpPortalTransformMatrix.setToLookAt(orPos, orPos.cpy().add(portal.linkedPortal.getPortaledVector(new Vector3(0, 0, 1))), portal.linkedPortal.getPortaledVector(new Vector3(0, 1, 0))).inv();
         this.tmpPortaledBoundingBox.setTransform(this.tmpPortalTransformMatrix);
-        System.out.println("New position: " + this.position);
     }
 
     @Unique

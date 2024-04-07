@@ -45,7 +45,7 @@ dependencies {
     implementation "com.badlogicgames.gdx:gdx-freetype:1.12.0"
     implementation "com.badlogicgames.gdx:gdx-freetype-platform:1.12.0:natives-desktop"
 
-    implementation "dev.crmodders:FluxAPI:0.5.4"
+    implementation "dev.crmodders:FluxAPI:${fluxapi_version}"
 }
 
 processResources {
@@ -61,7 +61,8 @@ processResources {
                 "loader_version": project.loader_version,
                 "cosmicreach_version": project.cosmicreach_version,
                 "mod_name": project.mod_name,
-                "modid": project.modid
+                "modid": project.modid,
+                "fluxapi_version": fluxapi_version
     }
 }
 

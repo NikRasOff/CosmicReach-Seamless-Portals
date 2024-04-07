@@ -394,13 +394,6 @@ public class Portal extends Entity {
             mesh.render(shader.shader, 4);
             mesh.unbind(shader.shader);
             SharedQuadIndexData.unbind();
-
-//            ShapeRenderer sr = new ShapeRenderer();
-//            sr.begin(ShapeRenderer.ShapeType.Line);
-//            sr.setColor(1, 0, 0, 1);
-//            BoundingBox bb = this.getGlobalBoundingBox();
-//            sr.box(bb.min.x, bb.min.y, bb.min.z, bb.getWidth(), bb.getHeight(), bb.getDepth());
-//            sr.end();
         }
     }
 

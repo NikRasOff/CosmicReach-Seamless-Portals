@@ -319,6 +319,16 @@ public class Portal extends Entity {
         this.portalMeshLocalOffset = new Vector3(0, 0, width * (camFacingSameDirAsPortal ? 0.5f : -0.5f));
     }
 
+    public Matrix4 getPortaledTransform(Matrix4 transform){
+        Matrix4 newTransform = transform.cpy();
+        Matrix4 thisPort = this.getPortalTransformationMatrix();
+        Matrix4 linkedPort = this.linkedPortal.getPortalTransformationMatrix();
+        linkedPort.inv();
+        newTransform.mul(thisPort);
+        newTransform.mul(linkedPort);
+        return newTransform;
+    }
+
     public Vector3 getPortaledPos(Vector3 pos){
         Vector3 newPos = pos.cpy();
         Matrix4 thisPort = this.getPortalTransformationMatrix();

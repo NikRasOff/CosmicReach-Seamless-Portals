@@ -6,4 +6,5 @@ public interface ISPAnimation {
     boolean isFinished();
 
     float getExtraTime();
+    void restart();
 }

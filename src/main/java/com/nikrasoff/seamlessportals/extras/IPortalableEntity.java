@@ -7,7 +7,6 @@ import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.world.Zone;
 
 public interface IPortalableEntity {
-    public Array<Portal> getNearbyPortals();
     public void setIgnorePortals(boolean value);
     public boolean isJustTeleported();
     public boolean hasCameraJustTeleported(Portal portal);

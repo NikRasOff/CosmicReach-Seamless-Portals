@@ -27,6 +27,10 @@ public class SPAnimationSequence implements ISPAnimation {
     @Override
     public void update(float deltaTime) {
         if (this.isFinished) return;
+        if (this.animationArray.isEmpty()) {
+            this.isFinished = true;
+            return;
+        }
         if (this.isParallel){
             this.extraTime = 0;
             boolean allDone = true;
@@ -77,5 +81,23 @@ public class SPAnimationSequence implements ISPAnimation {
 
     public void finish(){
         this.isFinished = true;
+    }
+
+    public void clear(){
+        this.animationArray.clear();
+    }
+
+    public void start(){
+        this.currentAnimation = 0;
+        this.isFinished = false;
+        this.extraTime = 0;
+    }
+    public void restart(){
+        this.currentAnimation = 0;
+        this.isFinished = false;
+        this.extraTime = 0;
+        for (ISPAnimation animation : this.animationArray){
+            animation.restart();
+        }
     }
 }

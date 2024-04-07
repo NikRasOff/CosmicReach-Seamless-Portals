@@ -1,9 +1,9 @@
 package com.nikrasoff.seamlessportals.animations;
 
 public abstract class SPAnimation<T> implements ISPAnimation {
-    T updatedValue;
-    T startingValue;
-    T endingValue;
+    public T updatedValue;
+    public T startingValue;
+    public T endingValue;
     float animEndTime;
     float animGoingFor;
     float progress;
@@ -35,5 +35,9 @@ public abstract class SPAnimation<T> implements ISPAnimation {
     @Override
     public float getExtraTime() {
         return this.isFinished() ? this.animGoingFor - this.animEndTime : 0;
+    }
+    public void restart(){
+        this.animGoingFor = 0;
+        this.isFinished = false;
     }
 }

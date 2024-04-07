@@ -1,15 +1,19 @@
 package com.nikrasoff.seamlessportals.mixin;
 
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
+import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.nikrasoff.seamlessportals.extras.DirectionVector;
 import com.nikrasoff.seamlessportals.extras.IPortalableEntity;
+import com.nikrasoff.seamlessportals.extras.IPortalablePlayer;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import finalforeach.cosmicreach.blocks.BlockPosition;
@@ -39,13 +43,14 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
     @Shadow public BoundingBox localBoundingBox;
     @Shadow public boolean isOnGround;
     @Unique
-    private transient final Array<Portal> nearbyPortals = new Array<>();
-    @Unique
     private transient Portal cameraInterpolatePortal = null;
     @Unique
     private transient boolean justTeleported = false;
     @Unique
     private transient boolean ignorePortals = false;
+
+    @Unique
+    private static final float terminalVelocity = 100; // This value was chosen randomly
 
     @Unique
     private transient Array<BlockPosition> tmpNonCollideBlocks = new Array<>();
@@ -62,6 +67,9 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
 
     @Inject(method = "updatePositions", at = @At("HEAD"))
     private void onEntityUpdate(Zone zone, double deltaTime, CallbackInfo ci) {
+        if (this.velocity.cpy().len() > terminalVelocity){
+            this.velocity.clamp(0, terminalVelocity);
+        }
         if (this.ignorePortals) return;
         if (this.cameraInterpolatePortal != null){
             this.cameraInterpolatePortal.isInterpProtectionActive = false;
@@ -71,22 +79,18 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
         this.tmpNonCollideBlocks.addAll(this.tmpCollidedBlocks);
         this.tmpCollidedBlocks.clear();
         this.tmpPortaledBoundingBox.setBounds(this.localBoundingBox);
+        this.tmpPortaledBoundingBox.getBounds().min.add(new Vector3(-0.01F, -0.01F, -0.01F));
+        this.tmpPortaledBoundingBox.getBounds().max.add(new Vector3(0.01F, 0.01F, 0.01F));
         this.justTeleported = false;
-        this.nearbyPortals.clear();
         // A bit of a hack since entities don't keep track of the zones they're in
         // And since for now there's only one entity - the player
         // TODO: Fix when more entities/multiplayer gets added
-        for (Portal curPortal : SeamlessPortals.portalManager.createdPortals) {
-            if (InGame.getLocalPlayer().zoneId.equals(curPortal.zoneID) && curPortal.getGlobalBoundingBox().intersects(this.tmpEntityBoundingBox)) {
-                this.nearbyPortals.add(curPortal);
-            }
-        }
         updateTrackedPortals(deltaTime);
     }
 
     @Unique
     private void updateTrackedPortals(double deltaTime){
-        if (this.nearbyPortals.isEmpty()) return;
+        if (SeamlessPortals.portalManager.createdPortals.isEmpty()) return;
 
         Vector3 prevPos = this.position.cpy();
         float ax = this.acceleration.x * (float)deltaTime;
@@ -105,12 +109,15 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
         Vector3 prevCameraPos = prevPos.cpy().add(this.viewPositionOffset);
         Vector3 nextCameraPos = targetPosition.cpy().add(this.viewPositionOffset);
 
-        for (Portal portal : this.nearbyPortals){
+        Ray posChange = new Ray(prevPos.cpy().add(new Vector3(0, 0.05F, 0)), targetPosition.cpy().sub(prevPos));
+        Ray cameraPosChange = new Ray(prevCameraPos, nextCameraPos.cpy().sub(prevCameraPos));
+
+        for (Portal portal : SeamlessPortals.portalManager.createdPortals){
             if (portal.isPortalDestroyed || !portal.isPortalStable()) {
                 continue;
             }
             if (this.isLocalPlayer()){
-                if (!portal.isOnSameSideOfPortal(prevCameraPos, nextCameraPos)){
+                if (!portal.isOnSameSideOfPortal(prevCameraPos, nextCameraPos) && Intersector.intersectRayOrientedBounds(cameraPosChange, portal.getMeshBoundingBox(), new Vector3())){
                     if (portal.isOnSameSideOfPortal(prevPos, prevCameraPos)){
                         this.cameraInterpolatePortal = portal.linkedPortal;
                         portal.linkedPortal.isInterpProtectionActive = true;
@@ -123,7 +130,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
                     }
                 }
             }
-            if (!portal.isOnSameSideOfPortal(prevPos, targetPosition)){
+            if (!portal.isOnSameSideOfPortal(prevPos, targetPosition) && Intersector.intersectRayOrientedBounds(posChange, portal.getMeshBoundingBox(), new Vector3())){
                 portal.linkedPortal.portalEndPosition = portal.getPortaledPos(targetPosition);
                 this.teleportThroughPortal(portal);
                 break;
@@ -174,14 +181,13 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
         this.position = portal.getPortaledPos(this.position);
         this.velocity = portal.getPortaledVector(this.velocity);
         this.onceVelocity = portal.getPortaledVector(this.onceVelocity);
+        this.acceleration.set(portal.getPortaledVector(this.acceleration));
         this.velocity.add(portal.linkedPortal.velocity);
         this.velocity.add(portal.linkedPortal.onceVelocity);
         if (this.isLocalPlayer()){
             portal.linkedPortal.updatePortalMeshScale((PerspectiveCamera) GameState.IN_GAME.getWorldCamera());
         }
-        if (!this.nearbyPortals.contains(portal.linkedPortal, true)){
-            this.nearbyPortals.add(portal.linkedPortal);
-        }
+        Vector3 originalPos = this.position.cpy();
 
         // A bunch of magic to make mismatched portals more intuitive
         // to the player and less intuitive to any poor soul
@@ -191,11 +197,17 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
         Vector3 orPos = portal.linkedPortal.getPortaledPos(this.position);
         this.snapOnGoThroughPortal(portal);
 
+        // Animating camera turning
+        if (this.isLocalPlayer()){
+            IPortalablePlayer locPlayer = (IPortalablePlayer) InGame.getLocalPlayer();
+            Vector3 offset = originalPos.sub(this.position);
+            locPlayer.portalCurrentCameraTransform(portal, offset);
+        }
+
         this.justTeleported = true;
         orPos.set(this.position);
         this.tmpPortalTransformMatrix.setToLookAt(orPos, orPos.cpy().add(portal.linkedPortal.getPortaledVector(new Vector3(0, 0, 1))), portal.linkedPortal.getPortaledVector(new Vector3(0, 1, 0))).inv();
         this.tmpPortaledBoundingBox.setTransform(this.tmpPortalTransformMatrix);
-        this.acceleration.set(portal.getPortaledVector(this.acceleration));
         System.out.println("New position: " + this.position);
     }
 
@@ -210,8 +222,8 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
 
         // Now, we get the new bounding box
         this.tmpEntityBoundingBox.set(this.localBoundingBox);
-        this.tmpEntityBoundingBox.min.add(this.tmpPortalNextPosition);
-        this.tmpEntityBoundingBox.max.add(this.tmpPortalNextPosition);
+        this.tmpEntityBoundingBox.min.add(this.position);
+        this.tmpEntityBoundingBox.max.add(this.position);
         this.tmpEntityBoundingBox.update();
 
         // Now, get the range of blocks to check against
@@ -253,6 +265,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
 
         // And now for the actual checking collisions part
 
+        // TODO: Fix when more entities/multiplayer gets added
         Zone curZone = InGame.getLocalPlayer().getZone(InGame.world); // For now just assume that this entity is the player
 
         float highestPoint = 0;
@@ -289,9 +302,12 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
                 }
             }
         }
-        if (highestPoint > 0){
+        if (highestPoint > 0.01F){
             highestPoint += 0.01F;
         }
+//        if (SeamlessPortals.debugMode){
+//            System.out.println("Bumped by " + highestPoint + "m in direction: " + direction.getName());
+//        }
         // finally, snap the player in the chosen direction by the chosen amount
         this.position.add(direction.getVector().cpy().scl(highestPoint));
     }
@@ -299,11 +315,6 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
     @Unique
     private boolean isLocalPlayer(){
         return ((IPortalableEntity) InGame.getLocalPlayer().getEntity() == this);
-    }
-
-    @Unique
-    public Array<Portal> getNearbyPortals(){
-        return this.nearbyPortals;
     }
 
     @Unique

@@ -24,7 +24,7 @@
     },
 
     "entrypoints": {
-      "init": "com.nikrasoff.seamlessportals.SeamlessPortals"
+      "main": "com.nikrasoff.seamlessportals.SeamlessPortals"
     },
 
     "depends": [

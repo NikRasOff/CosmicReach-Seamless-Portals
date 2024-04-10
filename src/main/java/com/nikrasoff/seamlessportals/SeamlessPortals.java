@@ -1,7 +1,8 @@
 package com.nikrasoff.seamlessportals;
 
 import com.nikrasoff.seamlessportals.portals.PortalManager;
-import net.fabricmc.api.ModInitializer;
+import org.coolcosmos.cosmicquilt.api.entrypoint.ModInitializer;
+import org.quiltmc.loader.api.ModContainer;
 
 import java.util.logging.Logger;
 
@@ -12,7 +13,7 @@ public class SeamlessPortals implements ModInitializer {
     public static boolean debugMode = false;
 
     @Override
-    public void onInitialize() {
+    public void onInitialize(ModContainer mod) {
         System.out.println("Initialising Seamless Portals!");
         SeamlessPortalsBlockEvents.registerSeamlessPortalsBlockEvents();
         SeamlessPortalsCustomBlocks.registerCustomBlocks();

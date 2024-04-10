@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+
+  "quilt_loader": {
+    "group": "${mod_group}",
+    "id": "${mod_id}",
+    "version": "${mod_version}",
+
+    "intermediate_mappings":"net.fabricmc:intermediary",
+
+    "metadata": {
+      "name": "${mod_name}",
+      "description": "This mod adds seamless portals into the game!",
+      "contributors": {
+        "NikRasOff": "Owner"
+      },
+
+      "contact": {
+        "issues": "https://github.com/NikRasOff/CosmicReach-Seamless-Portals/issues",
+        "sources": "https://github.com/NikRasOff/CosmicReach-Seamless-Portals"
+      },
+
+      "icon": "assets/example_mod/icon.png"
+    },
+
+    "entrypoints": {
+      "init": "com.nikrasoff.seamlessportals.SeamlessPortals"
+    },
+
+    "depends": [
+      {
+        "id": "cosmicquilt",
+        "versions": ">=${cosmic_quilt_version}"
+      },
+      {
+        "id": "cosmicreach",
+        "versions": ">=${cosmic_reach_version}"
+      },
+      {
+        "id": "fluxapi",
+        "versions": ">=${fluxapi_version}"
+      }
+    ]
+  },
+
+  "mixin": "seamlessportals.mixins.json"
+}

@@ -49,6 +49,9 @@ configurations {
     cosmicreach // Config to provide the Cosmic Reach project
     compileOnly.extendsFrom(cosmicreach) // Allows cosmic reach to be used in the codebase
 
+    quiltMod
+    implementation.extendsFrom(quiltMod)
+
     internal { // Allows to include something without it being in the maven (recommended to be used when including mods)
         visible = false
         canBeConsumed = false
@@ -66,10 +69,10 @@ dependencies {
     cosmicreach "finalforeach:cosmicreach:${cosmic_reach_version}"
 
     // Cosmic Quilt
-    internal "org.codeberg.CRModders:cosmic-quilt:${cosmic_quilt_version}"
+    implementation "org.codeberg.CRModders:cosmic-quilt:${cosmic_quilt_version}"
 
     // FluxAPI
-    implementation "dev.crmodders:fluxapi:${fluxapi_version}"
+    quiltMod "com.github.CRModders:FluxAPI:${fluxapi_version}"
 }
 
 processResources {

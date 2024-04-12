@@ -43,12 +43,11 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
     @Shadow public BoundingBox localBoundingBox;
     @Shadow public boolean isOnGround;
     @Unique
-    private transient Portal cameraInterpolatePortal = null;
-    @Unique
     private transient boolean justTeleported = false;
     @Unique
+    private transient Portal teleportPortal;
+    @Unique
     private transient boolean ignorePortals = false;
-
     @Unique
     private static final float terminalVelocity = 100; // This value was chosen randomly
 
@@ -71,10 +70,6 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
             this.velocity.clamp(0, terminalVelocity);
         }
         if (this.ignorePortals) return;
-        if (this.cameraInterpolatePortal != null){
-            this.cameraInterpolatePortal.isInterpProtectionActive = false;
-            this.cameraInterpolatePortal = null;
-        }
         this.tmpNonCollideBlocks.clear();
         this.tmpNonCollideBlocks.addAll(this.tmpCollidedBlocks);
         this.tmpCollidedBlocks.clear();
@@ -82,6 +77,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
         this.tmpPortaledBoundingBox.getBounds().min.add(new Vector3(-0.01F, -0.01F, -0.01F));
         this.tmpPortaledBoundingBox.getBounds().max.add(new Vector3(0.01F, 0.01F, 0.01F));
         this.justTeleported = false;
+        this.teleportPortal = null;
         // A bit of a hack since entities don't keep track of the zones they're in
         // And since for now there's only one entity - the player
         // TODO: Fix when more entities/multiplayer gets added
@@ -106,32 +102,13 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
         Vector3 targetPosition = (new Vector3(this.position)).add(posDiff);
         this.tmpPortalNextPosition.set(targetPosition);
 
-        Vector3 prevCameraPos = prevPos.cpy().add(this.viewPositionOffset);
-        Vector3 nextCameraPos = targetPosition.cpy().add(this.viewPositionOffset);
-
         Ray posChange = new Ray(prevPos.cpy().add(new Vector3(0, 0.05F, 0)), targetPosition.cpy().sub(prevPos));
-        Ray cameraPosChange = new Ray(prevCameraPos, nextCameraPos.cpy().sub(prevCameraPos));
 
         for (Portal portal : SeamlessPortals.portalManager.createdPortals){
             if (portal.isPortalDestroyed || !portal.isPortalStable()) {
                 continue;
             }
-            if (this.isLocalPlayer()){
-                if (portal.zoneID.equals(InGame.getLocalPlayer().zoneId) && !portal.isOnSameSideOfPortal(prevCameraPos, nextCameraPos) && Intersector.intersectRayOrientedBounds(cameraPosChange, portal.getMeshBoundingBox(), new Vector3())){
-                    if (portal.isOnSameSideOfPortal(prevPos, prevCameraPos)){
-                        this.cameraInterpolatePortal = portal.linkedPortal;
-                        portal.linkedPortal.isInterpProtectionActive = true;
-                        portal.linkedPortal.portalEndPosition = portal.getPortaledPos(nextCameraPos);
-                    }
-                    else {
-                        this.cameraInterpolatePortal = portal;
-                        portal.isInterpProtectionActive = true;
-                        portal.portalEndPosition = nextCameraPos;
-                    }
-                }
-            }
             if (portal.zoneID.equals(InGame.getLocalPlayer().zoneId) && !portal.isOnSameSideOfPortal(prevPos, targetPosition) && Intersector.intersectRayOrientedBounds(posChange, portal.getMeshBoundingBox(), new Vector3())){
-                portal.linkedPortal.portalEndPosition = portal.getPortaledPos(targetPosition);
                 this.teleportThroughPortal(portal);
                 break;
             }
@@ -218,6 +195,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
         }
 
         this.justTeleported = true;
+        this.teleportPortal = portal;
         orPos.set(this.position);
         this.tmpPortalTransformMatrix.setToLookAt(orPos, orPos.cpy().add(portal.linkedPortal.getPortaledVector(new Vector3(0, 0, 1))), portal.linkedPortal.getPortaledVector(new Vector3(0, 1, 0))).inv();
         this.tmpPortaledBoundingBox.setTransform(this.tmpPortalTransformMatrix);
@@ -335,11 +313,12 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
     }
 
     @Unique
-    public boolean hasCameraJustTeleported(Portal portal){
-        return (this.cameraInterpolatePortal == portal);
-    }
-
     public void setIgnorePortals(boolean value){
         this.ignorePortals = value;
+    }
+
+    @Unique
+    public Portal getTeleportingPortal(){
+        return this.teleportPortal;
     }
 }

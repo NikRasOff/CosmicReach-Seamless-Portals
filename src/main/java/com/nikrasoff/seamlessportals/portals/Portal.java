@@ -31,8 +31,6 @@ import finalforeach.cosmicreach.world.Zone;
 
 public class Portal extends Entity {
     public transient boolean isPortalDestroyed = false;
-    public transient boolean isInterpProtectionActive = false;
-    public transient Vector3 portalEndPosition = new Vector3();
     public transient boolean isPortalMeshGenerated = false;
 
     public transient Portal linkedPortal;
@@ -186,8 +184,11 @@ public class Portal extends Entity {
 
     public OrientedBoundingBox getMeshBoundingBox(){
         BoundingBox meshBB = new BoundingBox();
-        meshBB.min.set(this.portalMeshScale).scl(-0.5F);
-        meshBB.max.set(this.portalMeshScale).scl(0.5F);
+        Vector3 tmpScale = this.portalMeshScale.cpy();
+        tmpScale.z = 0;
+
+        meshBB.min.set(tmpScale).scl(-0.5F);
+        meshBB.max.set(tmpScale).scl(0.5F);
         meshBB.update();
 
         return new OrientedBoundingBox(meshBB, this.getPortalTransformationMatrix().inv());
@@ -259,7 +260,7 @@ public class Portal extends Entity {
         this.portalCamera.up.set(this.getPortaledVector(playerCamera.up));
         this.portalCamera.update();
 
-        if (!this.shouldDoGoThroughEffects()) setCameraNearClipPlane(playerCamera);
+        if (this.getDistanceToPortalPlane(playerCamera.position) > 0.02F) setCameraNearClipPlane(playerCamera);
     }
 
     private Texture createPortalTexture(Camera playerCamera){
@@ -277,10 +278,6 @@ public class Portal extends Entity {
         ScreenUtils.clear(Sky.skyColor, true);
         Sky.drawStars(this.portalCamera);
         GameSingletons.zoneRenderer.render(InGame.world.getZone(this.zoneID), this.portalCamera);
-        if (this.shouldDoGoThroughEffects() && !this.isOnSameSideOfPortal(playerCamera.position, this.portalEndPosition)) {
-            this.linkedPortal.renderRecursively(this.portalCamera, this.portalFrameBuffer);
-            portalFrameBuffer.bind();
-        }
         portalFrameBuffer.end();
 
         return this.portalFrameBuffer.getColorBufferTexture();
@@ -293,22 +290,15 @@ public class Portal extends Entity {
 
         float portalThickness = (new Vector3(halfWidth, halfHeight, playerCamera.near)).len();
 
-        Plane portalPlane = new Plane(this.viewDirection, this.position);
-        float camDistToPortalPlane = Math.abs(portalPlane.distance(playerCamera.position));
+        float camDistToPortalPlane = this.getDistanceToPortalPlane(playerCamera.position);
 
-        if (this.shouldDoGoThroughEffects()){
-            portalThickness += camDistToPortalPlane;
-        }
-        else{
-            if ((camDistToPortalPlane > portalThickness) || (!this.getGlobalBoundingBox().contains(playerCamera.position))){
-                portalThickness = 0;
-            }
+        if ((camDistToPortalPlane > portalThickness) || (!this.getGlobalBoundingBox().contains(playerCamera.position))){
+            portalThickness = 0;
         }
 
         this.portalMeshScale = new Vector3(this.portalSize.x, this.portalSize.y, portalThickness);
 
-        if (this.shouldDoGoThroughEffects()) this.setPortalMeshLocalOffset(this.portalEndPosition, portalThickness);
-        else this.setPortalMeshLocalOffset(playerCamera.position, portalThickness);
+        this.setPortalMeshLocalOffset(playerCamera.position, portalThickness);
 
         this.portalMeshScale.scl(this.animModelScale.getValue());
         this.portalMeshLocalOffset.scl(this.animModelScale.getValue());
@@ -327,6 +317,11 @@ public class Portal extends Entity {
         newTransform.mul(thisPort);
         newTransform.mul(linkedPort);
         return newTransform;
+    }
+
+    public float getDistanceToPortalPlane(Vector3 pos){
+        Plane portalPlane = new Plane(this.viewDirection, this.position);
+        return Math.abs(portalPlane.distance(pos));
     }
 
     public Vector3 getPortaledPos(Vector3 pos){
@@ -448,9 +443,5 @@ public class Portal extends Entity {
 
     public boolean isPortalStable(){
         return this.startingAnimationSequence.isFinished() && !this.isDestroyAnimationPlaying;
-    }
-
-    private boolean shouldDoGoThroughEffects(){
-        return (this.isInterpProtectionActive);
     }
 }

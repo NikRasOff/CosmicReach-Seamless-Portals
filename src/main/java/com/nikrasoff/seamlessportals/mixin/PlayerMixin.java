@@ -42,19 +42,24 @@ public abstract class PlayerMixin implements IPortalablePlayer {
     private void updateCameraForPortals(Camera playerCamera, float partTick, CallbackInfo ci){
         Vector3 playerCameraOffset = this.controlledEntity.viewPositionOffset;
         Vector3 curPlayerPos = playerCamera.position.cpy().sub(playerCameraOffset);
+
         if (this.cameraRotationAnimation != null && !this.cameraRotationAnimation.isFinished()){
             this.cameraRotationAnimation.update(Gdx.graphics.getDeltaTime());
         }
+
         playerCameraOffset.mul(this.upVectorTransform).sub(new Vector3().mul(this.upVectorTransform));
         playerCamera.up.mul(this.upVectorTransform).sub(new Vector3().mul(this.upVectorTransform));
         playerCamera.position.set(curPlayerPos.add(playerCameraOffset));
+
         IPortalableEntity portalableEntity = (IPortalableEntity) this.controlledEntity;
+
         Vector3 checkCamPos = playerCamera.position;
         Vector3 checkEntityPos = checkCamPos.cpy().sub(playerCameraOffset);
+
         if (portalableEntity.isJustTeleported()){
-            checkEntityPos = this.controlledEntity.position;
-            checkCamPos = checkEntityPos.cpy().add(this.controlledEntity.viewPositionOffset);
+            checkEntityPos = controlledEntity.position;
         }
+
         Ray ray = new Ray(checkEntityPos, checkCamPos.cpy().sub(checkEntityPos));
         for (Portal portal : SeamlessPortals.portalManager.createdPortals){
             if (!portal.isOnSameSideOfPortal(checkEntityPos, checkCamPos) && (Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3()))){
@@ -75,7 +80,6 @@ public abstract class PlayerMixin implements IPortalablePlayer {
 
     @Override
     public void portalCurrentCameraTransform(Portal portal, Vector3 offset) {
-        System.out.println("offset: " + offset);
         this.upVectorTransform.set(portal.getPortaledTransform(this.upVectorTransform));
         this.upVectorTransform.translate(offset);
         this.upVectorTransform.inv();

@@ -112,7 +112,7 @@ public class PortalManager {
             if (!portal.zoneID.equals(player.zoneId) || portal.isPortalDestroyed || portal.position.dst(playerCamera.position) > 50){
                 continue;
             }
-            if (!playerCamera.frustum.boundsInFrustum(portalBB) && !portal.isInterpProtectionActive){
+            if (!playerCamera.frustum.boundsInFrustum(portalBB) && portal.getDistanceToPortalPlane(playerCamera.position) > playerCamera.near){
                 continue;
             }
             portal.render(playerCamera);

@@ -140,9 +140,10 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
             orBlockState.getBoundingBox(this.tmpPortalCheckBlockBoundingBox, x, y, z);
             Vector3 checkCenter = new Vector3();
             this.tmpPortalCheckBlockBoundingBox.getCenter(checkCenter);
-            Ray ray = new Ray(this.position, checkCenter.cpy().sub(this.position));
+            Vector3 portalCollisionCheckPos = this.isJustTeleported() ? this.tmpPortalNextPosition : this.position;
+            Ray ray = new Ray(portalCollisionCheckPos, checkCenter.cpy().sub(portalCollisionCheckPos));
             for (Portal portal : SeamlessPortals.portalManager.createdPortals){
-                if (portal.zoneID.equals(InGame.getLocalPlayer().zoneId) && !portal.isOnSameSideOfPortal(this.position, checkCenter) && Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3())){
+                if (portal.zoneID.equals(InGame.getLocalPlayer().zoneId) && !portal.isOnSameSideOfPortal(portalCollisionCheckPos, checkCenter) && Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3())){
                     if (!portal.getMeshBoundingBox().intersects(this.tmpPortalCheckBlockBoundingBox)){
                         return null;
                     }

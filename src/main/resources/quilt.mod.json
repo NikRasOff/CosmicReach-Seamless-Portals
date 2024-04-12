@@ -20,7 +20,7 @@
         "sources": "https://github.com/NikRasOff/CosmicReach-Seamless-Portals"
       },
 
-      "icon": "assets/example_mod/icon.png"
+      "icon": "assets/seamlessportals/icon.png"
     },
 
     "entrypoints": {

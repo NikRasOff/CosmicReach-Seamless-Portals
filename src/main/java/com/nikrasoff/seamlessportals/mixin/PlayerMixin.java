@@ -11,9 +11,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
-import com.nikrasoff.seamlessportals.animations.ISPAnimation;
-import com.nikrasoff.seamlessportals.animations.Matrix4Animation;
-import com.nikrasoff.seamlessportals.animations.SPAnimationSequence;
+import com.nikrasoff.seamlessportals.animations.*;
 import com.nikrasoff.seamlessportals.extras.IPortalableEntity;
 import com.nikrasoff.seamlessportals.extras.IPortalablePlayer;
 import com.nikrasoff.seamlessportals.portals.Portal;
@@ -33,7 +31,9 @@ public abstract class PlayerMixin implements IPortalablePlayer {
     @Shadow private Entity controlledEntity;
 
     @Unique
-    public transient Matrix4 upVectorTransform = new Matrix4();
+    public transient Quaternion upVectorRotation = new Quaternion();
+    @Unique
+    public transient Vector3 upVectorOffset = new Vector3();
 
     @Unique
     public transient ISPAnimation cameraRotationAnimation;
@@ -47,8 +47,12 @@ public abstract class PlayerMixin implements IPortalablePlayer {
             this.cameraRotationAnimation.update(Gdx.graphics.getDeltaTime());
         }
 
-        playerCameraOffset.mul(this.upVectorTransform).sub(new Vector3().mul(this.upVectorTransform));
-        playerCamera.up.mul(this.upVectorTransform).sub(new Vector3().mul(this.upVectorTransform));
+        playerCameraOffset.mul(this.upVectorRotation);
+        playerCameraOffset.add(this.upVectorOffset);
+        if (this.upVectorOffset.len() > 0.1){
+            System.out.println(this.upVectorOffset);
+        }
+        playerCamera.up.mul(this.upVectorRotation);
         playerCamera.position.set(curPlayerPos.add(playerCameraOffset));
 
         IPortalableEntity portalableEntity = (IPortalableEntity) this.controlledEntity;
@@ -80,10 +84,14 @@ public abstract class PlayerMixin implements IPortalablePlayer {
 
     @Override
     public void portalCurrentCameraTransform(Portal portal, Vector3 offset) {
-        this.upVectorTransform.set(portal.getPortaledTransform(this.upVectorTransform));
-        this.upVectorTransform.translate(offset);
-        this.upVectorTransform.inv();
-        Matrix4Animation newAnim = new Matrix4Animation(this.upVectorTransform.cpy(), new Matrix4(), 0.5F, this.upVectorTransform);
+        Matrix4 upVectorTransform = new Matrix4();
+        upVectorTransform.set(this.upVectorOffset, this.upVectorRotation);
+        upVectorTransform.set(portal.getPortaledTransform(upVectorTransform));
+        upVectorTransform.translate(offset);
+        upVectorTransform.inv();
+        SPAnimationSequence newAnim = new SPAnimationSequence(true);
+        newAnim.add(new QuaternionAnimation(upVectorTransform.getRotation(new Quaternion()), new Quaternion(), 0.5F, this.upVectorRotation));
+        newAnim.add(new Vector3Animation(upVectorTransform.getTranslation(new Vector3()), new Vector3(), 0.5F, this.upVectorOffset));
         this.cameraRotationAnimation = newAnim;
     }
 }

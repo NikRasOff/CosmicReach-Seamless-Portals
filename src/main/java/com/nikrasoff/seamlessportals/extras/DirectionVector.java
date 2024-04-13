@@ -17,7 +17,7 @@ public enum DirectionVector {
     private final Vector3 vector;
     private final String name;
 
-    private DirectionVector(Vector3 from, String name){
+    DirectionVector(Vector3 from, String name){
         this.vector = from;
         this.name = name;
     }

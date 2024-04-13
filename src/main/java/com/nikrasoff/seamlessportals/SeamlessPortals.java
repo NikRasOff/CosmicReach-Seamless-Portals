@@ -9,7 +9,7 @@ public class SeamlessPortals implements ModInitializer {
     public static PortalManager portalManager = new PortalManager();
     public static final String MOD_ID = "seamlessportals";
     public static final Logger LOGGER = Logger.getLogger(MOD_ID);
-    public static boolean debugMode = true;
+    public static boolean debugMode = true; // Quilt configs appear to be broken so this is just here for now
 
     @Override
     public void onInitialize() {

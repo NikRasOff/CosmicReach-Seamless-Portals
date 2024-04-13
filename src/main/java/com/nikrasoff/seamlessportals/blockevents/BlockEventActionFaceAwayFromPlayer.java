@@ -2,6 +2,7 @@ package com.nikrasoff.seamlessportals.blockevents;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Queue;
+import com.nikrasoff.seamlessportals.extras.DirectionVector;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.world.BlockSetter;
@@ -11,7 +12,9 @@ import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.world.Zone;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.function.Predicate;
 
 public class BlockEventActionFaceAwayFromPlayer implements IBlockEventAction {
     @Override
@@ -28,38 +31,14 @@ public class BlockEventActionFaceAwayFromPlayer implements IBlockEventAction {
         Entity playerEntity = InGame.getLocalPlayer().getEntity();
         Vector3 playerEntityViewDir = playerEntity.viewDirection;
         String directionString = "";
-        String horDirString = "";
-        float highestDot = -90;
+        String horDirString;
 
-        float curDitDot = playerEntityViewDir.dot(new Vector3(1, 0, 0));
-        if (curDitDot > highestDot) {
-            highestDot = curDitDot;
-            horDirString = "posX";
+        horDirString = new String(DirectionVector.getClosestHorizontalDirection(playerEntityViewDir).getName());
+
+        if (!DirectionVector.getClosestDirection(playerEntityViewDir).getName().equals(horDirString)){
+            directionString = DirectionVector.getClosestVerticalDirection(playerEntityViewDir).getName();
         }
-        curDitDot = playerEntityViewDir.dot(new Vector3(-1, 0, 0));
-        if (curDitDot > highestDot) {
-            highestDot = curDitDot;
-            horDirString = "negX";
-        }
-        curDitDot = playerEntityViewDir.dot(new Vector3(0, 0, 1));
-        if (curDitDot > highestDot) {
-            highestDot = curDitDot;
-            horDirString = "posZ";
-        }
-        curDitDot = playerEntityViewDir.dot(new Vector3(0, 0, -1));
-        if (curDitDot > highestDot) {
-            highestDot = curDitDot;
-            horDirString = "negZ";
-        }
-        curDitDot = playerEntityViewDir.dot(new Vector3(0, 1, 0));
-        if (curDitDot > highestDot) {
-            highestDot = curDitDot;
-            directionString = "posY";
-        }
-        curDitDot = playerEntityViewDir.dot(new Vector3(0, -1, 0));
-        if (curDitDot > highestDot) {
-            directionString = "negY";
-        }
+
         directionString += horDirString;
 
         String[] blockStateID = blockState.stringId.split(",");

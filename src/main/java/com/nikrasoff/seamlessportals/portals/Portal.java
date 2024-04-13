@@ -313,7 +313,9 @@ public class Portal extends Entity {
         Matrix4 newTransform = transform.cpy();
         Matrix4 thisPort = this.getPortalTransformationMatrix();
         Matrix4 linkedPort = this.linkedPortal.getPortalTransformationMatrix();
-        linkedPort.inv();
+        thisPort.setTranslation(0, 0, 0);
+        linkedPort.setTranslation(0, 0, 0);
+        thisPort.inv();
         newTransform.mul(thisPort);
         newTransform.mul(linkedPort);
         return newTransform;

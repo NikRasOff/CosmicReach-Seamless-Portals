@@ -49,9 +49,6 @@ public abstract class PlayerMixin implements IPortalablePlayer {
 
         playerCameraOffset.mul(this.upVectorRotation);
         playerCameraOffset.add(this.upVectorOffset);
-        if (this.upVectorOffset.len() > 0.1){
-            System.out.println(this.upVectorOffset);
-        }
         playerCamera.up.mul(this.upVectorRotation);
         playerCamera.position.set(curPlayerPos.add(playerCameraOffset));
 

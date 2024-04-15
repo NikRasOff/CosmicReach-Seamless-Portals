@@ -9,8 +9,7 @@
     "InGameRenderMixin",
     "InGameWorldLoaderMixin",
     "PlayerMixin",
-    "PortalableEntityMixin",
-    "SeamlessPortalsGameShaderMixin"
+    "PortalableEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

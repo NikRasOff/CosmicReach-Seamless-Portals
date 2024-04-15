@@ -3,25 +3,22 @@ package com.nikrasoff.seamlessportals.blockevents;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Queue;
 import com.nikrasoff.seamlessportals.extras.DirectionVector;
+import finalforeach.cosmicreach.blockevents.actions.ActionId;
+import finalforeach.cosmicreach.blockevents.actions.IBlockAction;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.world.BlockSetter;
 import finalforeach.cosmicreach.blockevents.BlockEventTrigger;
-import finalforeach.cosmicreach.blockevents.IBlockEventAction;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.world.Zone;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.function.Predicate;
 
-public class BlockEventActionFaceAwayFromPlayer implements IBlockEventAction {
-    @Override
-    public String getActionId() {
-        return "seamlessportals:face_away_from_player";
-    }
-
+@ActionId(
+        id = "seamlessportals:face_away_from_player"
+)
+public class BlockActionFaceAwayFromPlayer implements IBlockAction {
     @Override
     public void act(BlockState blockState, BlockEventTrigger blockEventTrigger, Zone zone, Map<String, Object> map) {
         this.act(blockState, zone, (BlockPosition) map.get("blockPos"));

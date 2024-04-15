@@ -140,7 +140,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
             orBlockState.getBoundingBox(this.tmpPortalCheckBlockBoundingBox, x, y, z);
             Vector3 checkCenter = new Vector3();
             this.tmpPortalCheckBlockBoundingBox.getCenter(checkCenter);
-            Vector3 portalCollisionCheckPos = this.isJustTeleported() ? this.tmpPortalNextPosition : this.position;
+            Vector3 portalCollisionCheckPos = this.isJustTeleported() ? this.tmpPortalNextPosition : this.position.cpy();
             Ray ray = new Ray(portalCollisionCheckPos, checkCenter.cpy().sub(portalCollisionCheckPos));
             for (Portal portal : SeamlessPortals.portalManager.createdPortals){
                 if (portal.zoneID.equals(InGame.getLocalPlayer().zoneId) && !portal.isOnSameSideOfPortal(portalCollisionCheckPos, checkCenter) && Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3())){
@@ -185,7 +185,6 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
         // who happens to be looking through this code
 
         // sorry not sorry
-        Vector3 orPos = portal.linkedPortal.getPortaledPos(this.position);
         this.snapOnGoThroughPortal(portal);
 
         // Animating camera turning
@@ -197,7 +196,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
 
         this.justTeleported = true;
         this.teleportPortal = portal;
-        orPos.set(this.position);
+        Vector3 orPos = new Vector3(this.position);
         this.tmpPortalTransformMatrix.setToLookAt(orPos, orPos.cpy().add(portal.linkedPortal.getPortaledVector(new Vector3(0, 0, 1))), portal.linkedPortal.getPortaledVector(new Vector3(0, 1, 0))).inv();
         this.tmpPortaledBoundingBox.setTransform(this.tmpPortalTransformMatrix);
     }
@@ -293,14 +292,13 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
                 }
             }
         }
-        if (highestPoint > 0.01F){
+        if (highestPoint > 0){
             highestPoint += 0.01F;
         }
-//        if (SeamlessPortals.debugMode){
-//            System.out.println("Bumped by " + highestPoint + "m in direction: " + direction.getName());
-//        }
         // finally, snap the player in the chosen direction by the chosen amount
-        this.position.add(direction.getVector().cpy().scl(highestPoint));
+        Vector3 bump = direction.getVector().cpy().scl(highestPoint);
+        this.position.add(bump);
+        this.tmpPortalNextPosition.add(bump);
     }
 
     @Unique

@@ -9,7 +9,7 @@
     "intermediate_mappings":"net.fabricmc:intermediary",
 
     "metadata": {
-      "name": "${mod_name}",
+      "name": "Seamless Portals",
       "description": "This mod adds seamless portals into the game!",
       "contributors": {
         "NikRasOff": "Owner"

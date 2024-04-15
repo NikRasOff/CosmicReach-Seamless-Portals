@@ -21,10 +21,6 @@ repositories {
     }
 
     maven {
-        name "JitPack"
-        url "https://jitpack.io"
-    }
-    maven {
         name "Quilt"
         url "https://maven.quiltmc.org/repository/release"
     }
@@ -37,8 +33,12 @@ repositories {
         url "https://repo.spongepowered.org/maven/"
     }
     maven {
-        name "CRModders"
-        url 'https://maven.crmodders.dev'
+        name "crmReleases"
+        url 'https://maven.crmodders.dev/releases'
+    }
+    maven {
+        name "JitPack"
+        url "https://jitpack.io"
     }
 
     mavenCentral()
@@ -72,7 +72,7 @@ dependencies {
     implementation "org.codeberg.CRModders:cosmic-quilt:${cosmic_quilt_version}"
 
     // FluxAPI
-    quiltMod "com.github.CRModders:FluxAPI:${fluxapi_version}"
+    quiltMod "dev.crmodders:fluxapi:${fluxapi_version}"
 }
 
 processResources {

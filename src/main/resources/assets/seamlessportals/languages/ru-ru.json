@@ -1,0 +1,35 @@
+{
+    "language_tag": "ru-ru",
+    "major_version": 1,
+    "minor_version": 0,
+    "ids": [
+        "seamlessportals",
+        "fluxapi"
+    ],
+    "seamlessportals": {
+        "priority": 1000,
+        "format_templates": {
+            "config_menu": {
+                "debug_outlines": [
+                    "value"
+                ]
+            }
+        },
+        "strings": {
+            "config_menu": {
+                "title": "Меню конфигурации Seamless Portals",
+                "debug_outlines": "Линии хитбоксов: {value}"
+            }
+        }
+    },
+    "fluxapi": {
+        "priority": 500,
+        "strings": {
+            "menu": {
+                "on": "Вкл",
+                "off": "Выкл",
+                "back": "Назад"
+            }
+        }
+    }
+}

@@ -19,9 +19,16 @@ public class SeamlessPortals implements ModInitializer {
     @Override
     public void onInitialize(ModContainer modContainer) {
         System.out.println("Initialising Seamless Portals!");
+        String[] langIds = {
+                "en-US",
+                "ru-ru"
+        };
+
         GameEvents.ON_REGISTER_LANGUAGE.register(() -> {
-            LanguageFile lang = LanguageFile.loadLanguageFile(new ResourceLocation("seamlessportals", "languages/en-US.json").load());
-            TranslationApi.registerLanguageFile(lang);
+            for (String landID : langIds){
+                LanguageFile lang = LanguageFile.loadLanguageFile(new ResourceLocation("seamlessportals", "languages/" + landID + ".json").load());
+                TranslationApi.registerLanguageFile(lang);
+            }
         });
 
         SeamlessPortalsBlockEvents.registerSeamlessPortalsBlockEvents();

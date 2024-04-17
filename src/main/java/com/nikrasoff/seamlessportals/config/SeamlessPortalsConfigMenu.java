@@ -4,14 +4,10 @@ import dev.crmodders.flux.FluxConstants;
 import dev.crmodders.flux.FluxSettings;
 import dev.crmodders.flux.api.gui.ButtonElement;
 import dev.crmodders.flux.api.gui.TextElement;
-import dev.crmodders.flux.api.gui.base.BaseText;
 import dev.crmodders.flux.localization.TranslationKey;
 import dev.crmodders.flux.localization.TranslationString;
 import dev.crmodders.flux.menus.LayoutMenu;
-import dev.crmodders.flux.tags.Identifier;
 import finalforeach.cosmicreach.gamestates.GameState;
-
-import static com.nikrasoff.seamlessportals.SeamlessPortals.MOD_ID;
 
 public class SeamlessPortalsConfigMenu extends LayoutMenu {
     private static final TranslationKey debugOutlinesKey = new TranslationKey("seamlessportals:config_menu.debug_outlines");

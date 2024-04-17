@@ -3,22 +3,17 @@ package com.nikrasoff.seamlessportals.portals;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.badlogic.gdx.utils.Array;
-import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.config.SeamlessPortalsConfig;
 import finalforeach.cosmicreach.entities.Player;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.blocks.BlockPosition;
-import finalforeach.cosmicreach.io.ChunkLoader;
 import finalforeach.cosmicreach.world.Chunk;
-import finalforeach.cosmicreach.world.WorldLoader;
 import finalforeach.cosmicreach.world.Zone;
-import finalforeach.cosmicreach.worldgen.ChunkColumn;
 
 public class PortalManager {
     public String prevPortalGenZone;
@@ -84,7 +79,7 @@ public class PortalManager {
     }
 
     public void renderPortals(Camera playerCamera){
-        if (SeamlessPortals.debugMode){
+        if (SeamlessPortalsConfig.INSTANCE.debugOutlines.value()){
             if (!debugReady) initialiseDebug();
         }
         else if (debugReady){

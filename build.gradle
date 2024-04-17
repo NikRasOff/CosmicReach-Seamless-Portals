@@ -73,6 +73,9 @@ dependencies {
 
     // FluxAPI
     quiltMod "dev.crmodders:fluxapi:${fluxapi_version}"
+
+    // ModMenu
+    quiltMod "dev.crmodders:modmenu:${modmenu_version}"
 }
 
 processResources {

@@ -1,0 +1,24 @@
+{
+    "language_tag": "en-US",
+    "major_version": 1,
+    "minor_version": 0,
+    "ids": [
+        "seamlessportals"
+    ],
+    "seamlessportals": {
+        "priority": 1000,
+        "format_templates": {
+            "config_menu": {
+                "debug_outlines": [
+                    "value"
+                ]
+            }
+        },
+        "strings": {
+            "config_menu": {
+                "title": "Seamless Portals config menu",
+                "debug_outlines": "Debug Outlines: {value}"
+            }
+        }
+    }
+}

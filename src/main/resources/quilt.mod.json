@@ -24,7 +24,8 @@
     },
 
     "entrypoints": {
-      "main": "com.nikrasoff.seamlessportals.SeamlessPortals"
+      "init": "com.nikrasoff.seamlessportals.SeamlessPortals",
+      "modmenu": "com.nikrasoff.seamlessportals.config.SeamlessPortalsModMenuConfig"
     },
 
     "depends": [

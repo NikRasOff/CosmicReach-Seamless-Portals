@@ -1,6 +1,6 @@
 package com.nikrasoff.seamlessportals;
 
-import dev.crmodders.flux.api.generators.BlockGenerator;
+import dev.crmodders.flux.api.v5.generators.BlockGenerator;
 import dev.crmodders.flux.registry.FluxRegistries;
 import dev.crmodders.flux.tags.Identifier;
 

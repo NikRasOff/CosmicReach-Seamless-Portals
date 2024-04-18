@@ -2,15 +2,17 @@ package com.nikrasoff.seamlessportals.config;
 
 import dev.crmodders.flux.FluxConstants;
 import dev.crmodders.flux.FluxSettings;
-import dev.crmodders.flux.api.gui.ButtonElement;
-import dev.crmodders.flux.api.gui.TextElement;
+import dev.crmodders.flux.api.v5.gui.ButtonElement;
+import dev.crmodders.flux.api.v5.gui.TextElement;
 import dev.crmodders.flux.localization.TranslationKey;
 import dev.crmodders.flux.localization.TranslationString;
 import dev.crmodders.flux.menus.LayoutMenu;
 import finalforeach.cosmicreach.gamestates.GameState;
 
+import static com.nikrasoff.seamlessportals.SeamlessPortals.MOD_ID;
+
 public class SeamlessPortalsConfigMenu extends LayoutMenu {
-    private static final TranslationKey debugOutlinesKey = new TranslationKey("seamlessportals:config_menu.debug_outlines");
+    private static final TranslationKey debugOutlinesKey = new TranslationKey(MOD_ID + ":config_menu.debug_outlines");
     private final ButtonElement debugOutlines;
 
     private void updateDedugOutlinesText(){
@@ -26,7 +28,7 @@ public class SeamlessPortalsConfigMenu extends LayoutMenu {
     public SeamlessPortalsConfigMenu(GameState previousState){
         super(previousState);
 
-        TextElement title = new TextElement(new TranslationKey("seamlessportals:config_menu.title"));
+        TextElement title = new TextElement(new TranslationKey(MOD_ID + ":config_menu.title"));
         title.backgroundEnabled = false;
         this.addFluxElement(title);
 

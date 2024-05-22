@@ -14,7 +14,7 @@ public class SeamlessPortalsCustomBlocks {
             "ph_destabiliser_pulse"
     };
     public static void registerCustomBlocks(){
-        System.out.println("Registering custom blocks from Seamless Portals!");
+        SeamlessPortals.LOGGER.info("Registering custom blocks from Seamless Portals!");
         for (String block : blockIds){
             FluxRegistries.BLOCKS.register(new Identifier(MOD_ID, block), BlockGenerator::createGenerator);
         }

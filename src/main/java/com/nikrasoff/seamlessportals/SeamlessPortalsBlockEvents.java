@@ -8,7 +8,7 @@ import finalforeach.cosmicreach.blockevents.BlockEvents;
 
 public class SeamlessPortalsBlockEvents {
     static void registerSeamlessPortalsBlockEvents(){
-        System.out.println("Registering custom block events from Seamless Portals!");
+        SeamlessPortals.LOGGER.info("Registering custom block events from Seamless Portals!");
         BlockEvents.registerBlockEventAction(BlockActionFaceAwayFromPlayer.class);
         BlockEvents.registerBlockEventAction(BlockActionRegisterPortalGen.class);
         BlockEvents.registerBlockEventAction(BlockActionDeregisterPortalGen.class);

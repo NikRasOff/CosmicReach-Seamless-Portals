@@ -1,6 +1,8 @@
 package com.nikrasoff.seamlessportals.extras;
 
 public class FloatContainer {
+    // Honestly, not sure if this class is even needed
+    // But I'll keep it because why not
     private float value = 0;
 
     public FloatContainer(){}

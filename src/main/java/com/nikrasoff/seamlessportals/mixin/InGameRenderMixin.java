@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class InGameRenderMixin {
     @Shadow public abstract Camera getWorldCamera();
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/BlockSelection;render(Lcom/badlogic/gdx/graphics/Camera;)V"))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/BlockSelection;render(Lcom/badlogic/gdx/graphics/Camera;)V"))
     private void seamlessPortalsCustomRender(CallbackInfo ci){
         Camera renderFromCamera = getWorldCamera();
 

@@ -16,7 +16,7 @@ public class SeamlessPortals implements ModInitializer {
     public static final Logger LOGGER = Logger.getLogger(MOD_ID);
     @Override
     public void onInitialize(ModContainer modContainer) {
-        System.out.println("Initialising Seamless Portals!");
+        LOGGER.info("Initialising Seamless Portals!");
         String[] langIds = {
                 "en-US",
                 "ru-ru"

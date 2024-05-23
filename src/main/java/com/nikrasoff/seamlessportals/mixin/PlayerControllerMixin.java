@@ -7,17 +7,13 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.animations.*;
 import com.nikrasoff.seamlessportals.extras.IPortalableEntity;
-import com.nikrasoff.seamlessportals.extras.IPortalablePlayer;
+import com.nikrasoff.seamlessportals.extras.IPortalablePlayerController;
 import com.nikrasoff.seamlessportals.portals.Portal;
-import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Player;
 import finalforeach.cosmicreach.entities.PlayerController;
-import finalforeach.cosmicreach.world.Zone;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -26,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerController.class)
-public abstract class PlayerControllerMixin implements IPortalablePlayer {
+public abstract class PlayerControllerMixin implements IPortalablePlayerController {
     @Shadow Player player;
 
     @Unique

@@ -1,7 +1,5 @@
 #version 150
 
-in vec3 worldPos;
-
 uniform vec2 screenSize;
 uniform sampler2D screenTex;
 uniform vec4 overlayColor;

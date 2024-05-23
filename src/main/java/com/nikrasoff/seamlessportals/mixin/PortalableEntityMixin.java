@@ -3,7 +3,6 @@ package com.nikrasoff.seamlessportals.mixin;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
@@ -12,8 +11,9 @@ import com.badlogic.gdx.utils.Array;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.nikrasoff.seamlessportals.extras.DirectionVector;
+import com.nikrasoff.seamlessportals.extras.IPortalIngame;
 import com.nikrasoff.seamlessportals.extras.IPortalableEntity;
-import com.nikrasoff.seamlessportals.extras.IPortalablePlayer;
+import com.nikrasoff.seamlessportals.extras.IPortalablePlayerController;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import finalforeach.cosmicreach.blocks.BlockPosition;
@@ -189,7 +189,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
 
         // Animating camera turning
         if (this.isLocalPlayer()){
-            IPortalablePlayer locPlayer = (IPortalablePlayer) InGame.getLocalPlayer();
+            IPortalablePlayerController locPlayer = (IPortalablePlayerController) ((IPortalIngame) GameState.IN_GAME).getPlayerController();
             Vector3 offset = originalPos.sub(this.position);
             locPlayer.portalCurrentCameraTransform(portal, offset);
         }

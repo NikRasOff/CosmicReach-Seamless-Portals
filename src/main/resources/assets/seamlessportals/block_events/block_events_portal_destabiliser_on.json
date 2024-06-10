@@ -23,7 +23,7 @@
                 "parameters":
                 {
                     "sound": "seamlessportals:block_switch.ogg",
-                    "volume": -6,
+                    "volume": 1,
                     "pitch": 1,
                     "pan": 0
                 }

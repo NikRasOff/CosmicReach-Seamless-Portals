@@ -2,10 +2,17 @@ package com.nikrasoff.seamlessportals;
 
 import com.nikrasoff.seamlessportals.portals.PortalManager;
 import dev.crmodders.cosmicquilt.api.entrypoint.ModInitializer;
-import dev.crmodders.flux.api.v5.events.GameEvents;
-import dev.crmodders.flux.api.v5.resource.ResourceLocation;
-import dev.crmodders.flux.localization.LanguageFile;
-import dev.crmodders.flux.localization.TranslationApi;
+import dev.crmodders.flux.FluxRegistries;
+import dev.crmodders.flux.assets.FluxGameAssetLoader;
+import dev.crmodders.flux.block.DataModBlock;
+import dev.crmodders.flux.events.OnLoadAssetsEvent;
+import dev.crmodders.flux.events.OnPreLoadAssetsEvent;
+import dev.crmodders.flux.events.OnRegisterBlockEvent;
+import dev.crmodders.flux.localization.ILanguageFile;
+import dev.crmodders.flux.localization.LanguageManager;
+import dev.crmodders.flux.localization.files.LanguageFileVersion1;
+import dev.crmodders.flux.tags.ResourceLocation;
+import org.greenrobot.eventbus.Subscribe;
 import org.quiltmc.loader.api.ModContainer;
 
 import java.util.logging.Logger;
@@ -16,20 +23,31 @@ public class SeamlessPortals implements ModInitializer {
     public static final Logger LOGGER = Logger.getLogger(MOD_ID);
     @Override
     public void onInitialize(ModContainer modContainer) {
+        FluxRegistries.EVENT_BUS.register(this);
         LOGGER.info("Initialising Seamless Portals!");
-        String[] langIds = {
-                "en-US",
-                "ru-ru"
-        };
-
-        GameEvents.ON_REGISTER_LANGUAGE.register(() -> {
-            for (String langID : langIds){
-                LanguageFile lang = LanguageFile.loadLanguageFile(new ResourceLocation(MOD_ID, "languages/" + langID + ".json").load());
-                TranslationApi.registerLanguageFile(lang);
-            }
-        });
 
         SeamlessPortalsBlockEvents.registerSeamlessPortalsBlockEvents();
-        SeamlessPortalsCustomBlocks.registerCustomBlocks();
+    }
+
+    static String[] blockIds = {
+            "portal_generator",
+            "portal_destabiliser",
+            "ph_portal",
+            "ph_destabiliser_pulse"
+    };
+
+    @Subscribe
+    public void onEvent(OnRegisterBlockEvent event){
+        for (String id: blockIds){
+            event.registerBlock(() -> new DataModBlock(id, new ResourceLocation(MOD_ID, "blocks/" + id + ".json")));
+        }
+    }
+
+    @Subscribe
+    public void onEvent(OnPreLoadAssetsEvent event){
+        ILanguageFile langEN = FluxGameAssetLoader.LOADER.loadResourceSync(new ResourceLocation(MOD_ID, "languages/en-US.json"), LanguageFileVersion1.class);
+        LanguageManager.registerLanguageFile(langEN);
+        ILanguageFile langRU = FluxGameAssetLoader.LOADER.loadResourceSync(new ResourceLocation(MOD_ID, "languages/ru-ru.json"), LanguageFileVersion1.class);
+        LanguageManager.registerLanguageFile(langRU);
     }
 }

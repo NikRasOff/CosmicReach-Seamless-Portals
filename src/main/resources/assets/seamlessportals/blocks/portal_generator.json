@@ -10,58 +10,50 @@
         "facing=posZ,active=false":
         {
             "modelName": "seamlessportals:model_portal_generator_off",
-            "blockEventsId": "seamlessportals:block_events_portal_generator_off",
-            "rotXZ": 0
+            "blockEventsId": "seamlessportals:block_events_portal_generator_off"
         },
         "facing=posZ,active=true": {
             "modelName": "seamlessportals:model_portal_generator_on",
             "blockEventsId": "seamlessportals:block_events_portal_generator_on",
-            "rotXZ": 0,
             "catalogHidden": true,
             "lightLevelGreen": 8,
             "lightLevelBlue": 8
         },
         "facing=negX,active=false":
         {
-            "modelName": "seamlessportals:model_portal_generator_off",
+            "modelName": "seamlessportals:model_portal_generator_off2",
             "blockEventsId": "seamlessportals:block_events_portal_generator_off",
-            "rotXZ": 90,
             "catalogHidden": true
         },
         "facing=negX,active=true": {
-            "modelName": "seamlessportals:model_portal_generator_on",
+            "modelName": "seamlessportals:model_portal_generator_on2",
             "blockEventsId": "seamlessportals:block_events_portal_generator_on",
-            "rotXZ": 90,
             "catalogHidden": true,
             "lightLevelGreen": 8,
             "lightLevelBlue": 8
         },
         "facing=negZ,active=false":
         {
-            "modelName": "seamlessportals:model_portal_generator_off2",
+            "modelName": "seamlessportals:model_portal_generator_off3",
             "blockEventsId": "seamlessportals:block_events_portal_generator_off",
-            "rotXZ": 180,
             "catalogHidden": true
         },
         "facing=negZ,active=true": {
-            "modelName": "seamlessportals:model_portal_generator_on2",
+            "modelName": "seamlessportals:model_portal_generator_on3",
             "blockEventsId": "seamlessportals:block_events_portal_generator_on",
-            "rotXZ": 180,
             "catalogHidden": true,
             "lightLevelGreen": 8,
             "lightLevelBlue": 8
         },
         "facing=posX,active=false":
         {
-            "modelName": "seamlessportals:model_portal_generator_off2",
+            "modelName": "seamlessportals:model_portal_generator_off4",
             "blockEventsId": "seamlessportals:block_events_portal_generator_off",
-            "rotXZ": 270,
             "catalogHidden": true
         },
         "facing=posX,active=true": {
-            "modelName": "seamlessportals:model_portal_generator_on2",
+            "modelName": "seamlessportals:model_portal_generator_on4",
             "blockEventsId": "seamlessportals:block_events_portal_generator_on",
-            "rotXZ": 270,
             "catalogHidden": true,
             "lightLevelGreen": 8,
             "lightLevelBlue": 8
@@ -70,58 +62,50 @@
         {
             "modelName": "seamlessportals:model_portal_generator_up_off",
             "blockEventsId": "seamlessportals:block_events_portal_generator_off",
-            "rotXZ": 0,
             "catalogHidden": true
         },
         "facing=posYposZ,active=true": {
             "modelName": "seamlessportals:model_portal_generator_up_on",
             "blockEventsId": "seamlessportals:block_events_portal_generator_on",
-            "rotXZ": 0,
             "catalogHidden": true,
             "lightLevelGreen": 8,
             "lightLevelBlue": 8
         },
         "facing=posYnegX,active=false":
         {
-            "modelName": "seamlessportals:model_portal_generator_up_off",
+            "modelName": "seamlessportals:model_portal_generator_up_off2",
             "blockEventsId": "seamlessportals:block_events_portal_generator_off",
-            "rotXZ": 90,
             "catalogHidden": true
         },
         "facing=posYnegX,active=true": {
-            "modelName": "seamlessportals:model_portal_generator_up_on",
+            "modelName": "seamlessportals:model_portal_generator_up_on2",
             "blockEventsId": "seamlessportals:block_events_portal_generator_on",
-            "rotXZ": 90,
             "catalogHidden": true,
             "lightLevelGreen": 8,
             "lightLevelBlue": 8
         },
         "facing=posYnegZ,active=false":
         {
-            "modelName": "seamlessportals:model_portal_generator_up_off2",
+            "modelName": "seamlessportals:model_portal_generator_up_off3",
             "blockEventsId": "seamlessportals:block_events_portal_generator_off",
-            "rotXZ": 180,
             "catalogHidden": true
         },
         "facing=posYnegZ,active=true": {
-            "modelName": "seamlessportals:model_portal_generator_up_on2",
+            "modelName": "seamlessportals:model_portal_generator_up_on3",
             "blockEventsId": "seamlessportals:block_events_portal_generator_on",
-            "rotXZ": 180,
             "catalogHidden": true,
             "lightLevelGreen": 8,
             "lightLevelBlue": 8
         },
         "facing=posYposX,active=false":
         {
-            "modelName": "seamlessportals:model_portal_generator_up_off2",
+            "modelName": "seamlessportals:model_portal_generator_up_off4",
             "blockEventsId": "seamlessportals:block_events_portal_generator_off",
-            "rotXZ": 270,
             "catalogHidden": true
         },
         "facing=posYposX,active=true": {
-            "modelName": "seamlessportals:model_portal_generator_up_on2",
+            "modelName": "seamlessportals:model_portal_generator_up_on4",
             "blockEventsId": "seamlessportals:block_events_portal_generator_on",
-            "rotXZ": 270,
             "catalogHidden": true,
             "lightLevelGreen": 8,
             "lightLevelBlue": 8
@@ -130,58 +114,50 @@
         {
             "modelName": "seamlessportals:model_portal_generator_down_off",
             "blockEventsId": "seamlessportals:block_events_portal_generator_off",
-            "rotXZ": 0,
             "catalogHidden": true
         },
         "facing=negYposZ,active=true": {
             "modelName": "seamlessportals:model_portal_generator_down_on",
             "blockEventsId": "seamlessportals:block_events_portal_generator_on",
-            "rotXZ": 0,
             "catalogHidden": true,
             "lightLevelGreen": 8,
             "lightLevelBlue": 8
         },
         "facing=negYnegX,active=false":
         {
-            "modelName": "seamlessportals:model_portal_generator_down_off",
+            "modelName": "seamlessportals:model_portal_generator_down_off2",
             "blockEventsId": "seamlessportals:block_events_portal_generator_off",
-            "rotXZ": 90,
             "catalogHidden": true
         },
         "facing=negYnegX,active=true": {
-            "modelName": "seamlessportals:model_portal_generator_down_on",
+            "modelName": "seamlessportals:model_portal_generator_down_on2",
             "blockEventsId": "seamlessportals:block_events_portal_generator_on",
-            "rotXZ": 90,
             "catalogHidden": true,
             "lightLevelGreen": 8,
             "lightLevelBlue": 8
         },
         "facing=negYnegZ,active=false":
         {
-            "modelName": "seamlessportals:model_portal_generator_down_off2",
+            "modelName": "seamlessportals:model_portal_generator_down_off3",
             "blockEventsId": "seamlessportals:block_events_portal_generator_off",
-            "rotXZ": 180,
             "catalogHidden": true
         },
         "facing=negYnegZ,active=true": {
-            "modelName": "seamlessportals:model_portal_generator_down_on2",
+            "modelName": "seamlessportals:model_portal_generator_down_on3",
             "blockEventsId": "seamlessportals:block_events_portal_generator_on",
-            "rotXZ": 180,
             "catalogHidden": true,
             "lightLevelGreen": 8,
             "lightLevelBlue": 8
         },
         "facing=negYposX,active=false":
         {
-            "modelName": "seamlessportals:model_portal_generator_down_off2",
+            "modelName": "seamlessportals:model_portal_generator_down_off4",
             "blockEventsId": "seamlessportals:block_events_portal_generator_off",
-            "rotXZ": 270,
             "catalogHidden": true
         },
         "facing=negYposX,active=true": {
-            "modelName": "seamlessportals:model_portal_generator_down_on2",
+            "modelName": "seamlessportals:model_portal_generator_down_on4",
             "blockEventsId": "seamlessportals:block_events_portal_generator_on",
-            "rotXZ": 270,
             "catalogHidden": true,
             "lightLevelGreen": 8,
             "lightLevelBlue": 8

@@ -20,4 +20,10 @@ public abstract class PlayerMixin {
         IPortalableEntity portalableEntity = (IPortalableEntity) this.entity;
         return portalableEntity.checkIfShouldCollidePortal(instance, x, y, z, original);
     }
+
+    @WrapOperation(method = "crouchCheck", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/Zone;getBlockState(III)Lfinalforeach/cosmicreach/blocks/BlockState;"))
+    private BlockState sneakCheckMixin(Zone instance, int x, int y, int z, Operation<BlockState> original){
+        IPortalableEntity portalableEntity = (IPortalableEntity) this.entity;
+        return portalableEntity.checkIfShouldCollidePortal(instance, x, y, z, original);
+    }
 }

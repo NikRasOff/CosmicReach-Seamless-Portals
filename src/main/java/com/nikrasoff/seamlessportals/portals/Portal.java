@@ -275,8 +275,8 @@ public class Portal extends Entity {
             }
         }
         this.portalFrameBuffer.begin();
-        ScreenUtils.clear(Sky.skyColor, true);
-        Sky.drawStars(this.portalCamera);
+        ScreenUtils.clear(Sky.currentSky.currentSkyColor, true);
+        Sky.currentSky.drawSky(this.portalCamera);
         GameSingletons.zoneRenderer.render(InGame.world.getZone(this.zoneID), this.portalCamera);
         portalFrameBuffer.end();
 

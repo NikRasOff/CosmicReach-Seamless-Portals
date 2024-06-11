@@ -88,7 +88,6 @@ public class PortalManager {
         if (this.shouldUpdatePortalArray) this.updatePortalArray();
         Player player = InGame.getLocalPlayer();
         if (debugReady){
-            shapeRenderer.setColor(1, 0, 0, 1);
             shapeRenderer.setProjectionMatrix(playerCamera.combined);
         }
         for (Portal portal : this.createdPortals){
@@ -98,7 +97,10 @@ public class PortalManager {
             if (debugReady){
                 shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
                 shapeRenderer.setTransformMatrix(portalBigBB.transform);
+                shapeRenderer.setColor(1, 0, 0, 1);
                 shapeRenderer.box(portalBigBB.getBounds().min.x, portalBigBB.getBounds().min.y, portalBigBB.getBounds().min.z, portalBigBB.getBounds().getWidth(), portalBigBB.getBounds().getHeight(), -portalBigBB.getBounds().getDepth());
+                shapeRenderer.setColor(0, 0, 1, 1);
+                shapeRenderer.line(Vector3.Zero, portal.viewDirection);
                 shapeRenderer.end();
             }
             if (!portal.isPortalMeshGenerated){

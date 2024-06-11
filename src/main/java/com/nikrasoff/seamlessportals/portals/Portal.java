@@ -236,6 +236,9 @@ public class Portal extends Entity {
             if (viewSpaceDist < 0){
                 clipPlaneCameraSpace.scl(-1);
             }
+//            if (this.position.cpy().sub(playerCamera.position).len() < 5){
+//                System.out.println(clipPlaneCameraSpace + " bad");
+//            }
 
             this.portalCamera.projection.set(this.calculateObliqueMatrix(this.portalCamera, clipPlaneCameraSpace));
         }
@@ -278,6 +281,7 @@ public class Portal extends Entity {
         ScreenUtils.clear(Sky.currentSky.currentSkyColor, true);
         Sky.currentSky.drawSky(this.portalCamera);
         GameSingletons.zoneRenderer.render(InGame.world.getZone(this.zoneID), this.portalCamera);
+        Gdx.gl.glDepthMask(true);
         portalFrameBuffer.end();
 
         return this.portalFrameBuffer.getColorBufferTexture();

@@ -236,9 +236,6 @@ public class Portal extends Entity {
             if (viewSpaceDist < 0){
                 clipPlaneCameraSpace.scl(-1);
             }
-//            if (this.position.cpy().sub(playerCamera.position).len() < 5){
-//                System.out.println(clipPlaneCameraSpace + " bad");
-//            }
 
             this.portalCamera.projection.set(this.calculateObliqueMatrix(this.portalCamera, clipPlaneCameraSpace));
         }

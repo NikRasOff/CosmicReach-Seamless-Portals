@@ -10,7 +10,9 @@
     "InGameMixin",
     "PlayerControllerMixin",
     "PortalableEntityMixin",
-    "PlayerMixin"
+    "PlayerMixin",
+    "ItemCatalogMixin",
+    "EntityModelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

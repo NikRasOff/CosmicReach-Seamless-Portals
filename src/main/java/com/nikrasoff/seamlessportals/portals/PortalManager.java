@@ -1,6 +1,7 @@
 package com.nikrasoff.seamlessportals.portals;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -8,12 +9,20 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
 import com.nikrasoff.seamlessportals.config.SeamlessPortalsConfig;
+import dev.crmodders.flux.assets.FluxGameAssetLoader;
+import finalforeach.cosmicreach.entities.DroneEntity;
 import finalforeach.cosmicreach.entities.Player;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.blocks.BlockPosition;
+import finalforeach.cosmicreach.rendering.entities.EntityModel;
+import finalforeach.cosmicreach.rendering.entities.IEntityModel;
 import finalforeach.cosmicreach.world.Chunk;
 import finalforeach.cosmicreach.world.Zone;
+
+import java.io.FileInputStream;
+import java.io.IOException;
 
 public class PortalManager {
     public String prevPortalGenZone;
@@ -79,6 +88,13 @@ public class PortalManager {
     }
 
     public void renderPortals(Camera playerCamera){
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)){
+            System.out.println("Spawned a drone!");
+            DroneEntity drone = new DroneEntity();
+            drone.setPosition(playerCamera.position);
+            drone.model = EntityModel.load("drone_saw.cr_entity.json", "drone.animation.json", "animation.drone_saw.idle", "drone_saw.png");
+            InGame.getLocalPlayer().getZone(InGame.world).allEntities.add(drone);
+        }
         if (SeamlessPortalsConfig.INSTANCE.debugOutlines.value()){
             if (!debugReady) initialiseDebug();
         }
@@ -100,7 +116,7 @@ public class PortalManager {
                 shapeRenderer.setColor(1, 0, 0, 1);
                 shapeRenderer.box(portalBigBB.getBounds().min.x, portalBigBB.getBounds().min.y, portalBigBB.getBounds().min.z, portalBigBB.getBounds().getWidth(), portalBigBB.getBounds().getHeight(), -portalBigBB.getBounds().getDepth());
                 shapeRenderer.setColor(0, 0, 1, 1);
-                shapeRenderer.line(Vector3.Zero, portal.viewDirection);
+                shapeRenderer.line(Vector3.Zero, new Vector3(0, 0, -1));
                 shapeRenderer.end();
             }
             if (!portal.isPortalMeshGenerated){

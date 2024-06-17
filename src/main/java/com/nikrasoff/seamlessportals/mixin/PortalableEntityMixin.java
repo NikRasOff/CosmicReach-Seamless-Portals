@@ -39,9 +39,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
     @Shadow public Vector3 velocity;
     @Shadow public Vector3 onceVelocity;
     @Shadow private Vector3 acceleration;
-    @Shadow public Vector3 viewPositionOffset;
     @Shadow public BoundingBox localBoundingBox;
-    @Shadow public boolean isOnGround;
     @Unique
     private transient boolean justTeleported = false;
     @Unique

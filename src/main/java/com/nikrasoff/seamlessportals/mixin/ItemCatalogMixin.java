@@ -18,6 +18,6 @@ public abstract class ItemCatalogMixin extends SlotContainer {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void addCustomItems(int numSlots, CallbackInfo ci){
-        this.addItemStack(new ItemStack(Item.getItem("seamlessportals:handheld_portal_generator"), 100));
+        this.addItemStack(new ItemStack(Item.getItem("seamlessportals:handheld_portal_generator"), 1));
     }
 }

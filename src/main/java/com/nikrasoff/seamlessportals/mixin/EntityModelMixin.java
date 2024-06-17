@@ -1,18 +1,35 @@
 package com.nikrasoff.seamlessportals.mixin;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Matrix4;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.nikrasoff.seamlessportals.extras.IModEntityModel;
 import dev.crmodders.flux.assets.FluxGameAssetLoader;
 import dev.crmodders.flux.tags.Identifier;
 import dev.crmodders.flux.tags.ResourceLocation;
+import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.rendering.entities.EntityModel;
+import finalforeach.cosmicreach.rendering.entities.IEntityModel;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(EntityModel.class)
-public abstract class EntityModelMixin {
+public abstract class EntityModelMixin implements IModEntityModel {
+    @Shadow
+    float animTimer;
+
+    @Shadow public abstract void render(Entity entity, Camera worldCamera, Matrix4 modelMat);
+
+    @Shadow
+    public static IEntityModel load(String modelFileName, String animationSetName, String defaultAnimName, String textureName) {
+        return null;
+    }
+
     @WrapOperation(method = "load", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/GameAssetLoader;loadAsset(Ljava/lang/String;)Lcom/badlogic/gdx/files/FileHandle;", ordinal = 0))
     private static FileHandle loadModModel(String fileName, Operation<FileHandle> original){
         String fn = fileName.replace("models/entities/", "");
@@ -32,5 +49,16 @@ public abstract class EntityModelMixin {
         String fn = fileName.replace("animations/entities/", "");
         Identifier animSetID = Identifier.fromString(fn);
         return FluxGameAssetLoader.locateAsset(new ResourceLocation(animSetID.namespace, "animations/entities/" + animSetID.name));
+    }
+
+    @Override
+    public void renderNoAnim(Entity entity, Camera worldCamera, Matrix4 modelMat){
+        this.animTimer -= Gdx.graphics.getDeltaTime();
+        this.render(entity, worldCamera, modelMat);
+    }
+
+    @Override
+    public void updateAnimation() {
+        this.animTimer += Gdx.graphics.getDeltaTime();
     }
 }

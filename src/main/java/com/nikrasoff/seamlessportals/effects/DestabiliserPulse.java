@@ -21,7 +21,7 @@ public class DestabiliserPulse extends PulseEffect{
     public void render(Camera playerCamera) {
         super.render(playerCamera);
         if (this.animationSequence.getCurrentAnimationID() > 0){
-            for (Portal portal : SeamlessPortals.portalManager.createdPortals){
+            SeamlessPortals.portalManager.createdPortals.forEach((portalID, portal) -> {
                 Vector3 portalPos = portal.position.cpy();
 
                 Vector3 destroyDiff = new Vector3(this.destroyRadius, this.destroyRadius, this.destroyRadius);
@@ -31,7 +31,7 @@ public class DestabiliserPulse extends PulseEffect{
                 if (destroyBounds.contains(portalPos)){
                     portal.startDestruction();
                 }
-            }
+            });
         }
     }
 }

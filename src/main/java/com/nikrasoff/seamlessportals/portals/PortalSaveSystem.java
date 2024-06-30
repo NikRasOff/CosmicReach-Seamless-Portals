@@ -11,7 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 public class PortalSaveSystem {
-    public static String localPortalFileName = "portals.json";
+    public static String localPortalFileName = "seamlessportals/portal_data.json";
 
     public static void savePortals(World world) {
         if (SeamlessPortals.portalManager != null) {
@@ -61,9 +61,7 @@ public class PortalSaveSystem {
                 try {
                     Json json = new Json();
                     json.setIgnoreUnknownFields(true);
-                    PortalManager portalManager = (PortalManager) json.fromJson(PortalManager.class, fis);
-                    SeamlessPortals.portalManager = portalManager;
-                    portalManager.linkPortalsInArray();
+                    SeamlessPortals.portalManager = json.fromJson(PortalManager.class, fis);
                 } catch (Throwable var7) {
                     try {
                         fis.close();

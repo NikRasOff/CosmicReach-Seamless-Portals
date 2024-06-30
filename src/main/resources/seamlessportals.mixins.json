@@ -12,7 +12,8 @@
     "PortalableEntityMixin",
     "PlayerMixin",
     "ItemCatalogMixin",
-    "EntityModelMixin"
+    "EntityModelMixin",
+    "EntityModelInstanceMixin"
   ],
   "injectors": {
     "defaultRequire": 1

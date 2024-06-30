@@ -81,8 +81,8 @@ public class SeamlessPortalsConfigMenu extends GameState {
         GameState.switchToGameState(this.previousState);
     }
 
-    public void render(float partTick) {
-        super.render(partTick);
+    public void render() {
+        super.render();
 
         ScreenUtils.clear(0, 0, 0, 1.0F, true);
         Gdx.gl.glEnable(2929);

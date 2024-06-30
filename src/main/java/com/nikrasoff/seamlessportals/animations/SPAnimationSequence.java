@@ -31,6 +31,7 @@ public class SPAnimationSequence implements ISPAnimation {
             this.isFinished = true;
             return;
         }
+//        System.out.println(this.animationArray.get(this.currentAnimation).getClass() + " has been updated");
         if (this.isParallel){
             this.extraTime = 0;
             boolean allDone = true;

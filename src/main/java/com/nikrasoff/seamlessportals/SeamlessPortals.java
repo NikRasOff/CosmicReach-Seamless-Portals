@@ -2,6 +2,8 @@ package com.nikrasoff.seamlessportals;
 
 import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
 import com.nikrasoff.seamlessportals.models.EntityItemModel;
+import com.nikrasoff.seamlessportals.models.PortalModel;
+import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.portals.PortalManager;
 import dev.crmodders.cosmicquilt.api.entrypoint.ModInitializer;
 import dev.crmodders.flux.FluxRegistries;
@@ -14,6 +16,7 @@ import dev.crmodders.flux.localization.ILanguageFile;
 import dev.crmodders.flux.localization.LanguageManager;
 import dev.crmodders.flux.localization.files.LanguageFileVersion1;
 import dev.crmodders.flux.tags.ResourceLocation;
+import finalforeach.cosmicreach.entities.EntityCreator;
 import finalforeach.cosmicreach.items.Item;
 import finalforeach.cosmicreach.rendering.items.ItemRenderer;
 import org.greenrobot.eventbus.Subscribe;
@@ -49,6 +52,7 @@ public class SeamlessPortals implements ModInitializer {
 
     @Subscribe
     public void onEvent(OnPreLoadAssetsEvent event){
+        EntityCreator.registerEntityCreator("seamlessportals:entity_portal", Portal::readPortal);
         ItemRenderer.registerItemModelCreator(HandheldPortalGen.class, (handheldPortalGen) -> new EntityItemModel("seamlessportals:handheld_portal_gen.json", "seamlessportals:handheld_portal_gen.animation.json",
                 "animation.handheld_portal_generator.idle", "seamlessportals:handheld_portal_gen.png"));
         ILanguageFile langEN = FluxGameAssetLoader.LOADER.loadResourceSync(new ResourceLocation(MOD_ID, "languages/en-US.json"), LanguageFileVersion1.class);

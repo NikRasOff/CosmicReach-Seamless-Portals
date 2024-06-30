@@ -13,22 +13,20 @@ import dev.crmodders.flux.tags.Identifier;
 import dev.crmodders.flux.tags.ResourceLocation;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.rendering.entities.EntityModel;
+import finalforeach.cosmicreach.rendering.entities.EntityModelInstance;
 import finalforeach.cosmicreach.rendering.entities.IEntityModel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
+import java.util.WeakHashMap;
+
 @Mixin(EntityModel.class)
 public abstract class EntityModelMixin implements IModEntityModel {
-    @Shadow
-    float animTimer;
 
     @Shadow public abstract void render(Entity entity, Camera worldCamera, Matrix4 modelMat);
 
-    @Shadow
-    public static IEntityModel load(String modelFileName, String animationSetName, String defaultAnimName, String textureName) {
-        return null;
-    }
+    @Shadow private WeakHashMap<Entity, EntityModelInstance> modelInstances;
 
     @WrapOperation(method = "load", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/GameAssetLoader;loadAsset(Ljava/lang/String;)Lcom/badlogic/gdx/files/FileHandle;", ordinal = 0))
     private static FileHandle loadModModel(String fileName, Operation<FileHandle> original){
@@ -53,12 +51,14 @@ public abstract class EntityModelMixin implements IModEntityModel {
 
     @Override
     public void renderNoAnim(Entity entity, Camera worldCamera, Matrix4 modelMat){
-        this.animTimer -= Gdx.graphics.getDeltaTime();
+        EntityModelInstanceMixin e = (EntityModelInstanceMixin) this.modelInstances.get(entity);
+        e.setAnimTimer(e.getAnimTimer() - Gdx.graphics.getDeltaTime());
         this.render(entity, worldCamera, modelMat);
     }
 
     @Override
-    public void updateAnimation() {
-        this.animTimer += Gdx.graphics.getDeltaTime();
+    public void updateAnimation(Entity entity) {
+        EntityModelInstanceMixin e = (EntityModelInstanceMixin) this.modelInstances.get(entity);
+        e.setAnimTimer(e.getAnimTimer() + Gdx.graphics.getDeltaTime());
     }
 }

@@ -1,38 +1,22 @@
 package com.nikrasoff.seamlessportals.portals;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
-import com.nikrasoff.seamlessportals.config.SeamlessPortalsConfig;
-import dev.crmodders.flux.assets.FluxGameAssetLoader;
-import finalforeach.cosmicreach.entities.DroneEntity;
-import finalforeach.cosmicreach.entities.Player;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.blocks.BlockPosition;
-import finalforeach.cosmicreach.rendering.entities.EntityModel;
-import finalforeach.cosmicreach.rendering.entities.IEntityModel;
 import finalforeach.cosmicreach.world.Chunk;
 import finalforeach.cosmicreach.world.Zone;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.WeakHashMap;
 
 public class PortalManager {
+    public int saveDataVersion = 1;
     public String prevPortalGenZone;
     public Vector3 prevPortalGenPos;
-    public Array<Portal> createdPortals = new Array<>(Portal.class);
-
-    public boolean shouldUpdatePortalArray = false;
-
-    public static boolean debugReady = false;
-    private static ShapeRenderer shapeRenderer;
+    public int maxPortalID = 0;
+    public transient HashMap<Integer, Portal> createdPortals = new HashMap<>();
 
     public PortalManager(){}
     
@@ -47,88 +31,25 @@ public class PortalManager {
         return new BlockPosition(c, (int) (this.prevPortalGenPos.x - c.blockX), (int) (this.prevPortalGenPos.y - c.blockY), (int) (this.prevPortalGenPos.z - c.blockZ));
     }
 
+    public int getNextPortalID(){
+        this.maxPortalID += 1;
+        return this.maxPortalID - 1;
+    }
+
+    public Portal getPortal(int portalID){
+        return this.createdPortals.get(portalID);
+    }
+
+    public void addPortal(Portal portal){
+        this.createdPortals.put(portal.getPortalID(), portal);
+    }
+
     public void createPortalPair(BlockPosition portalPos1, BlockPosition portalPos2, Zone zone1, Zone zone2){
         Portal portal1 = Portal.fromBlockPos(new Vector2(3, 3), portalPos1, zone1);
         Portal portal2 = Portal.fromBlockPos(new Vector2(3, 3), portalPos2, zone2);
         portal1.linkPortal(portal2);
         portal2.linkPortal(portal1);
-        this.createdPortals.add(portal1);
-        this.createdPortals.add(portal2);
-    }
-
-    public void linkPortalsInArray(){
-        for (int i = 0; i < this.createdPortals.size; i += 2){
-            this.createdPortals.get(i).linkPortal(this.createdPortals.get(i + 1));
-            this.createdPortals.get(i + 1).linkPortal(this.createdPortals.get(i));
-        }
-    }
-
-    public void updatePortalArray(){
-        this.shouldUpdatePortalArray = false;
-        Array<Portal> newPortalArray = new Array<>(Portal.class);
-        for (Portal portal : this.createdPortals){
-            if (!portal.isPortalDestroyed){
-                newPortalArray.add(portal);
-            }
-        }
-        this.createdPortals = newPortalArray;
-    }
-
-    private void initialiseDebug(){
-        shapeRenderer = new ShapeRenderer();
-        debugReady = true;
-    }
-
-    private void disableDebug(){
-        if (shapeRenderer != null){
-            shapeRenderer.dispose();
-            shapeRenderer = null;
-        }
-        debugReady = false;
-    }
-
-    public void renderPortals(Camera playerCamera){
-        if (Gdx.input.isKeyJustPressed(Input.Keys.P)){
-            System.out.println("Spawned a drone!");
-            DroneEntity drone = new DroneEntity();
-            drone.setPosition(playerCamera.position);
-            drone.model = EntityModel.load("drone_saw.cr_entity.json", "drone.animation.json", "animation.drone_saw.idle", "drone_saw.png");
-            InGame.getLocalPlayer().getZone(InGame.world).allEntities.add(drone);
-        }
-        if (SeamlessPortalsConfig.INSTANCE.debugOutlines.value()){
-            if (!debugReady) initialiseDebug();
-        }
-        else if (debugReady){
-            disableDebug();
-        }
-        if (this.shouldUpdatePortalArray) this.updatePortalArray();
-        Player player = InGame.getLocalPlayer();
-        if (debugReady){
-            shapeRenderer.setProjectionMatrix(playerCamera.combined);
-        }
-        for (Portal portal : this.createdPortals){
-            portal.updateAnimations(Gdx.graphics.getDeltaTime());
-            OrientedBoundingBox portalBB = portal.getMeshBoundingBox();
-            OrientedBoundingBox portalBigBB = portal.getGlobalBoundingBox();
-            if (debugReady){
-                shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-                shapeRenderer.setTransformMatrix(portalBigBB.transform);
-                shapeRenderer.setColor(1, 0, 0, 1);
-                shapeRenderer.box(portalBigBB.getBounds().min.x, portalBigBB.getBounds().min.y, portalBigBB.getBounds().min.z, portalBigBB.getBounds().getWidth(), portalBigBB.getBounds().getHeight(), -portalBigBB.getBounds().getDepth());
-                shapeRenderer.setColor(0, 0, 1, 1);
-                shapeRenderer.line(Vector3.Zero, new Vector3(0, 0, -1));
-                shapeRenderer.end();
-            }
-            if (!portal.isPortalMeshGenerated){
-                portal.updatePortalMeshScale((PerspectiveCamera) playerCamera);
-            }
-            if (!portal.zoneID.equals(player.zoneId) || portal.isPortalDestroyed || portal.position.dst(playerCamera.position) > 50){
-                continue;
-            }
-            if (!playerCamera.frustum.boundsInFrustum(portalBB) && portal.getDistanceToPortalPlane(playerCamera.position) > playerCamera.near){
-                continue;
-            }
-            portal.render(playerCamera);
-        }
+        zone1.allEntities.add(portal1);
+        zone2.allEntities.add(portal2);
     }
 }

@@ -21,6 +21,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Map;
+
 @Mixin(PlayerController.class)
 public abstract class PlayerControllerMixin implements IPortalablePlayerController {
     @Shadow Player player;
@@ -34,7 +36,7 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
     public transient ISPAnimation cameraRotationAnimation;
 
     @Inject(method = "updateCamera", at = @At("RETURN"))
-    private void updateCameraForPortals(Camera playerCamera, float partTick, CallbackInfo ci){
+    private void updateCameraForPortals(Camera playerCamera, CallbackInfo ci){
         Vector3 playerCameraOffset = this.player.getEntity().viewPositionOffset;
         Vector3 curPlayerPos = playerCamera.position.cpy().sub(playerCameraOffset);
 
@@ -57,7 +59,8 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
         }
 
         Ray ray = new Ray(checkEntityPos, checkCamPos.cpy().sub(checkEntityPos));
-        for (Portal portal : SeamlessPortals.portalManager.createdPortals){
+        for (Map.Entry<Integer, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
+            Portal portal = portalEntry.getValue();
             if (!portal.isOnSameSideOfPortal(checkEntityPos, checkCamPos) && (Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3()))){
                 playerCamera.position.set(portal.getPortaledPos(playerCamera.position));
                 playerCamera.direction.set(portal.getPortaledVector(playerCamera.direction));

@@ -1,6 +1,5 @@
 package com.nikrasoff.seamlessportals.mixin;
 
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -29,6 +28,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Map;
 
 @Mixin(Entity.class)
 public abstract class PortalableEntityMixin implements IPortalableEntity {
@@ -102,8 +103,9 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
 
         Ray posChange = new Ray(prevPos.cpy().add(new Vector3(0, 0.05F, 0)), targetPosition.cpy().sub(prevPos));
 
-        for (Portal portal : SeamlessPortals.portalManager.createdPortals){
-            if (portal.isPortalDestroyed || !portal.isPortalStable()) {
+        for (Map.Entry<Integer, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
+            Portal portal = portalEntry.getValue();
+            if (portal.isPortalDestroyed) {
                 continue;
             }
             if (portal.zoneID.equals(InGame.getLocalPlayer().zoneId) && !portal.isOnSameSideOfPortal(prevPos, targetPosition) && Intersector.intersectRayOrientedBounds(posChange, portal.getMeshBoundingBox(), new Vector3())){
@@ -140,7 +142,8 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
             this.tmpPortalCheckBlockBoundingBox.getCenter(checkCenter);
             Vector3 portalCollisionCheckPos = this.isJustTeleported() ? this.tmpPortalNextPosition : this.position.cpy();
             Ray ray = new Ray(portalCollisionCheckPos, checkCenter.cpy().sub(portalCollisionCheckPos));
-            for (Portal portal : SeamlessPortals.portalManager.createdPortals){
+            for (Map.Entry<Integer, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
+                Portal portal = portalEntry.getValue();
                 if (portal.zoneID.equals(InGame.getLocalPlayer().zoneId) && !portal.isOnSameSideOfPortal(portalCollisionCheckPos, checkCenter) && Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3())){
                     if (!portal.getMeshBoundingBox().intersects(this.tmpPortalCheckBlockBoundingBox)){
                         return null;
@@ -173,9 +176,6 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
         this.acceleration.set(portal.getPortaledVector(this.acceleration));
         this.velocity.add(portal.linkedPortal.velocity);
         this.velocity.add(portal.linkedPortal.onceVelocity);
-        if (this.isLocalPlayer()){
-            portal.linkedPortal.updatePortalMeshScale((PerspectiveCamera) GameState.IN_GAME.getWorldCamera());
-        }
         Vector3 originalPos = this.position.cpy();
 
         // A bunch of magic to make mismatched portals more intuitive

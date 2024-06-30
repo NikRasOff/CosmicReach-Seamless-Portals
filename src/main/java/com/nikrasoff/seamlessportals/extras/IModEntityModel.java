@@ -6,5 +6,5 @@ import finalforeach.cosmicreach.entities.Entity;
 
 public interface IModEntityModel {
     void renderNoAnim(Entity entity, Camera worldCamera, Matrix4 modelMat);
-    void updateAnimation();
+    void updateAnimation(Entity entity);
 }

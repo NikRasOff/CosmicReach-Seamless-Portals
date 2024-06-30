@@ -21,13 +21,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class InGameMixin implements IPortalIngame {
     @Shadow public abstract Camera getWorldCamera();
 
-    @Shadow private static PlayerController playerController;
-
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/BlockSelection;render(Lcom/badlogic/gdx/graphics/Camera;)V"))
     private void seamlessPortalsCustomRender(CallbackInfo ci){
         Camera renderFromCamera = getWorldCamera();
 
-        SeamlessPortals.portalManager.renderPortals(renderFromCamera);
         PulseEffect.renderPulseEffects(renderFromCamera);
         EntityItemModel.advanceAnimations();
     }

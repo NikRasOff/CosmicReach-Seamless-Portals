@@ -5,13 +5,10 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
-import com.nikrasoff.seamlessportals.extras.IPortalWorldLoader;
 import com.nikrasoff.seamlessportals.extras.IPortalableEntity;
 import com.nikrasoff.seamlessportals.models.PortalModel;
-import finalforeach.cosmicreach.ClientWorldLoader;
-import finalforeach.cosmicreach.WorldLoader;
 import finalforeach.cosmicreach.gamestates.InGame;
-import finalforeach.cosmicreach.io.CosmicReachBinaryDeserializer;
+import finalforeach.cosmicreach.io.CRBinDeserializer;
 import finalforeach.cosmicreach.rendering.MeshData;
 import finalforeach.cosmicreach.rendering.RenderOrder;
 import finalforeach.cosmicreach.rendering.meshes.GameMesh;
@@ -21,11 +18,8 @@ import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.savelib.crbin.CRBSerialized;
 import finalforeach.cosmicreach.settings.GraphicsSettings;
-import finalforeach.cosmicreach.world.EntityChunk;
 import finalforeach.cosmicreach.world.EntityRegion;
-import finalforeach.cosmicreach.world.World;
 import finalforeach.cosmicreach.world.Zone;
-import finalforeach.cosmicreach.worldgen.ChunkColumn;
 
 public class Portal extends Entity {
     public transient boolean isPortalDestroyed = false;
@@ -48,7 +42,7 @@ public class Portal extends Entity {
 
     private boolean isEndAnimationPlaying = false;
 
-    public static Portal readPortal(CosmicReachBinaryDeserializer deserializer){
+    public static Portal readPortal(CRBinDeserializer deserializer){
         // It took so much time to make this work...
         Portal portal = new Portal();
         if (deserializer != null) {
@@ -269,10 +263,6 @@ public class Portal extends Entity {
         return (int) Math.signum(offset.dot(this.viewDirection));
     }
 
-    public Matrix4 getPortalModelMatrix(){
-        return this.modelMatrix;
-    }
-
     public boolean isOnSameSideOfPortal(Vector3 pos1, Vector3 pos2){
         return getPortalSide(pos1) == getPortalSide(pos2);
     }
@@ -291,7 +281,7 @@ public class Portal extends Entity {
 
     public void render(Camera worldCamera) {
         if (this.model != null) {
-            this.modelMatrix.setToLookAt(this.position, this.position.cpy().add(this.viewDirection), this.upVector);
+            tmpModelMatrix.setToLookAt(this.position, this.position.cpy().add(this.viewDirection), this.upVector);
             this.renderModelAfterMatrixSet(worldCamera);
         }
     }

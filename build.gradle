@@ -90,8 +90,7 @@ processResources {
             "mod_name"        : project.name,
             "mod_id"          : id,
             "cosmic_reach_version" : cosmic_reach_version,
-            "cosmic_quilt_version" : cosmic_quilt_version,
-            "fluxapi_version" : fluxapi_version
+            "cosmic_quilt_version" : cosmic_quilt_version
     ]
 
 

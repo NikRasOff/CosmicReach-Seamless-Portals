@@ -2,6 +2,7 @@ package com.nikrasoff.seamlessportals.mixin;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
@@ -45,7 +46,7 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
     private transient Vector3 preSavedCameraUp = new Vector3();
 
     @Inject(method = "updateCamera", at = @At("HEAD"))
-    private void preUpdateCamera(Camera playerCamera, CallbackInfo ci){
+    private void preUpdateCamera(PerspectiveCamera playerCamera, CallbackInfo ci){
         IPortalableEntity playerEntity = (IPortalableEntity) this.player.getEntity();
         if (playerEntity.isJustTeleported()){
             if (this.alreadyTPdCamera){
@@ -60,7 +61,7 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
     }
 
     @Inject(method = "updateCamera", at = @At("RETURN"))
-    private void updateCameraForPortals(Camera playerCamera, CallbackInfo ci){
+    private void updateCameraForPortals(PerspectiveCamera playerCamera, CallbackInfo ci){
         this.preSavedCameraUp.set(playerCamera.up);
         Vector3 playerCameraOffset = this.player.getEntity().viewPositionOffset;
         Vector3 curPlayerPos = playerCamera.position.cpy().sub(playerCameraOffset);

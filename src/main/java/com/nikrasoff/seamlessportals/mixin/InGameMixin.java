@@ -1,6 +1,7 @@
 package com.nikrasoff.seamlessportals.mixin;
 
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.nikrasoff.seamlessportals.effects.PulseEffect;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.IPortalIngame;
@@ -24,6 +25,14 @@ public abstract class InGameMixin implements IPortalIngame {
 
     @Shadow private static PlayerController playerController;
 
+    @Unique
+    private float tempFovForPortals = 0;
+
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/badlogic/gdx/utils/viewport/Viewport;apply()V"))
+    private void storeTempFOV(CallbackInfo ci){
+        this.tempFovForPortals = ((PerspectiveCamera)getWorldCamera()).fieldOfView;
+    }
+
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/BlockSelection;render(Lcom/badlogic/gdx/graphics/Camera;)V"))
     private void seamlessPortalsCustomRender(CallbackInfo ci){
         Camera renderFromCamera = getWorldCamera();
@@ -44,4 +53,9 @@ public abstract class InGameMixin implements IPortalIngame {
 
     @Accessor(value = "playerController")
     public abstract PlayerController getPlayerController();
+
+    @Override
+    public float getTempFovForPortals() {
+        return tempFovForPortals;
+    }
 }

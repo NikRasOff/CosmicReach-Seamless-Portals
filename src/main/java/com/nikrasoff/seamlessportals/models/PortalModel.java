@@ -15,10 +15,12 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.nikrasoff.seamlessportals.animations.*;
 import com.nikrasoff.seamlessportals.config.SeamlessPortalsConfig;
 import com.nikrasoff.seamlessportals.extras.FloatContainer;
+import com.nikrasoff.seamlessportals.extras.IPortalIngame;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.MeshData;
 import finalforeach.cosmicreach.rendering.RenderOrder;
@@ -147,7 +149,7 @@ public class PortalModel implements IEntityModel, Disposable {
     private void updatePortalCamera(Camera playerCamera, Portal portal){
         this.portalCamera.viewportHeight = playerCamera.viewportHeight;
         this.portalCamera.viewportWidth = playerCamera.viewportWidth;
-        this.portalCamera.fieldOfView = GraphicsSettings.fieldOfView.getValue();
+        this.portalCamera.fieldOfView = ((IPortalIngame) GameState.IN_GAME).getTempFovForPortals();
         this.portalCamera.near = playerCamera.near;
         this.portalCamera.far = playerCamera.far;
 

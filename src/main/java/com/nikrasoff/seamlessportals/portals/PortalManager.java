@@ -3,6 +3,8 @@ package com.nikrasoff.seamlessportals.portals;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.nikrasoff.seamlessportals.SeamlessPortals;
+import finalforeach.cosmicreach.WorldLoader;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.world.Chunk;
@@ -25,8 +27,12 @@ public class PortalManager {
         Zone cur_zone = InGame.world.getZone(this.prevPortalGenZone);
         Chunk c = cur_zone.getChunkAtBlock((int) this.prevPortalGenPos.x, (int) this.prevPortalGenPos.y, (int) this.prevPortalGenPos.z);
         if (c == null){
-            // Doesn't work in unloaded chunks, sadly.
-            return null;
+            WorldLoader.INSTANCE.getChunkColumn(cur_zone, Math.floorDiv((int) this.prevPortalGenPos.x, 16), Math.floorDiv((int) this.prevPortalGenPos.y, 256) * 16, Math.floorDiv((int) this.prevPortalGenPos.z, 16), true);
+            c = cur_zone.getChunkAtBlock((int) this.prevPortalGenPos.x, (int) this.prevPortalGenPos.y, (int) this.prevPortalGenPos.z);
+            if (c == null){
+                SeamlessPortals.LOGGER.warning("Couldn't gen previous portal generator location");
+                return null;
+            }
         }
         return new BlockPosition(c, (int) (this.prevPortalGenPos.x - c.blockX), (int) (this.prevPortalGenPos.y - c.blockY), (int) (this.prevPortalGenPos.z - c.blockZ));
     }
@@ -44,6 +50,10 @@ public class PortalManager {
         this.createdPortals.put(portal.getPortalID(), portal);
     }
 
+    public void removePortal(Portal portal){
+        this.createdPortals.remove(portal.getPortalID());
+    }
+
     public void createPortalPair(BlockPosition portalPos1, BlockPosition portalPos2, Zone zone1, Zone zone2){
         Portal portal1 = Portal.fromBlockPos(new Vector2(3, 3), portalPos1, zone1);
         Portal portal2 = Portal.fromBlockPos(new Vector2(3, 3), portalPos2, zone2);
@@ -54,7 +64,7 @@ public class PortalManager {
     }
 
     public void printExistingIDs(){
-        System.out.println("Existing IDs: ");
+        System.out.println("Existing portal IDs: ");
         for (int i : this.createdPortals.keySet()){
             System.out.println(i);
         }

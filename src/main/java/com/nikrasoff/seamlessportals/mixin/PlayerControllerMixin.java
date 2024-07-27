@@ -27,6 +27,9 @@ import java.util.Map;
 public abstract class PlayerControllerMixin implements IPortalablePlayerController {
     @Shadow Player player;
 
+    @Shadow
+    Vector3 lastCamPosition;
+    @Shadow private Camera playerCam;
     @Unique
     public transient Quaternion upVectorRotation = new Quaternion();
     @Unique
@@ -35,8 +38,30 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
     @Unique
     public transient ISPAnimation cameraRotationAnimation;
 
+    @Unique
+    private transient boolean alreadyTPdCamera = false;
+
+    @Unique
+    private transient Vector3 preSavedCameraUp = new Vector3();
+
+    @Inject(method = "updateCamera", at = @At("HEAD"))
+    private void preUpdateCamera(Camera playerCamera, CallbackInfo ci){
+        IPortalableEntity playerEntity = (IPortalableEntity) this.player.getEntity();
+        if (playerEntity.isJustTeleported()){
+            if (this.alreadyTPdCamera){
+                return;
+            }
+            this.alreadyTPdCamera = true;
+            this.lastCamPosition.set(playerEntity.getTeleportingPortal().getPortaledPos(this.lastCamPosition));
+        }
+        else{
+            this.alreadyTPdCamera = false;
+        }
+    }
+
     @Inject(method = "updateCamera", at = @At("RETURN"))
     private void updateCameraForPortals(Camera playerCamera, CallbackInfo ci){
+        this.preSavedCameraUp.set(playerCamera.up);
         Vector3 playerCameraOffset = this.player.getEntity().viewPositionOffset;
         Vector3 curPlayerPos = playerCamera.position.cpy().sub(playerCameraOffset);
 
@@ -69,6 +94,11 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
                 return;
             }
         }
+    }
+
+    @Override
+    public void resetPlayerCameraUp(){
+        playerCam.up.set(this.preSavedCameraUp);
     }
 
     @Override

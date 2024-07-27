@@ -101,7 +101,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
         Vector3 targetPosition = (new Vector3(this.position)).add(posDiff);
         this.tmpPortalNextPosition.set(targetPosition);
 
-        Ray posChange = new Ray(prevPos.cpy().add(new Vector3(0, 0.05F, 0)), targetPosition.cpy().sub(prevPos));
+        Ray posChange = new Ray(prevPos.cpy().add(new Vector3(0, 0.05F, 0)), targetPosition.cpy().add(new Vector3(0, 0.05F, 0)).sub(prevPos));
 
         for (Map.Entry<Integer, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
             Portal portal = portalEntry.getValue();
@@ -165,7 +165,9 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
     @Unique
     public void teleportThroughPortal(Portal portal) {
         // TODO: Fix when more entities/multiplayer gets added
-        InGame.getLocalPlayer().zoneId = new String(portal.linkedPortal.zoneID);
+        if (this.isLocalPlayer()){
+            InGame.getLocalPlayer().zoneId = portal.linkedPortal.zoneID;
+        }
         this.tmpPortalNextPosition.set(portal.getPortaledPos(this.tmpPortalNextPosition));
         this.viewDirection = portal.getPortaledVector(this.viewDirection);
         this.velocity.sub(portal.velocity);

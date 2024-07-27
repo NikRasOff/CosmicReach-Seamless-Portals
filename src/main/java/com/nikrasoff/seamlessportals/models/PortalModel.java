@@ -233,7 +233,7 @@ public class PortalModel implements IEntityModel, Disposable {
             this.updatePortalMeshScale((PerspectiveCamera) camera, (Portal) entity);
         }
         this.renderDebug((Portal) entity, camera);
-        if (((Portal) entity).linkedPortal == null){
+        if (((Portal) entity).linkedPortal == null || ((Portal) entity).isPortalDestroyed){
             return;
         }
         if (this.currentAnimation != null){
@@ -304,5 +304,10 @@ public class PortalModel implements IEntityModel, Disposable {
         if (this.portalFrameBuffer != null){
             this.portalFrameBuffer.dispose();
         }
+    }
+
+    public boolean isAnimationOver(){
+        System.out.println(currentAnimation.isFinished());
+        return currentAnimation.isFinished();
     }
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.nikrasoff.seamlessportals.effects.PulseEffect;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.IPortalIngame;
+import com.nikrasoff.seamlessportals.extras.IPortalablePlayerController;
 import com.nikrasoff.seamlessportals.models.EntityItemModel;
 import com.nikrasoff.seamlessportals.portals.PortalSaveSystem;
 import finalforeach.cosmicreach.entities.PlayerController;
@@ -21,12 +22,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class InGameMixin implements IPortalIngame {
     @Shadow public abstract Camera getWorldCamera();
 
+    @Shadow private static PlayerController playerController;
+
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/BlockSelection;render(Lcom/badlogic/gdx/graphics/Camera;)V"))
     private void seamlessPortalsCustomRender(CallbackInfo ci){
         Camera renderFromCamera = getWorldCamera();
 
         PulseEffect.renderPulseEffects(renderFromCamera);
         EntityItemModel.advanceAnimations();
+    }
+
+    @Inject(method = "render", at = @At("RETURN"))
+    private void resetPlayerCamera(CallbackInfo ci){
+        ((IPortalablePlayerController) playerController).resetPlayerCameraUp();
     }
 
     @Inject(method = "loadWorld(Lfinalforeach/cosmicreach/world/World;)V", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/io/PlayerSaver;loadPlayers(Lfinalforeach/cosmicreach/world/World;)V"))

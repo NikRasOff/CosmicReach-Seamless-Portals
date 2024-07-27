@@ -20,6 +20,7 @@ import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.savelib.crbin.CRBSerialized;
+import finalforeach.cosmicreach.settings.GraphicsSettings;
 import finalforeach.cosmicreach.world.EntityChunk;
 import finalforeach.cosmicreach.world.EntityRegion;
 import finalforeach.cosmicreach.world.World;
@@ -44,6 +45,8 @@ public class Portal extends Entity {
 
     @CRBSerialized
     public String zoneID;
+
+    private boolean isEndAnimationPlaying = false;
 
     public static Portal readPortal(CosmicReachBinaryDeserializer deserializer){
         // It took so much time to make this work...
@@ -199,7 +202,7 @@ public class Portal extends Entity {
         globalBB.set(this.localBoundingBox);
         globalBB.update();
 
-        return new OrientedBoundingBox(globalBB, this.modelMatrix.cpy().inv());
+        return new OrientedBoundingBox(globalBB, this.getPortalMatrix().inv());
     }
 
     public OrientedBoundingBox getMeshBoundingBox(){
@@ -230,12 +233,24 @@ public class Portal extends Entity {
 
     public Vector3 getPortaledPos(Vector3 pos){
         Vector3 newPos = pos.cpy();
-        Matrix4 thisPort = this.modelMatrix.cpy();
-        Matrix4 linkedPort = this.linkedPortal.modelMatrix.cpy().inv();
-//        linkedPort.inv();
+        Matrix4 thisPort = this.getPortalMatrix();
+        Matrix4 linkedPort = this.linkedPortal.getPortalMatrix().inv();
         newPos.mul(thisPort);
         newPos.mul(linkedPort);
         return newPos;
+    }
+
+    public Matrix4 getPortalMatrix(){
+        /*
+         I have no damn clue as to why this is even needed
+         I tried using just modelMatrix instead - doesn't work
+         when teleporting the player, and ONLY when teleporting the player.
+         In any other circumstance it works flawlessly, but not in that one case
+         WHY? WHY is it that way?
+        */
+        Matrix4 result = new Matrix4();
+        result.setToLookAt(this.position, this.position.cpy().add(this.viewDirection), this.upVector);
+        return result;
     }
 
     public Vector3 getPortaledVector(Vector3 vector3){
@@ -254,8 +269,24 @@ public class Portal extends Entity {
         return (int) Math.signum(offset.dot(this.viewDirection));
     }
 
+    public Matrix4 getPortalModelMatrix(){
+        return this.modelMatrix;
+    }
+
     public boolean isOnSameSideOfPortal(Vector3 pos1, Vector3 pos2){
         return getPortalSide(pos1) == getPortalSide(pos2);
+    }
+
+    @Override
+    public void update(Zone zone, double deltaTime) {
+        super.update(zone, deltaTime);
+        if (isEndAnimationPlaying){
+            PortalModel pm = (PortalModel) this.model;
+            if (pm.isAnimationOver()){
+                this.isPortalDestroyed = true;
+                this.onDeath(zone);
+            }
+        }
     }
 
     public void render(Camera worldCamera) {
@@ -266,6 +297,25 @@ public class Portal extends Entity {
     }
 
     public void startDestruction(){
+        if (isEndAnimationPlaying) return;
+        this.isEndAnimationPlaying = true;
         this.model.setCurrentAnimation(this, "end");
+    }
+
+    @Override
+    protected void onDeath(Zone zone) {
+        SeamlessPortals.portalManager.removePortal(this);
+        super.onDeath(zone);
+    }
+
+    public boolean isPortalInRange(boolean byProxy){
+        int renderDistance = GraphicsSettings.renderDistanceInChunks.getValue();
+        if (this.position.dst2(InGame.getLocalPlayer().getPosition()) <= renderDistance * renderDistance * 256){
+            return true;
+        }
+        if (byProxy && this.linkedPortal != null){
+            return this.linkedPortal.isPortalInRange(false);
+        }
+        return false;
     }
 }

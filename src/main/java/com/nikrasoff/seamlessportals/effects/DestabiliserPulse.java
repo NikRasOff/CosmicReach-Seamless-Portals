@@ -30,6 +30,7 @@ public class DestabiliserPulse extends PulseEffect{
                 BoundingBox destroyBounds = new BoundingBox(destroyMin, destroyMax);
                 if (destroyBounds.contains(portalPos)){
                     portal.startDestruction();
+                    portal.linkedPortal.startDestruction();
                 }
             });
         }

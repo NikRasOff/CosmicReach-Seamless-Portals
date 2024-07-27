@@ -46,6 +46,9 @@ public abstract class ClientWorldLoaderMixin implements IPortalWorldLoader {
         float minPortalResult = 1000000;
         boolean tooFarVertically = true;
         for (Map.Entry<Integer, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()) {
+            if (!portalEntry.getValue().isPortalInRange(true)){
+                continue;
+            }
             int portalChunkX = Math.floorDiv((int) portalEntry.getValue().position.x, 16);
             int portalChunkY = Math.floorDiv((int) portalEntry.getValue().position.y, 16);
             int portalChunkZ = Math.floorDiv((int) portalEntry.getValue().position.z, 16);
@@ -55,7 +58,7 @@ public abstract class ClientWorldLoaderMixin implements IPortalWorldLoader {
             float porRes = Vector2.dst2(ec.chunkX, ec.chunkZ, portalChunkX, portalChunkZ);
             if (porRes < minPortalResult) minPortalResult = porRes;
         }
-        return tooFarVertically || (minPortalResult > portalChunkLoadRadius);
+        return tooFarVertically || (minPortalResult > 1 +  portalChunkLoadRadius * portalChunkLoadRadius);
     }
 
     @Unique
@@ -64,6 +67,9 @@ public abstract class ClientWorldLoaderMixin implements IPortalWorldLoader {
         float minPortalResult = 1000000;
         boolean tooFarVertically = true;
         for (Map.Entry<Integer, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()) {
+            if (!portalEntry.getValue().isPortalInRange(true)){
+                continue;
+            }
             int portalChunkX = Math.floorDiv((int) portalEntry.getValue().position.x, 16);
             int portalChunkY = Math.floorDiv((int) portalEntry.getValue().position.y, 16);
             int portalChunkZ = Math.floorDiv((int) portalEntry.getValue().position.z, 16);
@@ -73,13 +79,16 @@ public abstract class ClientWorldLoaderMixin implements IPortalWorldLoader {
             float porRes = Vector2.dst2(cc.chunkX, cc.chunkZ, portalChunkX, portalChunkZ);
             if (porRes < minPortalResult) minPortalResult = porRes;
         }
-        return tooFarVertically || (minPortalResult > portalChunkLoadRadius);
+        return tooFarVertically || (minPortalResult > 1 + portalChunkLoadRadius * portalChunkLoadRadius);
     }
 
     @Inject(method = "generateWorld", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/ClientWorldLoader;loadSurroundingChunks(Lfinalforeach/cosmicreach/world/Zone;IIIII)V"))
     void loadChunksWithPortals(World world, Zone zone, CallbackInfo ci){
         int portalChunkLoadRadius = 2;
         for (Map.Entry<Integer, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()) {
+            if (!portalEntry.getValue().isPortalInRange(true)){
+                continue;
+            }
             int portalChunkX = Math.floorDiv((int) portalEntry.getValue().position.x, 16);
             int portalChunkY = Math.floorDiv((int) portalEntry.getValue().position.y, 16);
             int portalChunkZ = Math.floorDiv((int) portalEntry.getValue().position.z, 16);

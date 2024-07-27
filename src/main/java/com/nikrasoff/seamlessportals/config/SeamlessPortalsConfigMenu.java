@@ -3,14 +3,7 @@ package com.nikrasoff.seamlessportals.config;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.utils.ScreenUtils;
-import dev.crmodders.flux.FluxConstants;
-import dev.crmodders.flux.FluxSettings;
-import dev.crmodders.flux.localization.LanguageManager;
-import dev.crmodders.flux.localization.TranslationKey;
-import dev.crmodders.flux.localization.TranslationString;
 import finalforeach.cosmicreach.gamestates.GameState;
-import finalforeach.cosmicreach.io.ChunkSaver;
-import finalforeach.cosmicreach.lang.Lang;
 import finalforeach.cosmicreach.ui.FontRenderer;
 import finalforeach.cosmicreach.ui.HorizontalAnchor;
 import finalforeach.cosmicreach.ui.UIElement;
@@ -19,8 +12,6 @@ import finalforeach.cosmicreach.ui.VerticalAnchor;
 import static com.nikrasoff.seamlessportals.SeamlessPortals.MOD_ID;
 
 public class SeamlessPortalsConfigMenu extends GameState {
-    private static final TranslationKey debugOutlinesKey = new TranslationKey(MOD_ID + ":config_menu.debug_outlines");
-
     public GameState previousState;
 
     public SeamlessPortalsConfigMenu(GameState prevState){
@@ -50,9 +41,7 @@ public class SeamlessPortalsConfigMenu extends GameState {
             public void updateText() {
                 super.updateText();
                 boolean value = SeamlessPortalsConfig.INSTANCE.debugOutlines.value();
-                String on = LanguageManager.string(FluxConstants.TextOn);
-                String off = LanguageManager.string(FluxConstants.TextOff);
-                String text = LanguageManager.format(debugOutlinesKey, value ? on : off);
+                String text = "Debug outlines: " + (value ? "On" : "Off");
                 setText(text);
             }
         };
@@ -64,7 +53,7 @@ public class SeamlessPortalsConfigMenu extends GameState {
                 super.onCreate();
                 this.hAnchor = HorizontalAnchor.CENTERED;
                 this.vAnchor = VerticalAnchor.BOTTOM_ALIGNED;
-                this.setText(LanguageManager.string(FluxConstants.TextBack));
+                this.setText("Back");
             }
 
             @Override
@@ -96,7 +85,7 @@ public class SeamlessPortalsConfigMenu extends GameState {
 
         batch.setProjectionMatrix(this.uiCamera.combined);
         batch.begin();
-        String title = LanguageManager.string(new TranslationKey("seamlessportals:config_menu.title"));
+        String title = "Seamless Portals config menu";
         FontRenderer.drawText(batch, this.uiViewport, title, 0, 15, HorizontalAnchor.CENTERED, VerticalAnchor.TOP_ALIGNED);
         batch.end();
 

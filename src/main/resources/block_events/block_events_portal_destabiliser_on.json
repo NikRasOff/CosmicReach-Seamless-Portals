@@ -1,0 +1,33 @@
+{
+    "parent":"base:block_events_default",
+    "stringId": "seamlessportals:block_events_portal_destabiliser_on",
+    "triggers":
+    {
+        "onInteract":
+        [
+            {
+                "actionId": "base:set_block_state_params",
+                "parameters":
+                {
+                    "xOff": 0,
+                    "yOff": 0,
+                    "zOff": 0,
+                    "params":
+                    {
+                        "active":"false"
+                    }
+                }
+            },
+            {
+                "actionId": "base:play_sound_2d",
+                "parameters":
+                {
+                    "sound": "block_switch.ogg",
+                    "volume": 1,
+                    "pitch": 1,
+                    "pan": 0
+                }
+            }
+        ]
+    }
+}

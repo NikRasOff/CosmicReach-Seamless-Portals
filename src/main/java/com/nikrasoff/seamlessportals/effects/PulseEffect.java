@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.Array;
 import com.nikrasoff.seamlessportals.animations.ColorAnimation;
 import com.nikrasoff.seamlessportals.animations.SPAnimationSequence;
 import com.nikrasoff.seamlessportals.animations.Vector3Animation;
-import dev.crmodders.flux.FluxConstants;
 import finalforeach.cosmicreach.entities.Player;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.MeshData;
@@ -31,7 +30,7 @@ public class PulseEffect {
     public Color modelColor = new Color();
 
     static GameMesh mesh = createModel();
-    static GameShader shader = new GameShader("seamlessportals:effect_pulse.vert.glsl", "seamlessportals:effect_pulse.frag.glsl");
+    static GameShader shader = new GameShader("effect_pulse.vert.glsl", "effect_pulse.frag.glsl");
 
     public boolean fading = false;
 
@@ -50,7 +49,7 @@ public class PulseEffect {
     }
 
     private static GameMesh createModel(){
-        MeshData meshData = new MeshData(ChunkShader.DEFAULT_BLOCK_SHADER, RenderOrder.TRANSPARENT);
+        MeshData meshData = new MeshData(ChunkShader.DEFAULT_BLOCK_SHADER, RenderOrder.FULLY_TRANSPARENT);
 
         BlockState.getInstance("seamlessportals:ph_destabiliser_pulse[default]").addVertices(meshData, 0, 0, 0);
         return meshData.toSharedIndexMesh(true);

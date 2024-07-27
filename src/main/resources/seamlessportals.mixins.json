@@ -13,7 +13,9 @@
     "PlayerMixin",
     "ItemCatalogMixin",
     "EntityModelMixin",
-    "EntityModelInstanceMixin"
+    "EntityModelInstanceMixin",
+    "ClientWorldLoaderMixin",
+    "BlockStateGeneratorMixin"
   ],
   "injectors": {
     "defaultRequire": 1

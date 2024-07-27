@@ -1,0 +1,10 @@
+{
+    "stringId": "seamlessportals:ph_portal",
+    "blockStates":
+    {
+        "default": {
+            "modelName": "model_portal",
+            "catalogHidden": true
+        }
+    }
+}

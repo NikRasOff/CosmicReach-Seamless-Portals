@@ -1,0 +1,189 @@
+{
+    "generators":
+    [
+        {
+            "stringId": "seamlessportals:directional_blocks_all",
+            "include":
+            [
+                "seamlessportals:directional_blocks_vertical",
+                "seamlessportals:directional_blocks_horizontal"
+            ]
+        },
+        {
+            "stringId": "seamlessportals:directional_blocks_horizontal",
+            "include":
+            [
+                "seamlessportals:dir_block_NegX", "seamlessportals:dir_block_NegZ",
+                "seamlessportals:dir_block_PosX", "seamlessportals:dir_block_PosZ"
+            ]
+        },
+        {
+            "stringId": "seamlessportals:dir_block_NegX",
+            "modelName": "directional_cube2",
+            "params":
+            {
+                "facing":"negX"
+            },
+            "overrides":
+            {
+                "catalogHidden": true
+            }
+        },
+        {
+            "stringId": "seamlessportals:dir_block_NegZ",
+            "modelName": "directional_cube3",
+            "params":
+            {
+                "facing":"negZ"
+            },
+            "overrides":
+            {
+                "catalogHidden": true
+            }
+        },
+        {
+            "stringId": "seamlessportals:dir_block_PosX",
+            "modelName": "directional_cube4",
+            "params":
+            {
+                "facing":"posX"
+            },
+            "overrides":
+            {
+                "catalogHidden": true
+            }
+        },
+        {
+            "stringId": "seamlessportals:dir_block_PosZ",
+            "modelName": "directional_cube",
+            "params":
+            {
+                "facing":"posZ"
+            },
+            "overrides":
+            {
+                "catalogHidden": true
+            }
+        },
+        {
+            "stringId": "seamlessportals:directional_blocks_vertical",
+            "include":
+            [
+                "seamlessportals:directional_blocks_vertical_PosY",
+                "seamlessportals:directional_blocks_vertical_NegY"
+            ]
+        },
+        {
+            "stringId": "seamlessportals:directional_blocks_vertical_PosY",
+            "include":
+            [
+                "seamlessportals:dir_block_PosYNegX", "seamlessportals:dir_block_PosYNegZ",
+                "seamlessportals:dir_block_PosYPosX", "seamlessportals:dir_block_PosYPosZ"
+            ]
+        },
+        {
+            "stringId": "seamlessportals:dir_block_PosYNegX",
+            "modelName": "directional_cube_vertical2",
+            "params":
+            {
+                "facing":"posYnegX"
+            },
+            "overrides":
+            {
+                "catalogHidden": true
+            }
+        },
+        {
+            "stringId": "seamlessportals:dir_block_PosYNegZ",
+            "modelName": "directional_cube_vertical3",
+            "params":
+            {
+                "facing":"posYnegZ"
+            },
+            "overrides":
+            {
+                "catalogHidden": true
+            }
+        },
+        {
+            "stringId": "seamlessportals:dir_block_PosYPosX",
+            "modelName": "directional_cube_vertical4",
+            "params":
+            {
+                "facing":"posYposX"
+            },
+            "overrides":
+            {
+                "catalogHidden": true
+            }
+        },
+        {
+            "stringId": "seamlessportals:dir_block_PosYPosZ",
+            "modelName": "directional_cube_vertical",
+            "params":
+            {
+                "facing":"posYposZ"
+            },
+            "overrides":
+            {
+                "catalogHidden": true
+            }
+        },
+        {
+            "stringId": "seamlessportals:directional_blocks_vertical_NegY",
+            "include":
+            [
+                "seamlessportals:dir_block_NegYNegX", "seamlessportals:dir_block_NegYNegZ",
+                "seamlessportals:dir_block_NegYPosX", "seamlessportals:dir_block_NegYPosZ"
+            ]
+        },
+        {
+            "stringId": "seamlessportals:dir_block_NegYNegX",
+            "modelName": "directional_cube_vertical_down2",
+            "params":
+            {
+                "facing":"negYnegX"
+            },
+            "overrides":
+            {
+                "catalogHidden": true
+            }
+        },
+        {
+            "stringId": "seamlessportals:dir_block_NegYNegZ",
+            "modelName": "directional_cube_vertical_down3",
+            "params":
+            {
+                "facing":"negYnegZ"
+            },
+            "overrides":
+            {
+                "catalogHidden": true
+            }
+        },
+        {
+            "stringId": "seamlessportals:dir_block_NegYPosX",
+            "modelName": "directional_cube_vertical_down4",
+            "params":
+            {
+                "facing":"negYposX"
+            },
+            "overrides":
+            {
+                "catalogHidden": true
+            }
+        },
+        {
+            "stringId": "seamlessportals:dir_block_NegYPosZ",
+            "modelName": "directional_cube_vertical_down",
+            "params":
+            {
+                "facing":"negYposZ"
+            },
+            "overrides":
+            {
+                "catalogHidden": true
+            }
+        }
+    ]
+}

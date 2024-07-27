@@ -72,7 +72,7 @@ dependencies {
     implementation "org.codeberg.CRModders:cosmic-quilt:${cosmic_quilt_version}"
 
     // FluxAPI
-    quiltMod "dev.crmodders:fluxapi:${fluxapi_version}"
+//    quiltMod "dev.crmodders:fluxapi:${fluxapi_version}"
 
     // ModMenu
     quiltMod "dev.crmodders:modmenu:${modmenu_version}"

@@ -233,6 +233,9 @@ public class PortalModel implements IEntityModel, Disposable {
             this.updatePortalMeshScale((PerspectiveCamera) camera, (Portal) entity);
         }
         this.renderDebug((Portal) entity, camera);
+        if (((Portal) entity).linkedPortal == null){
+            return;
+        }
         if (this.currentAnimation != null){
             this.currentAnimation.update(Gdx.graphics.getDeltaTime());
         }
@@ -247,7 +250,7 @@ public class PortalModel implements IEntityModel, Disposable {
             mesh = createModel();
         }
         if (shader == null){
-            shader = new GameShader("seamlessportals:portal.vert.glsl", "seamlessportals:portal.frag.glsl");
+            shader = new GameShader("portal.vert.glsl", "portal.frag.glsl");
         }
 
         Texture portalTexture = this.createPortalTexture(camera, (Portal) entity);

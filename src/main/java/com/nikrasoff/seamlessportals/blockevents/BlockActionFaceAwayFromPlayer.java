@@ -12,6 +12,7 @@ import finalforeach.cosmicreach.blockevents.BlockEventTrigger;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.world.Zone;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -38,6 +39,16 @@ public class BlockActionFaceAwayFromPlayer implements IBlockAction {
 
         directionString += horDirString;
 
+        String newSaveKey = getNewSaveKey(blockState, directionString);
+        BlockState newBlockState = BlockState.getInstance(newSaveKey);
+        BlockSetter.replaceBlock(zone, newBlockState, targetBlockPosition, new Queue<>());
+    }
+
+    @NotNull
+    private static String getNewSaveKey(BlockState blockState, String directionString) {
+        if (!blockState.stringId.contains("facing=")){
+            return blockState.getBlockId() + "[" + blockState.stringId + ",facing=" + directionString + "]";
+        }
         String[] blockStateID = blockState.stringId.split(",");
         StringBuilder newBlockStateID = new StringBuilder();
         for (String idString : blockStateID){
@@ -57,8 +68,6 @@ public class BlockActionFaceAwayFromPlayer implements IBlockAction {
             }
         }
 
-        String newSaveKey = blockState.getBlockId() + "[" + newBlockStateID + "]";
-        BlockState newBlockState = BlockState.getInstance(newSaveKey);
-        BlockSetter.replaceBlock(zone, newBlockState, targetBlockPosition, new Queue<>());
+        return blockState.getBlockId() + "[" + newBlockStateID + "]";
     }
 }

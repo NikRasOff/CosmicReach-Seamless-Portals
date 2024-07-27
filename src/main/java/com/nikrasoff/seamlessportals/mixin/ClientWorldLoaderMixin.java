@@ -3,6 +3,7 @@ package com.nikrasoff.seamlessportals.mixin;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.extras.IPortalWorldLoader;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.ClientWorldLoader;
 import finalforeach.cosmicreach.world.EntityChunk;
@@ -20,8 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Mixin(ClientWorldLoader.class)
-public abstract class ClientWorldLoaderMixin {
+public abstract class ClientWorldLoaderMixin implements IPortalWorldLoader {
     @Shadow protected abstract void loadSurroundingChunks(Zone zone, int playerChunkX, int playerChunkY, int playerChunkZ, int localGenRadiusInChunks, int lesserRadius);
+
+    @Shadow private Array<ChunkColumn> chunkColumnsToGenerate;
 
     @Inject(method = "lambda$unloadFarAwayChunks$1", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/worldgen/ChunkColumn;getChunks(Lfinalforeach/cosmicreach/world/Zone;Lcom/badlogic/gdx/utils/Array;)Lcom/badlogic/gdx/utils/Array;"), cancellable = true)
     void stopUnloadingChunksNearPortals(int playerChunkX, int playerChunkZ, int playerChunkY, int chunkRadius, Zone zone, Array tmpColChunks, ChunkColumn cc, CallbackInfo ci){
@@ -82,5 +85,13 @@ public abstract class ClientWorldLoaderMixin {
             int portalChunkZ = Math.floorDiv((int) portalEntry.getValue().position.z, 16);
             this.loadSurroundingChunks(zone, portalChunkX, portalChunkY, portalChunkZ, portalChunkLoadRadius, 6);
         }
+    }
+
+    @Override
+    public void removeChunkColumnFromGen(ChunkColumn cc) {
+        System.out.println("Deleted one! X:" + cc.chunkX + " Y:" + cc.chunkY + " Z:" + cc.chunkZ);
+        boolean result = chunkColumnsToGenerate.removeValue(cc, true);
+        System.out.println(chunkColumnsToGenerate.contains(cc, true));
+        System.out.println(result);
     }
 }

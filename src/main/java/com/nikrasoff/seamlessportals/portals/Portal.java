@@ -1,37 +1,28 @@
 package com.nikrasoff.seamlessportals.portals;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
-import com.nikrasoff.seamlessportals.animations.ColorAnimation;
-import com.nikrasoff.seamlessportals.animations.FloatAnimation;
-import com.nikrasoff.seamlessportals.animations.SPAnimationSequence;
-import com.nikrasoff.seamlessportals.extras.FloatContainer;
+import com.nikrasoff.seamlessportals.extras.IPortalWorldLoader;
 import com.nikrasoff.seamlessportals.extras.IPortalableEntity;
 import com.nikrasoff.seamlessportals.models.PortalModel;
-import finalforeach.cosmicreach.GameSingletons;
-import finalforeach.cosmicreach.TickRunner;
+import finalforeach.cosmicreach.ClientWorldLoader;
 import finalforeach.cosmicreach.WorldLoader;
-import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.InGame;
-import finalforeach.cosmicreach.io.CRBSerialized;
 import finalforeach.cosmicreach.io.CosmicReachBinaryDeserializer;
 import finalforeach.cosmicreach.rendering.MeshData;
 import finalforeach.cosmicreach.rendering.RenderOrder;
-import finalforeach.cosmicreach.rendering.SharedQuadIndexData;
 import finalforeach.cosmicreach.rendering.meshes.GameMesh;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
-import finalforeach.cosmicreach.rendering.shaders.GameShader;
-import finalforeach.cosmicreach.settings.GraphicsSettings;
 import finalforeach.cosmicreach.blocks.BlockPosition;
-import finalforeach.cosmicreach.world.Sky;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.savelib.crbin.CRBSerialized;
+import finalforeach.cosmicreach.world.EntityChunk;
+import finalforeach.cosmicreach.world.EntityRegion;
+import finalforeach.cosmicreach.world.World;
 import finalforeach.cosmicreach.world.Zone;
 import finalforeach.cosmicreach.worldgen.ChunkColumn;
 
@@ -51,28 +42,25 @@ public class Portal extends Entity {
     @CRBSerialized
     public Vector3 upVector = new Vector3(0, 1,0 );
 
-    public boolean isDestroyAnimationPlaying = false;
-
     @CRBSerialized
     public String zoneID;
 
     public static Portal readPortal(CosmicReachBinaryDeserializer deserializer){
+        // It took so much time to make this work...
         Portal portal = new Portal();
         if (deserializer != null) {
             portal.read(deserializer);
+            SeamlessPortals.portalManager.addPortal(portal);
+//            System.out.println(portal.linkedPortalID);
+//            SeamlessPortals.portalManager.printExistingIDs();
             Portal lPortal = SeamlessPortals.portalManager.getPortal(portal.linkedPortalID);
             if (lPortal != null){
                 portal.linkPortal(lPortal);
                 lPortal.linkPortal(portal);
             }
             else {
-                ChunkColumn cc = WorldLoader.INSTANCE.getChunkColumn(InGame.world.getZone(portal.zoneID), (int) portal.linkedPortalChunkCoords.x, (int) portal.linkedPortalChunkCoords.y, (int) portal.linkedPortalChunkCoords.z, false);
-                if (cc != null){
-                    cc.readyToUnload = true;
-                }
-                else {
-                    return null;
-                }
+                Vector3 chunkCoords = portal.linkedPortalChunkCoords;
+                EntityRegion.readChunkColumn(InGame.world.getZone(portal.zoneID), (int) chunkCoords.x, (int) chunkCoords.z, Math.floorDiv((int) chunkCoords.x, 16), Math.floorDiv((int) chunkCoords.y, 16), Math.floorDiv((int) chunkCoords.z, 16));
             }
         }
         return portal;

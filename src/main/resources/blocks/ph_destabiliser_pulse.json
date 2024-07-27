@@ -1,0 +1,10 @@
+{
+    "stringId": "seamlessportals:ph_destabiliser_pulse",
+    "blockStates":
+    {
+        "default": {
+            "modelName": "model_destabiliser_pulse",
+            "catalogHidden": true
+        }
+    }
+}

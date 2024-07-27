@@ -1,0 +1,28 @@
+{
+    "parent": "directional_cube",
+
+    "textures":
+    {
+        "front":
+        {
+            "fileName": "portal_generator_front_on.png"
+        },
+        "back":
+        {
+            "fileName": "portal_generator_back_on.png"
+        },
+        "side":
+        {
+            "fileName": "portal_generator_side_on.png"
+        },
+        "front_vertical":
+        {
+            "fileName": "portal_gen_front_vertical_on.png"
+        },
+        "back_vertical":
+        {
+            "fileName": "portal_gen_back_vertical_on.png"
+        }
+    }
+    
+}

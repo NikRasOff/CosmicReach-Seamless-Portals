@@ -1,0 +1,12 @@
+{
+    "parent": "cube",
+
+    "textures":
+    {
+        "all":
+        {
+            "fileName": "portal_destabiliser_on.png"
+        }
+    }
+    
+}

@@ -52,4 +52,11 @@ public class PortalManager {
         zone1.allEntities.add(portal1);
         zone2.allEntities.add(portal2);
     }
+
+    public void printExistingIDs(){
+        System.out.println("Existing IDs: ");
+        for (int i : this.createdPortals.keySet()){
+            System.out.println(i);
+        }
+    }
 }

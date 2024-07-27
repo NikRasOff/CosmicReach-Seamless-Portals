@@ -59,7 +59,10 @@ public class PortalModel implements IEntityModel, Disposable {
     public PortalModel(){
         this.portalCamera = new PerspectiveCamera(GraphicsSettings.fieldOfView.getValue(), (float)Gdx.graphics.getWidth(), (float)Gdx.graphics.getHeight());
         SPAnimationSequence startingAnimationSequence = new SPAnimationSequence(false);
-        startingAnimationSequence.add(new SetValueAnimation<>(this.colorOverlay, new Color(0, 0, 1, 1)));
+        startingAnimationSequence.add(new DoThingAnimation<>(() -> {
+            colorOverlay.set(Color.BLUE);
+            animModelScale.set(0);
+        }));
         startingAnimationSequence.add(new FloatAnimation(0, 1, 0.5F, this.animModelScale));
         startingAnimationSequence.add(new ColorAnimation(new Color(0, 0, 1, 1), new Color(0, 0, 1,0), 0.5F, this.colorOverlay));
         this.allAnimations.put("start", startingAnimationSequence);
@@ -68,7 +71,7 @@ public class PortalModel implements IEntityModel, Disposable {
         endingAnimationSequence.add(new ColorAnimation(new Color(1, 0, 0, 0), new Color(1, 0, 0, 1), 0.25F, this.colorOverlay));
         this.allAnimations.put("end", endingAnimationSequence);
         SPAnimationSequence idleAnimSeq = new SPAnimationSequence(true);
-        idleAnimSeq.add(new SetValueAnimation<>(this.colorOverlay, Color.CLEAR));
+        idleAnimSeq.add(new DoThingAnimation<>(() -> colorOverlay.set(Color.CLEAR)));
         this.allAnimations.put("idle", idleAnimSeq);
     }
 
@@ -307,7 +310,6 @@ public class PortalModel implements IEntityModel, Disposable {
     }
 
     public boolean isAnimationOver(){
-        System.out.println(currentAnimation.isFinished());
         return currentAnimation.isFinished();
     }
 }

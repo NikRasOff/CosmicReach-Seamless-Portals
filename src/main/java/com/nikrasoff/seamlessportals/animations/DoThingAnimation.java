@@ -1,20 +1,17 @@
 package com.nikrasoff.seamlessportals.animations;
 
-public class SetValueAnimation<T> implements ISPAnimation{
-    private T changedValue;
-    private T newValue;
+public class DoThingAnimation<T> implements ISPAnimation{
+    private Runnable thingToDo;
     private boolean isFinished = false;
     private float extraTime = 0;
 
-    public SetValueAnimation(T changedValue, T newValue){
-        this.changedValue = changedValue;
-        this.newValue = newValue;
+    public DoThingAnimation(Runnable thingToDo){
+        this.thingToDo = thingToDo;
     }
 
     @Override
     public void update(float deltaTime) {
-        changedValue = newValue;
-        extraTime = deltaTime;
+        thingToDo.run();
         isFinished = true;
     }
 

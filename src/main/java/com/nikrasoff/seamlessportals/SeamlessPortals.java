@@ -36,7 +36,7 @@ public class SeamlessPortals implements ModInitializer {
         }
 
         EntityCreator.registerEntityCreator("seamlessportals:entity_portal", Portal::readPortal);
-        ItemRenderer.registerItemModelCreator(HandheldPortalGen.class, (handheldPortalGen) -> new EntityItemModel("handheld_portal_gen.json", "handheld_portal_gen.animation.json",
+        ItemRenderer.registerItemModelCreator(HandheldPortalGen.class, (handheldPortalGen) -> new EntityItemModel("handheld_portal_gen.json", "handheld_portal_gen.anim.json",
                 "animation.handheld_portal_generator.idle", "handheld_portal_gen.png"));
 
         Item.registerItem(new HandheldPortalGen());

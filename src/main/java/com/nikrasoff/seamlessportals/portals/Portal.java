@@ -216,8 +216,8 @@ public class Portal extends Entity {
 
     public Matrix4 getPortaledTransform(Matrix4 transform){
         Matrix4 newTransform = transform.cpy();
-        Matrix4 thisPort = this.modelMatrix;
-        Matrix4 linkedPort = this.linkedPortal.modelMatrix;
+        Matrix4 thisPort = this.getPortalMatrix();
+        Matrix4 linkedPort = this.linkedPortal.getPortalMatrix();
         thisPort.setTranslation(0, 0, 0);
         linkedPort.setTranslation(0, 0, 0);
         thisPort.inv();

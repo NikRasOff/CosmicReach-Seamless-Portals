@@ -29,7 +29,7 @@ public class EntityItemModel extends ItemModel {
 
     @Override
     public void render(Camera camera, Matrix4 modelMat) {
-        ((IModEntityModel) this.entityModel).renderNoAnim(dummyEntity, camera, new Matrix4());
+        ((IModEntityModel) this.entityModel).renderNoAnim(dummyEntity, camera, modelMat);
     }
 
     @Override

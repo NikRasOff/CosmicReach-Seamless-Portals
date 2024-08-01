@@ -1,5 +1,7 @@
 package com.nikrasoff.seamlessportals;
 
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.OrderedMap;
 import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
 import com.nikrasoff.seamlessportals.models.EntityItemModel;
 import com.nikrasoff.seamlessportals.portals.Portal;

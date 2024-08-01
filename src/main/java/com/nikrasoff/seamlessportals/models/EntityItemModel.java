@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.utils.Array;
 import com.nikrasoff.seamlessportals.extras.IModEntityModel;
+import com.nikrasoff.seamlessportals.mixin.EntityModelInstanceMixin;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.items.Item;
@@ -16,6 +17,7 @@ public class EntityItemModel extends ItemModel {
     public static Array<IModEntityModel> activeModels = new Array<>();
     public static Entity dummyEntity = new Entity("seamlessportals:dummy");
     public EntityModel entityModel;
+
     public EntityItemModel(String modelFileName, String animationSetName, String defaultAnimName, String textureName){
         this.entityModel = (EntityModel) EntityModel.load(dummyEntity, modelFileName, animationSetName, defaultAnimName, textureName);
         activeModels.add((IModEntityModel) this.entityModel);

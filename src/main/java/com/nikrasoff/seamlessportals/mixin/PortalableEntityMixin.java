@@ -1,5 +1,7 @@
 package com.nikrasoff.seamlessportals.mixin;
 
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -9,17 +11,16 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.nikrasoff.seamlessportals.extras.DirectionVector;
-import com.nikrasoff.seamlessportals.extras.IPortalIngame;
-import com.nikrasoff.seamlessportals.extras.IPortalableEntity;
-import com.nikrasoff.seamlessportals.extras.IPortalablePlayerController;
+import com.nikrasoff.seamlessportals.extras.*;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import finalforeach.cosmicreach.TickRunner;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.InGame;
+import finalforeach.cosmicreach.rendering.entities.IEntityModel;
 import finalforeach.cosmicreach.world.Chunk;
 import finalforeach.cosmicreach.world.Zone;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,7 +33,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Map;
 
 @Mixin(Entity.class)
-public abstract class PortalableEntityMixin implements IPortalableEntity {
+public abstract class PortalableEntityMixin implements IPortalableEntity, IModEntity {
     @Shadow public Vector3 position;
 
     @Shadow public Vector3 viewDirection;
@@ -41,6 +42,14 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
     @Shadow public Vector3 onceVelocity;
     @Shadow private Vector3 acceleration;
     @Shadow public BoundingBox localBoundingBox;
+    @Shadow public IEntityModel model;
+    @Shadow protected transient Vector3 lastRenderPosition;
+    @Shadow protected transient BoundingBox globalBoundingBox;
+    @Shadow private transient Color modelLightColor;
+    @Shadow protected transient int invulnerabiltyFrames;
+
+    @Shadow public abstract void setPosition(Vector3 position);
+
     @Unique
     private transient boolean justTeleported = false;
     @Unique
@@ -172,7 +181,8 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
         this.viewDirection = portal.getPortaledVector(this.viewDirection);
         this.velocity.sub(portal.velocity);
         this.velocity.sub(portal.onceVelocity);
-        this.position = portal.getPortaledPos(this.position);
+        this.setPosition(portal.getPortaledPos(this.position));
+//        this.position = portal.getPortaledPos(this.position);
         this.velocity = portal.getPortaledVector(this.velocity);
         this.onceVelocity = portal.getPortaledVector(this.onceVelocity);
         this.acceleration.set(portal.getPortaledVector(this.acceleration));
@@ -319,5 +329,56 @@ public abstract class PortalableEntityMixin implements IPortalableEntity {
     @Unique
     public Portal getTeleportingPortal(){
         return this.teleportPortal;
+    }
+
+    @Override
+    public void renderNoAnim(Camera renderCamera) {
+        if (this.model != null) {
+            Vector3 tmpPos = new Vector3();
+            tmpPos.set(this.lastRenderPosition);
+            TickRunner.INSTANCE.partTickLerp(tmpPos, this.position);
+            if (renderCamera.frustum.boundsInFrustum(this.globalBoundingBox)) {
+                Matrix4 tmpMatrix = new Matrix4();
+                tmpMatrix.idt();
+                tmpMatrix.translate(tmpPos);
+                float r = this.modelLightColor.r;
+                float g = this.modelLightColor.g;
+                float b = this.modelLightColor.b;
+                if (this.invulnerabiltyFrames > 0) {
+                    b = 0.0F;
+                    g = 0.0F;
+                }
+
+                this.model.setTint((Entity) (Object) this, r, g, b, 1.0F);
+                ((IModEntityModel) this.model).renderNoAnim((Entity)(Object) this, renderCamera, tmpMatrix);
+            }
+        }
+    }
+
+    @Override
+    public void renderAfterMatrixSetNoAnim(Camera renderCamera, Matrix4 customMatrix) {
+        float r = this.modelLightColor.r;
+        float g = this.modelLightColor.g;
+        float b = this.modelLightColor.b;
+        if (this.invulnerabiltyFrames > 0) {
+            b = 0.0F;
+            g = 0.0F;
+        }
+
+        this.model.setTint((Entity) (Object) this, r, g, b, 1.0F);
+        this.model.render((Entity) (Object) this, renderCamera, customMatrix);
+    }
+
+    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lcom/badlogic/gdx/math/Vector3;set(Lcom/badlogic/gdx/math/Vector3;)Lcom/badlogic/gdx/math/Vector3;", ordinal = 1))
+    public Vector3 nullifyAnimations(Vector3 instance, Vector3 vector, Operation<Vector3> original){
+        return null;
+    }
+
+    @Inject(method = "render", at = @At("RETURN"))
+    public void advanceAnimations(Camera worldCamera, CallbackInfo ci){
+        Vector3 tmpPos = new Vector3();
+        tmpPos.set(this.lastRenderPosition);
+        TickRunner.INSTANCE.partTickLerp(tmpPos, this.position);
+        this.lastRenderPosition.set(tmpPos);
     }
 }

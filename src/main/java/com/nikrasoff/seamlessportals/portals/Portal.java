@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
-import com.nikrasoff.seamlessportals.extras.IPortalableEntity;
+import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
 import com.nikrasoff.seamlessportals.models.PortalModel;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.io.CRBinDeserializer;
@@ -29,7 +29,7 @@ public class Portal extends Entity {
     @CRBSerialized
     private Vector3 linkedPortalChunkCoords = new Vector3();
     @CRBSerialized
-    private int linkedPortalID = 0;
+    private int linkedPortalID = -1;
     @CRBSerialized
     private int portalID = -1;
     @CRBSerialized

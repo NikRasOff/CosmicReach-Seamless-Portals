@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Array;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.nikrasoff.seamlessportals.extras.*;
+import com.nikrasoff.seamlessportals.extras.interfaces.*;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import finalforeach.cosmicreach.TickRunner;

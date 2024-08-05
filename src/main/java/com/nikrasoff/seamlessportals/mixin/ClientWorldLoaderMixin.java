@@ -3,7 +3,7 @@ package com.nikrasoff.seamlessportals.mixin;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
-import com.nikrasoff.seamlessportals.extras.IPortalWorldLoader;
+import com.nikrasoff.seamlessportals.extras.interfaces.IPortalWorldLoader;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.ClientWorldLoader;
 import finalforeach.cosmicreach.world.EntityChunk;
@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Mixin(ClientWorldLoader.class)

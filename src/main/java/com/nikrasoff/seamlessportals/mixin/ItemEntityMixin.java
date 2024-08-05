@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.nikrasoff.seamlessportals.extras.IModEntity;
+import com.nikrasoff.seamlessportals.extras.interfaces.IModEntity;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.TickRunner;
 import finalforeach.cosmicreach.entities.Entity;
@@ -20,11 +20,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemEntity.class)
 public abstract class ItemEntityMixin extends Entity implements IModEntity {
-    @Shadow private ItemStack itemStack;
+    @Shadow
+    ItemStack itemStack;
 
-    @Shadow private float renderSize;
+    @Shadow
+    float renderSize;
 
-    @Shadow private float randomHoverOffsetTime;
+    @Shadow
+    float randomHoverOffsetTime;
 
     public ItemEntityMixin(String entityTypeId) {
         super(entityTypeId);

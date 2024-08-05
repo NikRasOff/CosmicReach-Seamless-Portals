@@ -1,19 +1,14 @@
 package com.nikrasoff.seamlessportals.mixin;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Matrix4;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.nikrasoff.seamlessportals.extras.IModEntityModel;
+import com.nikrasoff.seamlessportals.extras.interfaces.IModEntityModel;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.rendering.entities.EntityModel;
 import finalforeach.cosmicreach.rendering.entities.EntityModelInstance;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.WeakHashMap;
 

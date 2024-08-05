@@ -17,7 +17,8 @@
     "ClientWorldLoaderMixin",
     "BlockStateGeneratorMixin",
     "ItemRendererMixin",
-    "ItemEntityMixin"
+    "ItemEntityMixin",
+    "BlockSelectionMixin"
   ],
   "injectors": {
     "defaultRequire": 1

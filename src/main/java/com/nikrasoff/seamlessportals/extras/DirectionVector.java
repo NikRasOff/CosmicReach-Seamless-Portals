@@ -39,6 +39,7 @@ public enum DirectionVector {
     }
 
     public static DirectionVector getClosestDirectionVector(Vector3 from, DirectionVector[] checkDirections){
+        from.nor();
         DirectionVector result = POS_Z;
         float biggestDot = -100;
         for (DirectionVector v : checkDirections){

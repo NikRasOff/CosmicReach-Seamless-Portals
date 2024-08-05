@@ -2,7 +2,7 @@ package com.nikrasoff.seamlessportals.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.nikrasoff.seamlessportals.extras.IPortalableEntity;
+import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.entities.Player;

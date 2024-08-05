@@ -1,6 +1,5 @@
-package com.nikrasoff.seamlessportals.extras;
+package com.nikrasoff.seamlessportals.extras.interfaces;
 
-import com.badlogic.gdx.utils.Array;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.blocks.BlockState;

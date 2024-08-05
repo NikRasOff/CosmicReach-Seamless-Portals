@@ -1,6 +1,5 @@
 package com.nikrasoff.seamlessportals.items;
 
-import com.nikrasoff.seamlessportals.extras.IModEntityModel;
 import com.nikrasoff.seamlessportals.mixin.EntityModelInstanceMixin;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.items.Item;
@@ -12,6 +11,12 @@ public class HandheldPortalGen implements Item {
             "animation.handheld_portal_generator.idle", "handheld_portal_gen.png");
 
     public static String currentAnimation = "none";
+
+    public static void setCurrentAnimation(String animName){
+        HandheldPortalGen.resetAnimationTimer();
+        hpgEntityModel.setCurrentAnimation(dummyEntity,"animation.handheld_portal_generator." + animName);
+        currentAnimation = animName;
+    }
 
     public static void resetAnimationTimer(){
         ((EntityModelInstanceMixin) hpgEntityModel.getModelInstance(dummyEntity)).setAnimTimer(0);

@@ -1,4 +1,4 @@
-package com.nikrasoff.seamlessportals.extras;
+package com.nikrasoff.seamlessportals.extras.interfaces;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Matrix4;

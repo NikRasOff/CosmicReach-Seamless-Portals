@@ -1,14 +1,10 @@
 package com.nikrasoff.seamlessportals.mixin;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.nikrasoff.seamlessportals.extras.IModEntityModel;
 import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
-import com.nikrasoff.seamlessportals.models.EntityItemModel;
 import finalforeach.cosmicreach.entities.Entity;
-import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.items.Item;
 import finalforeach.cosmicreach.items.ItemModel;
 import finalforeach.cosmicreach.rendering.entities.EntityModel;
@@ -23,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemRenderer.class)
-public abstract class ItemRendererMixin {
+public abstract class ItemRendererMixin{
     @Shadow
     public static <T extends Item> ItemModel getModel(T item, boolean createIfNull) {
         return null;
@@ -48,7 +44,6 @@ public abstract class ItemRendererMixin {
     @Inject(method = "renderHeldItem(Lfinalforeach/cosmicreach/items/Item;Lcom/badlogic/gdx/graphics/PerspectiveCamera;)V", at = @At("HEAD"), cancellable = true)
     static private void customHeldItemRender(Item heldItem, PerspectiveCamera worldCamera, CallbackInfo ci){
         if (UI.renderUI && heldItem != null && heldItem.getID().equals("seamlessportals:handheld_portal_generator")){
-            Entity playerEntity = InGame.getLocalPlayer().getEntity();
             Entity dummyEntity = HandheldPortalGen.dummyEntity;
             EntityModel model = HandheldPortalGen.hpgEntityModel;
             swingTimer = 0F;
@@ -57,13 +52,9 @@ public abstract class ItemRendererMixin {
                 if (!isHpgEquipped) {
                     lastHeldItemModel = null;
                     isHpgEquipped = true;
-                    HandheldPortalGen.resetAnimationTimer();
-                    model.setCurrentAnimation(dummyEntity, "animation.handheld_portal_generator.equip");
-                    HandheldPortalGen.currentAnimation = "equip";
-                } else if (HandheldPortalGen.isAnimOver("equip", 1.25F)) {
-                    HandheldPortalGen.resetAnimationTimer();
-                    model.setCurrentAnimation(dummyEntity, "animation.handheld_portal_generator.idle");
-                    HandheldPortalGen.currentAnimation = "idle";
+                    HandheldPortalGen.setCurrentAnimation("equip");
+                } else if (HandheldPortalGen.isAnimOver("equip", 1.25F) || HandheldPortalGen.isAnimOver("fire", 1F)) {
+                    HandheldPortalGen.setCurrentAnimation("idle");
                 }
 
                 heldItemCamera.fieldOfView = 50.0F;
@@ -90,6 +81,12 @@ public abstract class ItemRendererMixin {
         }
         else {
             isHpgEquipped = false;
+        }
+    }
+    @Inject(method = "swingHeldItem", at = @At("HEAD"))
+    static private void fireHpgAnim(CallbackInfo ci){
+        if (isHpgEquipped){
+            HandheldPortalGen.setCurrentAnimation("fire");
         }
     }
 }

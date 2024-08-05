@@ -7,14 +7,13 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.nikrasoff.seamlessportals.animations.*;
 import com.nikrasoff.seamlessportals.config.SeamlessPortalsConfig;
 import com.nikrasoff.seamlessportals.extras.FloatContainer;
-import com.nikrasoff.seamlessportals.extras.IModEntity;
-import com.nikrasoff.seamlessportals.extras.IPortalIngame;
+import com.nikrasoff.seamlessportals.extras.interfaces.IModEntity;
+import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blocks.BlockState;
@@ -30,7 +29,6 @@ import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.settings.GraphicsSettings;
 import finalforeach.cosmicreach.world.Sky;
-import finalforeach.cosmicreach.world.World;
 
 import java.util.HashMap;
 

@@ -8,6 +8,7 @@ import finalforeach.cosmicreach.WorldLoader;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.world.Chunk;
+import finalforeach.cosmicreach.world.EntityRegion;
 import finalforeach.cosmicreach.world.Zone;
 
 import java.util.HashMap;
@@ -18,6 +19,13 @@ public class PortalManager {
     public String prevPortalGenZone;
     public Vector3 prevPortalGenPos;
     public int maxPortalID = 0;
+
+    public Vector3 primaryPortalChunkPos = new Vector3();
+    public int primaryPortalId = -1;
+
+    public Vector3 secondaryPortalChunkPos = new Vector3();
+    public int secondaryPortalId = -1;
+
     public transient HashMap<Integer, Portal> createdPortals = new HashMap<>();
 
     public PortalManager(){}
@@ -40,6 +48,16 @@ public class PortalManager {
     public int getNextPortalID(){
         this.maxPortalID += 1;
         return this.maxPortalID - 1;
+    }
+
+    public Portal getPortalWithGen(int portalID, Vector3 chunkCoords, String zoneID){
+        Portal result = getPortal(portalID);
+        if (result != null){
+            return result;
+        }
+        EntityRegion.readChunkColumn(InGame.world.getZone(zoneID), (int) chunkCoords.x, (int) chunkCoords.z, Math.floorDiv((int) chunkCoords.x, 16), Math.floorDiv((int) chunkCoords.y, 16), Math.floorDiv((int) chunkCoords.z, 16));
+        result = getPortal(portalID);
+        return result;
     }
 
     public Portal getPortal(int portalID){

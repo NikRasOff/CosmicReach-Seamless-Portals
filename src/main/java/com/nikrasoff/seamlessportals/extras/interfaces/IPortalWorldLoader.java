@@ -1,4 +1,4 @@
-package com.nikrasoff.seamlessportals.extras;
+package com.nikrasoff.seamlessportals.extras.interfaces;
 
 import finalforeach.cosmicreach.worldgen.ChunkColumn;
 

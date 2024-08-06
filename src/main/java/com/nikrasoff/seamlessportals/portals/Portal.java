@@ -81,7 +81,7 @@ public class Portal extends Entity {
         this.localBoundingBox.min.set(-size.x/2, -size.y / 2, -1F);
         this.localBoundingBox.max.set(size.x/2, size.y / 2, 1F);
 
-        setPosition(portalPos.x + 0.5F, portalPos.y, portalPos.z + 0.5F);
+        setPosition(portalPos.x, portalPos.y, portalPos.z);
 
         this.viewDirection = viewDir;
         this.upVector = upDir;
@@ -173,7 +173,7 @@ public class Portal extends Entity {
             }
         }
 
-        return new Portal(size, dirString, new Vector3(blPos.getGlobalX(), blPos.getGlobalY(), blPos.getGlobalZ()), zone);
+        return new Portal(size, dirString, new Vector3(blPos.getGlobalX() + 0.5F, blPos.getGlobalY(), blPos.getGlobalZ() + 0.5F), zone);
     }
 
     private static GameMesh createModel(){

@@ -70,6 +70,12 @@ public class PortalManager {
 
     public void removePortal(Portal portal){
         this.createdPortals.remove(portal.getPortalID());
+        if (portal.getPortalID() == this.primaryPortalId){
+            this.primaryPortalId = -1;
+        }
+        if (portal.getPortalID() == this.secondaryPortalId){
+            this.secondaryPortalId = -1;
+        }
     }
 
     public void createPortalPair(BlockPosition portalPos1, BlockPosition portalPos2, Zone zone1, Zone zone2){

@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.config.SeamlessPortalsConfig;
+import com.nikrasoff.seamlessportals.effects.DestabiliserPulse;
 import com.nikrasoff.seamlessportals.extras.DirectionVector;
 import com.nikrasoff.seamlessportals.extras.ExtraPortalUtils;
 import com.nikrasoff.seamlessportals.extras.RaycastOutput;
@@ -27,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BlockSelection.class)
-public class BlockSelectionMixin {
+public abstract class BlockSelectionMixin {
     @Shadow public static boolean enabled;
 
     @Shadow public static ShapeRenderer shapeRenderer;
@@ -54,6 +55,7 @@ public class BlockSelectionMixin {
         }
     }
 
+    @Unique
     private Vector3 getUpVectorForPortals(DirectionVector dv, Camera cam){
         switch (dv.getName()){
             case "posY" -> {
@@ -75,6 +77,20 @@ public class BlockSelectionMixin {
         }
     }
 
+    @Unique
+    private Vector3 getPositionForPortals(Vector3 pos, DirectionVector normal){
+        switch (normal.getName()){
+            case "posY", "negY" -> {
+                return pos.cpy().add(normal.getVector().cpy().scl(0.05F));
+            }
+            default -> {
+                Vector3 newPos = pos.cpy().add(normal.getVector().cpy().scl(0.05F));
+                newPos.y = (float) Math.floor(newPos.y + 0.5);
+                return newPos;
+            }
+        }
+    }
+
     @Inject(method = "raycast", at = @At("HEAD"), cancellable = true)
     private void customRaycast(Zone zone, Camera worldCamera, CallbackInfo ci){
         if (InGame.getLocalPlayer() != null){
@@ -92,7 +108,7 @@ public class BlockSelectionMixin {
 
                         if (pm.primaryPortalId == -1){
                             Vector3 upDir = getUpVectorForPortals(result.hitNormal(), worldCamera);
-                            Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, result.hitPos(), zone);
+                            Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), zone);
                             pm.primaryPortalId = newPortal.getPortalID();
                             pm.primaryPortalChunkPos.x = Math.floorDiv((int) newPortal.position.x, 16);
                             pm.primaryPortalChunkPos.y = Math.floorDiv((int) newPortal.position.y, 16);
@@ -115,7 +131,7 @@ public class BlockSelectionMixin {
                                 System.out.println("Fuck");
                             }
                             else{
-                                prPortal.setPosition(result.hitPos().cpy().add(result.hitNormal().getVector().cpy().scl(0.05F)));
+                                prPortal.setPosition(getPositionForPortals(result.hitPos(), result.hitNormal()));
                                 prPortal.viewDirection = result.hitNormal().getVector().cpy().scl(-1);
                                 prPortal.upVector = getUpVectorForPortals(result.hitNormal(), worldCamera);
                             }
@@ -132,7 +148,7 @@ public class BlockSelectionMixin {
 
                         if (pm.secondaryPortalId == -1){
                             Vector3 upDir = getUpVectorForPortals(result.hitNormal(), worldCamera);
-                            Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector(), upDir, result.hitPos(), zone);
+                            Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector(), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), zone);
                             pm.secondaryPortalId = newPortal.getPortalID();
                             pm.secondaryPortalChunkPos.x = Math.floorDiv((int) newPortal.position.x, 16);
                             pm.secondaryPortalChunkPos.y = Math.floorDiv((int) newPortal.position.y, 16);
@@ -155,13 +171,16 @@ public class BlockSelectionMixin {
                                 System.out.println("Fuck");
                             }
                             else{
-                                secPortal.setPosition(result.hitPos().cpy().add(result.hitNormal().getVector().cpy().scl(0.05F)));
+                                secPortal.setPosition(getPositionForPortals(result.hitPos(), result.hitNormal()));
                                 secPortal.viewDirection = result.hitNormal().getVector();
                                 secPortal.upVector = getUpVectorForPortals(result.hitNormal(), worldCamera);
                             }
                         }
                     }
                     ItemRenderer.swingHeldItem();
+                }
+                if (Controls.pickBlockPressed()){
+                    new DestabiliserPulse(worldCamera.position.cpy(), 3, zone);
                 }
 
                 ci.cancel();

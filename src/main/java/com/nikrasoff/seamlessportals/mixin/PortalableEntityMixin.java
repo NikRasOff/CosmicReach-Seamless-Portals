@@ -158,6 +158,9 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
                     if (!portal.getMeshBoundingBox().intersects(this.tmpPortalCheckBlockBoundingBox)){
                         return null;
                     }
+                    else{
+                        System.out.println(this.tmpPortalCheckBlockBoundingBox + " and [" + portal.getMeshBoundingBox().getCorner000(new Vector3()) + "|" + portal.getMeshBoundingBox().getCorner111(new Vector3()) + "]");
+                    }
                 }
             }
 

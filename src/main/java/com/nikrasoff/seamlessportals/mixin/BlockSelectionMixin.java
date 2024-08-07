@@ -62,6 +62,8 @@ public abstract class BlockSelectionMixin {
                 Vector3 upDir = new Vector3(cam.direction);
                 upDir.y = 0;
                 upDir.nor();
+                DirectionVector closestVec = DirectionVector.getClosestHorizontalDirection(upDir);
+                if (closestVec.getVector().dot(upDir) > 0.96) return closestVec.getVector().cpy();
                 return upDir;
             }
             case "negY" -> {
@@ -69,6 +71,8 @@ public abstract class BlockSelectionMixin {
                 upDir.y = 0;
                 upDir.scl(-1);
                 upDir.nor();
+                DirectionVector closestVec = DirectionVector.getClosestHorizontalDirection(upDir);
+                if (closestVec.getVector().dot(upDir) > 0.96) return closestVec.getVector().cpy();
                 return upDir;
             }
             default -> {
@@ -81,7 +85,22 @@ public abstract class BlockSelectionMixin {
     private Vector3 getPositionForPortals(Vector3 pos, DirectionVector normal){
         switch (normal.getName()){
             case "posY", "negY" -> {
-                return pos.cpy().add(normal.getVector().cpy().scl(0.05F));
+                Vector3 newPos = pos.cpy().add(normal.getVector().cpy().scl(0.05F));
+                newPos.x = (float) (Math.round(newPos.x * 2) / 2.0);
+                newPos.z = (float) (Math.round(newPos.z * 2) / 2.0);
+                return newPos;
+            }
+            case "posX", "negX" -> {
+                Vector3 newPos = pos.cpy().add(normal.getVector().cpy().scl(0.05F));
+                newPos.y = (float) Math.round(newPos.y);
+                newPos.z = (float) (Math.round(newPos.z * 2) / 2.0);
+                return newPos;
+            }
+            case "posZ", "negZ" -> {
+                Vector3 newPos = pos.cpy().add(normal.getVector().cpy().scl(0.05F));
+                newPos.y = (float) Math.round(newPos.y);
+                newPos.x = (float) (Math.round(newPos.x * 2) / 2.0);
+                return newPos;
             }
             default -> {
                 Vector3 newPos = pos.cpy().add(normal.getVector().cpy().scl(0.05F));

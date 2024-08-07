@@ -200,12 +200,13 @@ public class Portal extends Entity {
     }
 
     public OrientedBoundingBox getMeshBoundingBox(){
-        OrientedBoundingBox globalBB = this.getGlobalBoundingBox();
-        globalBB.getBounds().min.z = 0;
-        globalBB.getBounds().max.z = 0;
-        globalBB.getBounds().update();
+        BoundingBox meshBB = new BoundingBox();
+        meshBB.set(this.localBoundingBox);
+        meshBB.min.z = -0.025F;
+        meshBB.max.z = 0.025F;
+        meshBB.update();
 
-        return globalBB;
+        return new OrientedBoundingBox(meshBB, this.getPortalMatrix().inv());
     }
 
     public Matrix4 getPortaledTransform(Matrix4 transform){

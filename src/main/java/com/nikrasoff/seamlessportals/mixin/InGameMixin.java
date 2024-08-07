@@ -32,7 +32,7 @@ public abstract class InGameMixin implements IPortalIngame {
         this.tempFovForPortals = ((PerspectiveCamera)getWorldCamera()).fieldOfView;
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/BlockSelection;render(Lcom/badlogic/gdx/graphics/Camera;)V"))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/ui/UI;render()V"))
     private void seamlessPortalsCustomRender(CallbackInfo ci){
         Camera renderFromCamera = getWorldCamera();
 

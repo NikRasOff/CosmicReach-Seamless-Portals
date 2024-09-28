@@ -1,10 +1,9 @@
 package com.nikrasoff.seamlessportals.mixin;
 
-import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
 import finalforeach.cosmicreach.items.Item;
 import finalforeach.cosmicreach.items.ItemCatalog;
 import finalforeach.cosmicreach.items.ItemStack;
-import finalforeach.cosmicreach.items.SlotContainer;
+import finalforeach.cosmicreach.items.containers.SlotContainer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

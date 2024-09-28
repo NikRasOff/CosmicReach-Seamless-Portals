@@ -8,13 +8,13 @@
     {
         "active=false":
         {
-            "modelName": "model_portal_destabiliser_off",
-            "blockEventsId": "block_events_portal_destabiliser_off",
+            "modelName": "seamlessportals:models/blocks/model_portal_destabiliser_off.json",
+            "blockEventsId": "seamlessportals:block_events_portal_destabiliser_off",
             "dropId": "seamlessportals:portal_destabiliser[active=false]"
         },
         "active=true": {
-            "modelName": "model_portal_destabiliser_on",
-            "blockEventsId": "block_events_portal_destabiliser_on",
+            "modelName": "seamlessportals:models/blocks/model_portal_destabiliser_on.json",
+            "blockEventsId": "seamlessportals:block_events_portal_destabiliser_on",
             "catalogHidden": true,
             "lightLevelRed": 8,
             "dropId": "seamlessportals:portal_destabiliser[active=false]"

@@ -1,6 +1,6 @@
 {
     "parent":"base:block_events_default",
-    "stringId": "seamlessportals:block_events_portal_generator_on",
+    "stringId": "seamlessportals:block_events_portal_generator_off",
     "triggers":
     {
         "onInteract":
@@ -14,18 +14,18 @@
                     "zOff": 0,
                     "params":
                     {
-                        "active":"false"
+                        "active":"true"
                     }
                 }
             },
             {
-                "actionId": "seamlessportals:deregister_portal_gen"
+                "actionId": "seamlessportals:register_portal_gen"
             },
             {
                 "actionId": "base:play_sound_2d",
                 "parameters":
                 {
-                    "sound": "block_switch.ogg",
+                    "sound": "seamlessportals:sounds/blocks/block_switch.ogg",
                     "volume": 1,
                     "pitch": 1,
                     "pan": 0
@@ -35,7 +35,23 @@
                 "actionId": "base:play_sound_2d",
                 "parameters":
                 {
-                    "sound": "portal_generator_power_down.ogg",
+                    "sound": "seamlessportals:sounds/blocks/portal_generator_power_up.ogg",
+                    "volume": 1,
+                    "pitch": 1,
+                    "pan": 0
+                }
+            }
+        ],
+        "onPlace":
+        [
+            {
+                "actionId": "seamlessportals:face_away_from_player"
+            },
+            {
+                "actionId": "base:play_sound_2d",
+                "parameters":
+                {
+                    "sound": "sounds/blocks/block-place.ogg",
                     "volume": 1,
                     "pitch": 1,
                     "pan": 0
@@ -43,9 +59,6 @@
             }
         ],
         "onBreak": [
-            {
-                "actionId": "seamlessportals:deregister_portal_gen"
-            },
             {
                 "actionId": "base:replace_block_state",
                 "parameters":
@@ -60,17 +73,7 @@
                 "actionId": "base:play_sound_2d",
                 "parameters":
                 {
-                    "sound": "portal_gen_break_on.ogg",
-                    "volume": 1,
-                    "pitch": 1,
-                    "pan": 0
-                }
-            },
-            {
-                "actionId": "base:play_sound_2d",
-                "parameters":
-                {
-                    "sound": "block-break.ogg",
+                    "sound": "sounds/blocks/block-break.ogg",
                     "volume": 1,
                     "pitch": 1,
                     "pan": 0

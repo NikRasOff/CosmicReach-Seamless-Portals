@@ -12,7 +12,6 @@
     "PortalableEntityMixin",
     "PlayerMixin",
     "ItemCatalogMixin",
-    "EntityModelMixin",
     "EntityModelInstanceMixin",
     "ClientWorldLoaderMixin",
     "BlockStateGeneratorMixin",

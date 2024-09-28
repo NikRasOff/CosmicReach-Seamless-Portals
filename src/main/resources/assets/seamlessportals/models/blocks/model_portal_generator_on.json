@@ -1,0 +1,28 @@
+{
+    "parent": "seamlessportals:models/blocks/directional_cube.json",
+
+    "textures":
+    {
+        "front":
+        {
+            "fileName": "seamlessportals:textures/blocks/portal_generator_front_on.png"
+        },
+        "back":
+        {
+            "fileName": "seamlessportals:textures/blocks/portal_generator_back_on.png"
+        },
+        "side":
+        {
+            "fileName": "seamlessportals:textures/blocks/portal_generator_side_on.png"
+        },
+        "front_vertical":
+        {
+            "fileName": "seamlessportals:textures/blocks/portal_gen_front_vertical_on.png"
+        },
+        "back_vertical":
+        {
+            "fileName": "seamlessportals:textures/blocks/portal_gen_back_vertical_on.png"
+        }
+    }
+    
+}

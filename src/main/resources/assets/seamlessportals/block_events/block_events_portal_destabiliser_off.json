@@ -28,7 +28,7 @@
                 "actionId": "base:play_sound_2d",
                 "parameters":
                 {
-                    "sound": "block_switch.ogg",
+                    "sound": "seamlessportals:sounds/blocks/block_switch.ogg",
                     "volume": 1,
                     "pitch": 1,
                     "pan": 0
@@ -38,7 +38,7 @@
                 "actionId": "base:play_sound_2d",
                 "parameters":
                 {
-                    "sound": "portal_destabiliser_pulse.ogg",
+                    "sound": "seamlessportals:sounds/blocks/portal_destabiliser_pulse.ogg",
                     "volume": 12,
                     "pitch": 1,
                     "pan": 0

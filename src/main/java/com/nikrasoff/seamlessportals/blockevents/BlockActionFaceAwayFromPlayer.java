@@ -41,7 +41,7 @@ public class BlockActionFaceAwayFromPlayer implements IBlockAction {
 
         String newSaveKey = getNewSaveKey(blockState, directionString);
         BlockState newBlockState = BlockState.getInstance(newSaveKey);
-        BlockSetter.replaceBlock(zone, newBlockState, targetBlockPosition, new Queue<>());
+        BlockSetter.get().replaceBlock(zone, newBlockState, targetBlockPosition);
     }
 
     @NotNull

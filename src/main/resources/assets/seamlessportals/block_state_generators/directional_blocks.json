@@ -19,7 +19,7 @@
         },
         {
             "stringId": "seamlessportals:dir_block_NegX",
-            "modelName": "directional_cube2",
+            "modelName": "seamlessportals:models/blocks/directional_cube2.json",
             "params":
             {
                 "facing":"negX"
@@ -31,7 +31,7 @@
         },
         {
             "stringId": "seamlessportals:dir_block_NegZ",
-            "modelName": "directional_cube3",
+            "modelName": "seamlessportals:models/blocks/directional_cube3.json",
             "params":
             {
                 "facing":"negZ"
@@ -43,7 +43,7 @@
         },
         {
             "stringId": "seamlessportals:dir_block_PosX",
-            "modelName": "directional_cube4",
+            "modelName": "seamlessportals:models/blocks/directional_cube4.json",
             "params":
             {
                 "facing":"posX"
@@ -55,7 +55,7 @@
         },
         {
             "stringId": "seamlessportals:dir_block_PosZ",
-            "modelName": "directional_cube",
+            "modelName": "seamlessportals:models/blocks/directional_cube.json",
             "params":
             {
                 "facing":"posZ"
@@ -83,7 +83,7 @@
         },
         {
             "stringId": "seamlessportals:dir_block_PosYNegX",
-            "modelName": "directional_cube_vertical2",
+            "modelName": "seamlessportals:models/blocks/directional_cube_vertical2.json",
             "params":
             {
                 "facing":"posYnegX"
@@ -95,7 +95,7 @@
         },
         {
             "stringId": "seamlessportals:dir_block_PosYNegZ",
-            "modelName": "directional_cube_vertical3",
+            "modelName": "seamlessportals:models/blocks/directional_cube_vertical3.json",
             "params":
             {
                 "facing":"posYnegZ"
@@ -107,7 +107,7 @@
         },
         {
             "stringId": "seamlessportals:dir_block_PosYPosX",
-            "modelName": "directional_cube_vertical4",
+            "modelName": "seamlessportals:models/blocks/directional_cube_vertical4.json",
             "params":
             {
                 "facing":"posYposX"
@@ -119,7 +119,7 @@
         },
         {
             "stringId": "seamlessportals:dir_block_PosYPosZ",
-            "modelName": "directional_cube_vertical",
+            "modelName": "seamlessportals:models/blocks/directional_cube_vertical.json",
             "params":
             {
                 "facing":"posYposZ"
@@ -139,7 +139,7 @@
         },
         {
             "stringId": "seamlessportals:dir_block_NegYNegX",
-            "modelName": "directional_cube_vertical_down2",
+            "modelName": "seamlessportals:models/blocks/directional_cube_vertical_down2.json",
             "params":
             {
                 "facing":"negYnegX"
@@ -151,7 +151,7 @@
         },
         {
             "stringId": "seamlessportals:dir_block_NegYNegZ",
-            "modelName": "directional_cube_vertical_down3",
+            "modelName": "seamlessportals:models/blocks/directional_cube_vertical_down3.json",
             "params":
             {
                 "facing":"negYnegZ"
@@ -163,7 +163,7 @@
         },
         {
             "stringId": "seamlessportals:dir_block_NegYPosX",
-            "modelName": "directional_cube_vertical_down4",
+            "modelName": "seamlessportals:models/blocks/directional_cube_vertical_down4.json",
             "params":
             {
                 "facing":"negYposX"
@@ -175,7 +175,7 @@
         },
         {
             "stringId": "seamlessportals:dir_block_NegYPosZ",
-            "modelName": "directional_cube_vertical_down",
+            "modelName": "seamlessportals:models/blocks/directional_cube_vertical_down.json",
             "params":
             {
                 "facing":"negYposZ"

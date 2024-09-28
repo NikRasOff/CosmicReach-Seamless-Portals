@@ -2,7 +2,7 @@
     "cuboids":
     [
         {
-            "localBounds": [8,8,8, -8,-8,-8],
+            "localBounds": [8,8,8, -8,-7.95,-8],
             "faces":
             {
                 "localNegX": {"uv": [ 0, 0, 16, 16 ], "texture": "all"},
@@ -35,7 +35,7 @@
     {
         "all":
         {
-            "uv": [0, 0]
+            "fileName": "seamlessportals:textures/blocks/portal_destabiliser_off.png"
         }
     }
 

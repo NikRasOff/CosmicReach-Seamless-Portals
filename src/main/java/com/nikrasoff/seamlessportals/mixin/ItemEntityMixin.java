@@ -36,11 +36,11 @@ public abstract class ItemEntityMixin extends Entity implements IModEntity {
     @Override
     public void renderNoAnim(Camera renderCamera){
         if (renderCamera.frustum.boundsInFrustum(this.globalBoundingBox)) {
-            if (this.model == null && this.itemStack != null) {
-                this.model = GameSingletons.itemEntityModelLoader.load(this.itemStack);
+            if (this.modelInstance == null && this.itemStack != null) {
+                this.modelInstance = GameSingletons.itemEntityModelLoader.load(this.itemStack);
             }
 
-            if (this.model != null) {
+            if (this.modelInstance != null) {
                 Matrix4 tmpMatrix = new Matrix4();
                 Vector3 tmpPos = new Vector3();
                 tmpMatrix.idt();

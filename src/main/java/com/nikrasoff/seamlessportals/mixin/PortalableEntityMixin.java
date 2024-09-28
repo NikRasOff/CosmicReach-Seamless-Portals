@@ -22,6 +22,7 @@ import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.entities.IEntityModel;
+import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
 import finalforeach.cosmicreach.world.Chunk;
 import finalforeach.cosmicreach.world.Zone;
 import org.spongepowered.asm.mixin.Mixin;
@@ -43,7 +44,6 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
     @Shadow public Vector3 onceVelocity;
     @Shadow private Vector3 acceleration;
     @Shadow public BoundingBox localBoundingBox;
-    @Shadow public IEntityModel model;
     @Shadow protected transient Vector3 lastRenderPosition;
     @Shadow protected transient BoundingBox globalBoundingBox;
     @Shadow private transient Color modelLightColor;
@@ -51,6 +51,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
 
     @Shadow public abstract void setPosition(Vector3 position);
 
+    @Shadow public IEntityModelInstance modelInstance;
     @Unique
     private transient boolean justTeleported = false;
     @Unique
@@ -337,7 +338,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
 
     @Override
     public void renderNoAnim(Camera renderCamera) {
-        if (this.model != null) {
+        if (this.modelInstance != null) {
             Vector3 tmpPos = new Vector3();
             tmpPos.set(this.lastRenderPosition);
             TickRunner.INSTANCE.partTickLerp(tmpPos, this.position);
@@ -353,8 +354,8 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
                     g = 0.0F;
                 }
 
-                this.model.setTint((Entity) (Object) this, r, g, b, 1.0F);
-                ((IModEntityModel) this.model).renderNoAnim((Entity)(Object) this, renderCamera, tmpMatrix);
+                this.modelInstance.setTint(r, g, b, 1.0F);
+                ((IModEntityModelInstance) this.modelInstance).renderNoAnim((Entity)(Object) this, renderCamera, tmpMatrix);
             }
         }
     }
@@ -369,8 +370,8 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
             g = 0.0F;
         }
 
-        this.model.setTint((Entity) (Object) this, r, g, b, 1.0F);
-        this.model.render((Entity) (Object) this, renderCamera, customMatrix);
+        this.modelInstance.setTint(r, g, b, 1.0F);
+        this.modelInstance.render((Entity) (Object) this, renderCamera, customMatrix);
     }
 
     @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lcom/badlogic/gdx/math/Vector3;set(Lcom/badlogic/gdx/math/Vector3;)Lcom/badlogic/gdx/math/Vector3;", ordinal = 1))

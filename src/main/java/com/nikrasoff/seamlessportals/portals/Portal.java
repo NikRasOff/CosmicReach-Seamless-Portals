@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
 import com.nikrasoff.seamlessportals.models.PortalModel;
+import com.nikrasoff.seamlessportals.models.PortalModelInstance;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.io.CRBinDeserializer;
 import finalforeach.cosmicreach.rendering.MeshData;
@@ -25,6 +26,8 @@ public class Portal extends Entity {
     public transient boolean isPortalDestroyed = false;
 
     public transient Portal linkedPortal;
+
+    static private final PortalModel portalModel = new PortalModel();
 
     @CRBSerialized
     private Vector3 linkedPortalChunkCoords = new Vector3();
@@ -70,7 +73,7 @@ public class Portal extends Entity {
         this.noClip = true;
         IPortalableEntity.setIgnorePortals((IPortalableEntity) this, true);
         this.zoneID = "base:moon";
-        this.model = new PortalModel();
+        this.modelInstance = portalModel.getNewModelInstance();
     }
 
     public Portal(Vector2 size, Vector3 viewDir, Vector3 upDir, Vector3 portalPos, Zone zone){
@@ -90,7 +93,7 @@ public class Portal extends Entity {
         this.zoneID = zone.zoneId;
         this.portalSize = new Vector3(size.x, size.y, 0);
         this.viewPositionOffset = new Vector3(0, 0, 0);
-        this.model.setCurrentAnimation(this, "start");
+        this.modelInstance.setCurrentAnimation("start");
     }
 
     public Portal(Vector2 size, String viewDir, Vector3 portalPos, Zone zone){
@@ -272,7 +275,7 @@ public class Portal extends Entity {
     public void update(Zone zone, double deltaTime) {
         super.update(zone, deltaTime);
         if (isEndAnimationPlaying){
-            PortalModel pm = (PortalModel) this.model;
+            PortalModelInstance pm = (PortalModelInstance) this.modelInstance;
             if (pm.isAnimationOver()){
                 this.isPortalDestroyed = true;
                 this.onDeath(zone);
@@ -281,7 +284,7 @@ public class Portal extends Entity {
     }
 
     public void render(Camera worldCamera) {
-        if (this.model != null) {
+        if (this.modelInstance != null) {
             tmpModelMatrix.setToLookAt(this.position, this.position.cpy().add(this.viewDirection), this.upVector);
             this.renderModelAfterMatrixSet(worldCamera);
         }
@@ -290,7 +293,7 @@ public class Portal extends Entity {
     public void startDestruction(){
         if (isEndAnimationPlaying) return;
         this.isEndAnimationPlaying = true;
-        this.model.setCurrentAnimation(this, "end");
+        this.modelInstance.setCurrentAnimation("end");
     }
 
     @Override

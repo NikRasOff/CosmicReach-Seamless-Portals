@@ -25,15 +25,15 @@ public abstract class ClientWorldLoaderMixin implements IPortalWorldLoader {
 
     @Shadow private Array<ChunkColumn> chunkColumnsToGenerate;
 
-    @Inject(method = "lambda$unloadFarAwayChunks$1", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/worldgen/ChunkColumn;getChunks(Lfinalforeach/cosmicreach/world/Zone;Lcom/badlogic/gdx/utils/Array;)Lcom/badlogic/gdx/utils/Array;"), cancellable = true)
+    @Inject(method = "lambda$unloadFarAwayChunks$2", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/worldgen/ChunkColumn;getChunks(Lfinalforeach/cosmicreach/world/Zone;Lcom/badlogic/gdx/utils/Array;)Lcom/badlogic/gdx/utils/Array;"), cancellable = true)
     void stopUnloadingChunksNearPortals(int playerChunkX, int playerChunkZ, int playerChunkY, int chunkRadius, Zone zone, Array tmpColChunks, ChunkColumn cc, CallbackInfo ci){
         if (!isChunkOutsidePortalRange(cc)){
             ci.cancel();
         }
     }
 
-    @Inject(method = "lambda$unloadFarAwayChunks$2", at = @At(value = "INVOKE", target = "Lcom/badlogic/gdx/utils/Array;contains(Ljava/lang/Object;Z)Z"), cancellable = true)
-    static private void stopUnloadingEntityChunksNearPortals(int playerChunkX, int playerChunkZ, int playerChunkY, int chunkRadius, Array entityRegionsToSave, Array entityChunksToRemove, EntityChunk ec, CallbackInfo ci){
+    @Inject(method = "lambda$unloadFarAwayChunks$1", at = @At(value = "INVOKE", target = "Lcom/badlogic/gdx/utils/Array;contains(Ljava/lang/Object;Z)Z"), cancellable = true)
+    private void stopUnloadingEntityChunksNearPortals(int playerChunkX, int playerChunkZ, int playerChunkY, int chunkRadius, EntityChunk ec, CallbackInfo ci){
         if (ec.hasEntities() && !isEntityChunkOutsidePortalRange(ec)){
             ci.cancel();
         }

@@ -3,7 +3,7 @@
     "blockStates":
     {
         "default": {
-            "modelName": "model_portal",
+            "modelName": "seamlessportals:models/blocks/model_portal.json",
             "catalogHidden": true
         }
     }

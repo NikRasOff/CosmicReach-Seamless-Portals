@@ -35,8 +35,8 @@ public class BlockActionRegisterPortalGen implements IBlockAction {
                 return;
             }
             SeamlessPortals.portalManager.createPortalPair(SeamlessPortals.portalManager.getPrevGenBlockPos(), blockPos, InGame.world.getZone(SeamlessPortals.portalManager.prevPortalGenZone), zone);
-            BlockSetter.replaceBlock(zone, BlockState.getInstance("base:air[default]"), SeamlessPortals.portalManager.getPrevGenBlockPos(), new Queue<>());
-            BlockSetter.replaceBlock(zone, BlockState.getInstance("base:air[default]"), blockPos, new Queue<>());
+            BlockSetter.get().replaceBlock(zone, BlockState.getInstance("base:air[default]"), SeamlessPortals.portalManager.getPrevGenBlockPos());
+            BlockSetter.get().replaceBlock(zone, BlockState.getInstance("base:air[default]"), blockPos);
             SeamlessPortals.portalManager.prevPortalGenPos = null;
             SeamlessPortals.portalManager.prevPortalGenZone = null;
         }

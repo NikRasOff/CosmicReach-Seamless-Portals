@@ -15,8 +15,10 @@ import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.MeshData;
 import finalforeach.cosmicreach.rendering.RenderOrder;
 import finalforeach.cosmicreach.rendering.SharedQuadIndexData;
+import finalforeach.cosmicreach.rendering.blockmodels.BlockModelJson;
 import finalforeach.cosmicreach.rendering.meshes.GameMesh;
 import finalforeach.cosmicreach.rendering.meshes.IntIndexData;
+import finalforeach.cosmicreach.rendering.meshes.IntIndexedMesh;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.blocks.BlockState;
@@ -33,8 +35,8 @@ public class PulseEffect {
     public Vector3 modelScale = new Vector3();
     public Color modelColor = new Color();
 
-    static GameMesh mesh = createModel();
-    static GameShader shader;
+    public static GameMesh mesh;
+    public static GameShader shader;
 
     public PulseEffect(Vector3 pos, Zone zone, Vector3 startingModelScale, Vector3 finalModelScale, Color startingColor, Color finalColor, float changeTime, Vector3 fadeoutScale, Color fadeoutColor, float fadeoutTime){
         this.position = pos;
@@ -51,10 +53,10 @@ public class PulseEffect {
     }
 
     private static GameMesh createModel(){
-        MeshData meshData = new MeshData(ChunkShader.DEFAULT_BLOCK_SHADER, RenderOrder.DEFAULT);
+        MeshData meshData = new MeshData(shader, RenderOrder.DEFAULT);
 
         BlockState.getInstance("seamlessportals:ph_destabiliser_pulse[default]").addVertices(meshData, 0, 0, 0);
-        return meshData.toIntIndexedMesh(true);
+        return meshData.toSharedIndexMesh(true);
     }
 
     public static void renderPulseEffects(Camera playerCamera){
@@ -72,8 +74,9 @@ public class PulseEffect {
             allPulseEffects.removeValue(this, true);
             return;
         }
+        SharedQuadIndexData.bind();
+
         shader.bind(playerCamera);
-        System.out.println(shader.getUniformLocation("posOffset"));
         shader.bindOptionalMatrix4("u_projViewTrans", playerCamera.combined);
         shader.bindOptionalUniform3f("posOffset", this.position);
         shader.bindOptionalUniform3f("modelScale", this.modelScale);
@@ -82,10 +85,13 @@ public class PulseEffect {
         mesh.bind(shader.shader);
         mesh.render(shader.shader, 4);
         mesh.unbind(shader.shader);
+        shader.unbind();
+        SharedQuadIndexData.unbind();
     }
 
     static {
         shader = new GameShader(Identifier.of("seamlessportals", "shaders/effect_pulse.vert.glsl"), Identifier.of("seamlessportals", "shaders/effect_pulse.frag.glsl"));
         shader.allVertexAttributesObj = new VertexAttributes(VertexAttribute.Position());
+        mesh = createModel();
     }
 }

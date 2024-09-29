@@ -1,7 +1,6 @@
 package com.nikrasoff.seamlessportals;
 
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.OrderedMap;
 import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
 import com.nikrasoff.seamlessportals.models.EntityItemModel;
 import com.nikrasoff.seamlessportals.portals.Portal;
@@ -10,7 +9,6 @@ import dev.crmodders.cosmicquilt.api.entrypoint.ModInitializer;
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.blockevents.BlockEvents;
 import finalforeach.cosmicreach.blocks.Block;
-import finalforeach.cosmicreach.blocks.BlockStateGenerator;
 import finalforeach.cosmicreach.entities.EntityCreator;
 import finalforeach.cosmicreach.items.Item;
 import finalforeach.cosmicreach.rendering.items.ItemRenderer;

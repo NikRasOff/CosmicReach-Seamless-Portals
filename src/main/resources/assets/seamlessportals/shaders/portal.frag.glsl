@@ -1,10 +1,10 @@
-#version 150
+#ifdef GL_ES
+precision mediump float;
+#endif
 
 uniform vec2 screenSize;
 uniform sampler2D screenTex;
 uniform vec4 overlayColor;
-
-out vec4 outColor;
 
 void main() {
     vec4 resultingColor = texture(screenTex, gl_FragCoord.xy / screenSize);
@@ -12,5 +12,5 @@ void main() {
     resultingColor.g = resultingColor.g * (1 - overlayColor.a) + overlayColor.g * overlayColor.a;
     resultingColor.b = resultingColor.b * (1 - overlayColor.a) + overlayColor.b * overlayColor.a;
 
-    outColor = resultingColor;
+    gl_FragColor = resultingColor;
 }

@@ -1,50 +1,39 @@
-package com.nikrasoff.seamlessportals.models;
+package com.nikrasoff.seamlessportals.rendering.models;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g3d.Renderable;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.ScreenUtils;
-import com.nikrasoff.seamlessportals.animations.*;
+import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.config.SeamlessPortalsConfig;
-import com.nikrasoff.seamlessportals.extras.FloatContainer;
-import com.nikrasoff.seamlessportals.extras.interfaces.IModEntity;
-import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
 import com.nikrasoff.seamlessportals.portals.Portal;
-import finalforeach.cosmicreach.GameSingletons;
+import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
+import com.nikrasoff.seamlessportals.rendering.shaders.TwoSidedShader;
 import finalforeach.cosmicreach.blocks.BlockState;
-import finalforeach.cosmicreach.entities.Entity;
-import finalforeach.cosmicreach.gamestates.GameState;
-import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.MeshData;
 import finalforeach.cosmicreach.rendering.RenderOrder;
-import finalforeach.cosmicreach.rendering.SharedQuadIndexData;
 import finalforeach.cosmicreach.rendering.entities.IEntityModel;
 import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
 import finalforeach.cosmicreach.rendering.meshes.GameMesh;
 import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
-import finalforeach.cosmicreach.settings.GraphicsSettings;
-import finalforeach.cosmicreach.world.Sky;
-
-import java.util.HashMap;
+import finalforeach.cosmicreach.util.Identifier;
 
 public class PortalModel implements IEntityModel, Disposable {
     public static boolean debugReady = false;
     private static ShapeRenderer shapeRenderer;
     FrameBuffer portalFrameBuffer;
-    GameMesh mesh;
-    GameShader shader;
+    public static Renderable renderable;
+    public static TwoSidedShader shader;
 
-    GameMesh createModel(){
-        MeshData meshData = new MeshData(ChunkShader.DEFAULT_BLOCK_SHADER, RenderOrder.DEFAULT);
-
-        BlockState.getInstance("seamlessportals:ph_portal[default]").addVertices(meshData, 0, 0, 0);
-        return meshData.toSharedIndexMesh(true);
+    public static void create(){
+        renderable = new Renderable();
+        SeamlessPortalsRenderUtil.CUBE_MODEL_INSTANCE.getRenderable(renderable);
+        shader = new TwoSidedShader(Identifier.of(SeamlessPortals.MOD_ID, "shaders/default.vert.glsl"), Identifier.of(SeamlessPortals.MOD_ID, "shaders/portal.frag.glsl"));
+        shader.init();
     }
 
     public PortalModel(){

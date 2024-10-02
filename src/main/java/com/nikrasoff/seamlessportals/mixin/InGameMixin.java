@@ -1,19 +1,15 @@
 package com.nikrasoff.seamlessportals.mixin;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.effects.PulseEffect;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalablePlayerController;
-import com.nikrasoff.seamlessportals.models.EntityItemModel;
+import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
+import com.nikrasoff.seamlessportals.rendering.models.EntityItemModel;
 import com.nikrasoff.seamlessportals.portals.PortalSaveSystem;
 import finalforeach.cosmicreach.entities.PlayerController;
 import finalforeach.cosmicreach.gamestates.InGame;
-import finalforeach.cosmicreach.rendering.SharedQuadIndexData;
-import finalforeach.cosmicreach.rendering.meshes.SharedIndexMesh;
 import finalforeach.cosmicreach.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -32,6 +28,11 @@ public abstract class InGameMixin implements IPortalIngame {
     @Unique
     private float tempFovForPortals = 0;
 
+    @Inject(method = "render", at = @At("HEAD"))
+    private void startRenderContext(CallbackInfo ci){
+        SeamlessPortalsRenderUtil.RENDER_CONTEXT.begin();
+    }
+
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/badlogic/gdx/utils/viewport/Viewport;apply()V"))
     private void storeTempFOV(CallbackInfo ci){
         this.tempFovForPortals = ((PerspectiveCamera)getWorldCamera()).fieldOfView;
@@ -47,6 +48,7 @@ public abstract class InGameMixin implements IPortalIngame {
 
     @Inject(method = "render", at = @At("RETURN"))
     private void resetPlayerCamera(CallbackInfo ci){
+        SeamlessPortalsRenderUtil.RENDER_CONTEXT.end();
         ((IPortalablePlayerController) playerController).resetPlayerCameraUp();
     }
 

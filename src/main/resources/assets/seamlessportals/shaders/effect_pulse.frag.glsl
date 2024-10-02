@@ -1,9 +1,9 @@
-#version 150
+#ifdef GL_ES
+precision mediump float;
+#endif
 
-uniform vec4 modelColor;
-
-out vec4 outColor;
+uniform vec4 u_modelColor;
 
 void main() {
-    outColor = modelColor;
+    gl_FragColor = u_modelColor;
 }

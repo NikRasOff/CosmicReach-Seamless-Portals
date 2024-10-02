@@ -1,4 +1,4 @@
-package com.nikrasoff.seamlessportals.models;
+package com.nikrasoff.seamlessportals.rendering.models;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -8,10 +8,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntityModelInstance;
-import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.items.Item;
-import finalforeach.cosmicreach.rendering.entities.EntityAnimationSet;
 import finalforeach.cosmicreach.rendering.entities.EntityModelInstance;
 import finalforeach.cosmicreach.rendering.items.ItemModel;
 import finalforeach.cosmicreach.rendering.entities.EntityModel;

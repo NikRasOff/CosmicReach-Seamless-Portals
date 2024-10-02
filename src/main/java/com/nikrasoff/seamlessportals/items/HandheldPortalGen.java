@@ -1,11 +1,6 @@
 package com.nikrasoff.seamlessportals.items;
 
-import com.nikrasoff.seamlessportals.mixin.EntityModelInstanceMixin;
-import com.nikrasoff.seamlessportals.models.EntityItemModel;
-import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.items.Item;
-import finalforeach.cosmicreach.rendering.entities.EntityModel;
-import finalforeach.cosmicreach.rendering.items.ItemRenderer;
 
 public class HandheldPortalGen implements Item {
     public static final String hpgID = "seamlessportals:handheld_portal_generator";

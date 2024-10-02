@@ -1,10 +1,13 @@
 package com.nikrasoff.seamlessportals;
 
 import com.badlogic.gdx.math.Vector3;
+import com.nikrasoff.seamlessportals.effects.PulseEffect;
 import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
-import com.nikrasoff.seamlessportals.models.EntityItemModel;
+import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
+import com.nikrasoff.seamlessportals.rendering.models.EntityItemModel;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.portals.PortalManager;
+import com.nikrasoff.seamlessportals.rendering.models.PortalModel;
 import dev.crmodders.cosmicquilt.api.entrypoint.ModInitializer;
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.blockevents.BlockEvents;
@@ -24,9 +27,7 @@ public class SeamlessPortals implements ModInitializer {
 
     static String[] blockIds = {
             "portal_generator",
-            "portal_destabiliser",
-            "ph_portal",
-            "ph_destabiliser_pulse"
+            "portal_destabiliser"
     };
 
     static String[] blockEventIds = {
@@ -38,6 +39,9 @@ public class SeamlessPortals implements ModInitializer {
     @Override
     public void onInitialize(ModContainer modContainer) {
         LOGGER.info("Initialising Seamless Portals!");
+        SeamlessPortalsRenderUtil.initialise();
+        PulseEffect.create();
+        PortalModel.create();
 
         SeamlessPortalsBlockEvents.registerSeamlessPortalsBlockEvents();
 

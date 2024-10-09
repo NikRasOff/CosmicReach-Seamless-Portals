@@ -3,11 +3,7 @@ package com.nikrasoff.seamlessportals.effects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.*;
-import com.badlogic.gdx.graphics.g3d.utils.DefaultTextureBinder;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -53,7 +49,7 @@ public class PulseEffect {
 
     public static void create(){
         renderable = new Renderable();
-        SeamlessPortalsRenderUtil.CUBE_MODEL_INSTANCE.getRenderable(renderable);
+        SeamlessPortalsRenderUtil.cubeModelInstance.getRenderable(renderable);
         shader = new TwoSidedShader(Identifier.of(SeamlessPortals.MOD_ID, "shaders/default.vert.glsl"), Identifier.of(SeamlessPortals.MOD_ID, "shaders/effect_pulse.frag.glsl"));
         shader.init();
     }
@@ -79,7 +75,7 @@ public class PulseEffect {
         tmpMat.scale(modelScale.x, modelScale.y, modelScale.z);
 
         renderable.worldTransform.set(tmpMat);
-        shader.begin(playerCamera, SeamlessPortalsRenderUtil.RENDER_CONTEXT);
+        shader.begin(playerCamera, SeamlessPortalsRenderUtil.renderContext);
 
         tmpVec4[0] = modelColor.r;
         tmpVec4[1] = modelColor.g;

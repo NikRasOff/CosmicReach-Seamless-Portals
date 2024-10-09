@@ -4,20 +4,20 @@
   "package": "com.nikrasoff.seamlessportals.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-  ],
-  "client": [
+    "LangMixin",
     "ChunkSaverMixin",
     "InGameMixin",
     "PlayerControllerMixin",
     "PortalableEntityMixin",
     "PlayerMixin",
-    "ItemCatalogMixin",
     "EntityModelInstanceMixin",
     "ClientWorldLoaderMixin",
-    "BlockStateGeneratorMixin",
     "ItemRendererMixin",
     "ItemEntityMixin",
-    "BlockSelectionMixin"
+    "BlockSelectionMixin",
+    "GameLoadMixin"
+  ],
+  "client": [
   ],
   "injectors": {
     "defaultRequire": 1

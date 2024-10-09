@@ -6,8 +6,8 @@ import com.nikrasoff.seamlessportals.effects.PulseEffect;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalablePlayerController;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
-import com.nikrasoff.seamlessportals.rendering.models.EntityItemModel;
 import com.nikrasoff.seamlessportals.portals.PortalSaveSystem;
+import com.nikrasoff.seamlessportals.rendering.models.ObjItemModel;
 import finalforeach.cosmicreach.entities.PlayerController;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.world.World;
@@ -30,7 +30,8 @@ public abstract class InGameMixin implements IPortalIngame {
 
     @Inject(method = "render", at = @At("HEAD"))
     private void startRenderContext(CallbackInfo ci){
-        SeamlessPortalsRenderUtil.RENDER_CONTEXT.begin();
+        SeamlessPortalsRenderUtil.renderContext.begin();
+        ObjItemModel.updateAnimations();
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/badlogic/gdx/utils/viewport/Viewport;apply()V"))
@@ -43,12 +44,11 @@ public abstract class InGameMixin implements IPortalIngame {
         Camera renderFromCamera = getWorldCamera();
 
         PulseEffect.renderPulseEffects(renderFromCamera);
-        EntityItemModel.advanceAnimations();
     }
 
     @Inject(method = "render", at = @At("RETURN"))
     private void resetPlayerCamera(CallbackInfo ci){
-        SeamlessPortalsRenderUtil.RENDER_CONTEXT.end();
+        SeamlessPortalsRenderUtil.renderContext.end();
         ((IPortalablePlayerController) playerController).resetPlayerCameraUp();
     }
 

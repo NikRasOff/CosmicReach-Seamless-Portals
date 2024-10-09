@@ -20,12 +20,9 @@ import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.InGame;
-import finalforeach.cosmicreach.rendering.SharedQuadIndexData;
 import finalforeach.cosmicreach.rendering.entities.IEntityModel;
 import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
-import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.settings.GraphicsSettings;
-import finalforeach.cosmicreach.util.Identifier;
 import finalforeach.cosmicreach.world.Sky;
 
 import java.util.HashMap;
@@ -226,7 +223,7 @@ public class PortalModelInstance implements IEntityModelInstance {
         Texture portalTexture = this.createPortalTexture(camera, (Portal) entity);
         this.updatePortalMeshScale((PerspectiveCamera) camera, (Portal) entity);
 
-        PortalModel.shader.begin(camera, SeamlessPortalsRenderUtil.RENDER_CONTEXT);
+        PortalModel.shader.begin(camera, SeamlessPortalsRenderUtil.renderContext);
 
         Vector2 screenSize = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         tmpVec2[0] = screenSize.x;

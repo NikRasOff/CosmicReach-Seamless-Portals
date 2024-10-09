@@ -2,7 +2,7 @@
     "generators":
     [
         {
-            "stringId": "seamlessportals:directional_blocks_all",
+            "stringId": "seamlessportals:directional_blocks",
             "include":
             [
                 "seamlessportals:directional_blocks_vertical",

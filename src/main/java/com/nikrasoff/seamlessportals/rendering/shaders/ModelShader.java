@@ -10,23 +10,15 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.util.Identifier;
 
-public class TwoSidedShader implements Shader {
+public class ModelShader implements Shader {
     public ShaderProgram program;
     Camera camera;
     RenderContext context;
 
-    Identifier vertIdentifier;
-    Identifier fragIdentifier;
-
-    public TwoSidedShader(Identifier vert, Identifier frag){
-        this.vertIdentifier = vert;
-        this.fragIdentifier = frag;
-    }
-
     @Override
     public void init () {
-        String vert = GameAssetLoader.loadAsset(vertIdentifier).readString();
-        String frag = GameAssetLoader.loadAsset(fragIdentifier).readString();
+        String vert = GameAssetLoader.loadAsset(Identifier.of("seamlessportals", "shaders/model.vert.glsl")).readString();
+        String frag = GameAssetLoader.loadAsset(Identifier.of("seamlessportals", "shaders/model.frag.glsl")).readString();
         program = new ShaderProgram(vert, frag);
         if (!program.isCompiled()) throw new GdxRuntimeException(program.getLog());
     }
@@ -39,14 +31,12 @@ public class TwoSidedShader implements Shader {
         this.camera = camera;
         this.context = context;
         program.bind();
-        program.setUniformMatrix("u_projViewTrans", camera.combined);
+        program.setUniformMatrix("u_projTrans", camera.combined);
         context.setDepthTest(GL20.GL_LESS);
     }
     @Override
     public void render (Renderable renderable) {
         program.setUniformMatrix("u_worldTrans", renderable.worldTransform);
-        context.setCullFace(GL20.GL_FRONT);
-        renderable.meshPart.render(program);
         context.setCullFace(GL20.GL_BACK);
         renderable.meshPart.render(program);
     }

@@ -1,1 +1,17 @@
-rootProject.name = "CosmicReach-Seamless-Portals"
+buildscript {
+    repositories {
+        maven {
+            name "JitPack"
+            url "https://jitpack.io"
+        }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath "com.github.johnrengelman:shadow:8.1.1"
+        classpath "com.github.PuzzleLoader:CRPuzzleGradle:$puzzle_gradle_version"
+    }
+}
+
+rootProject.name = 'CosmicReach-Seamless-Portals'
+

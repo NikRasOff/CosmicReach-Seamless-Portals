@@ -8,18 +8,11 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.badlogic.gdx.utils.Disposable;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
-import com.nikrasoff.seamlessportals.config.SeamlessPortalsConfig;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import com.nikrasoff.seamlessportals.rendering.shaders.TwoSidedShader;
-import finalforeach.cosmicreach.blocks.BlockState;
-import finalforeach.cosmicreach.rendering.MeshData;
-import finalforeach.cosmicreach.rendering.RenderOrder;
 import finalforeach.cosmicreach.rendering.entities.IEntityModel;
 import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
-import finalforeach.cosmicreach.rendering.meshes.GameMesh;
-import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
-import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.util.Identifier;
 
 public class PortalModel implements IEntityModel, Disposable {
@@ -31,7 +24,7 @@ public class PortalModel implements IEntityModel, Disposable {
 
     public static void create(){
         renderable = new Renderable();
-        SeamlessPortalsRenderUtil.CUBE_MODEL_INSTANCE.getRenderable(renderable);
+        SeamlessPortalsRenderUtil.cubeModelInstance.getRenderable(renderable);
         shader = new TwoSidedShader(Identifier.of(SeamlessPortals.MOD_ID, "shaders/default.vert.glsl"), Identifier.of(SeamlessPortals.MOD_ID, "shaders/portal.frag.glsl"));
         shader.init();
     }
@@ -55,7 +48,7 @@ public class PortalModel implements IEntityModel, Disposable {
     }
 
     void renderDebug(Portal portal, Camera camera){
-        if (SeamlessPortalsConfig.INSTANCE.debugOutlines.value()){
+        if (SeamlessPortals.debugOutlines){
             if (!debugReady) initialiseDebug();
         }
         else if (debugReady){

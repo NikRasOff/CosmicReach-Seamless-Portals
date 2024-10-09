@@ -8,6 +8,7 @@ import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
 import com.nikrasoff.seamlessportals.rendering.models.PortalModel;
 import com.nikrasoff.seamlessportals.rendering.models.PortalModelInstance;
+import finalforeach.cosmicreach.Threads;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.io.CRBinDeserializer;
 import finalforeach.cosmicreach.rendering.MeshData;
@@ -44,6 +45,7 @@ public class Portal extends Entity {
     public String zoneID;
 
     private boolean isEndAnimationPlaying = false;
+    public static final Object lock = new Object();
 
     public static Portal readPortal(CRBinDeserializer deserializer){
         // It took so much time to make this work...
@@ -51,8 +53,6 @@ public class Portal extends Entity {
         if (deserializer != null) {
             portal.read(deserializer);
             SeamlessPortals.portalManager.addPortal(portal);
-//            System.out.println(portal.linkedPortalID);
-//            SeamlessPortals.portalManager.printExistingIDs();
             Portal lPortal = SeamlessPortals.portalManager.getPortal(portal.linkedPortalID);
             if (lPortal != null){
                 portal.linkPortal(lPortal);
@@ -179,13 +179,6 @@ public class Portal extends Entity {
         return new Portal(size, dirString, new Vector3(blPos.getGlobalX() + 0.5F, blPos.getGlobalY(), blPos.getGlobalZ() + 0.5F), zone);
     }
 
-    private static GameMesh createModel(){
-        MeshData meshData = new MeshData(ChunkShader.DEFAULT_BLOCK_SHADER, RenderOrder.DEFAULT);
-
-        BlockState.getInstance("seamlessportals:ph_portal[default]").addVertices(meshData, 0, 0, 0);
-        return meshData.toSharedIndexMesh(true);
-    }
-
     public void linkPortal(Portal to){
         linkedPortal = to;
         this.linkedPortalID = to.getPortalID();
@@ -239,16 +232,12 @@ public class Portal extends Entity {
     }
 
     public Matrix4 getPortalMatrix(){
-        /*
-         I have no damn clue as to why this is even needed
-         I tried using just modelMatrix instead - doesn't work
-         when teleporting the player, and ONLY when teleporting the player.
-         In any other circumstance it works flawlessly, but not in that one case
-         WHY? WHY is it that way?
-        */
-        Matrix4 result = new Matrix4();
-        result.setToLookAt(this.position, this.position.cpy().add(this.viewDirection), this.upVector);
-        return result;
+        // Synchronized to get rid of weird flickering when teleporting
+        Matrix4 m = new Matrix4();
+        synchronized (lock){
+            m.setToLookAt(this.position, this.position.cpy().add(this.viewDirection), this.upVector);
+        }
+        return m;
     }
 
     public Vector3 getPortaledVector(Vector3 vector3){

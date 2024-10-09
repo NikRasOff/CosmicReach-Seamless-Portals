@@ -88,7 +88,7 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
         Ray ray = new Ray(checkEntityPos, checkCamPos.cpy().sub(checkEntityPos));
         for (Map.Entry<Integer, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
             Portal portal = portalEntry.getValue();
-            if (!portal.isOnSameSideOfPortal(checkEntityPos, checkCamPos) && (Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3()))){
+            if (portal.linkedPortal != null && !portal.isOnSameSideOfPortal(checkEntityPos, checkCamPos) && (Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3()))){
                 playerCamera.position.set(portal.getPortaledPos(playerCamera.position));
                 playerCamera.direction.set(portal.getPortaledVector(playerCamera.direction));
                 playerCamera.up.set(portal.getPortaledVector(playerCamera.up));

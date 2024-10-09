@@ -38,7 +38,7 @@ public class PortalManager {
             WorldLoader.INSTANCE.getChunkColumn(cur_zone, Math.floorDiv((int) this.prevPortalGenPos.x, 16), Math.floorDiv((int) this.prevPortalGenPos.y, 256) * 16, Math.floorDiv((int) this.prevPortalGenPos.z, 16), true);
             c = cur_zone.getChunkAtBlock((int) this.prevPortalGenPos.x, (int) this.prevPortalGenPos.y, (int) this.prevPortalGenPos.z);
             if (c == null){
-                SeamlessPortals.LOGGER.warning("Couldn't gen previous portal generator location");
+                SeamlessPortals.LOGGER.warn("Couldn't gen previous portal generator location");
                 return null;
             }
         }

@@ -116,7 +116,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
 
         for (Map.Entry<Integer, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
             Portal portal = portalEntry.getValue();
-            if (portal.isPortalDestroyed) {
+            if (portal.isPortalDestroyed || portal.linkedPortal == null) {
                 continue;
             }
             if (portal.zoneID.equals(InGame.getLocalPlayer().zoneId) && !portal.isOnSameSideOfPortal(prevPos, targetPosition) && Intersector.intersectRayOrientedBounds(posChange, portal.getMeshBoundingBox(), new Vector3())){
@@ -139,6 +139,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
         }
 
         Chunk c = instance.getChunkAtBlock(x, y, z);
+        if (c == null) return orBlockState;
         BlockPosition curBlockPos = new BlockPosition(c, x - c.blockX, y - c.blockY, z - c.blockZ);
         if (this.tmpNonCollideBlocks.contains(curBlockPos, false)){
             if (!this.tmpCollidedBlocks.contains(curBlockPos, false)){
@@ -155,7 +156,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
             Ray ray = new Ray(portalCollisionCheckPos, checkCenter.cpy().sub(portalCollisionCheckPos));
             for (Map.Entry<Integer, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
                 Portal portal = portalEntry.getValue();
-                if (portal.zoneID.equals(InGame.getLocalPlayer().zoneId) && !portal.isOnSameSideOfPortal(portalCollisionCheckPos, checkCenter) && Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3())){
+                if (portal.linkedPortal != null && portal.zoneID.equals(InGame.getLocalPlayer().zoneId) && !portal.isOnSameSideOfPortal(portalCollisionCheckPos, checkCenter) && Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3())){
                     if (!portal.getMeshBoundingBox().intersects(this.tmpPortalCheckBlockBoundingBox)){
                         return null;
                     }

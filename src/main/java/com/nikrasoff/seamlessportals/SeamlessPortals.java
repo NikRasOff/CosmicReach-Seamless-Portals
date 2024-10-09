@@ -1,29 +1,35 @@
 package com.nikrasoff.seamlessportals;
 
 import com.badlogic.gdx.math.Vector3;
+import com.github.puzzle.core.PuzzleRegistries;
+import com.github.puzzle.game.block.DataModBlock;
+import com.github.puzzle.game.events.OnLoadAssetsEvent;
+import com.github.puzzle.game.events.OnLoadAssetsFinishedEvent;
+import com.github.puzzle.game.events.OnPreLoadAssetsEvent;
+import com.github.puzzle.game.events.OnRegisterBlockEvent;
+import com.github.puzzle.loader.entrypoint.interfaces.ModInitializer;
 import com.nikrasoff.seamlessportals.effects.PulseEffect;
 import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
-import com.nikrasoff.seamlessportals.rendering.models.EntityItemModel;
+import com.nikrasoff.seamlessportals.rendering.models.ObjItemModel;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.portals.PortalManager;
 import com.nikrasoff.seamlessportals.rendering.models.PortalModel;
-import dev.crmodders.cosmicquilt.api.entrypoint.ModInitializer;
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.blockevents.BlockEvents;
-import finalforeach.cosmicreach.blocks.Block;
 import finalforeach.cosmicreach.entities.EntityCreator;
 import finalforeach.cosmicreach.items.Item;
 import finalforeach.cosmicreach.rendering.items.ItemRenderer;
 import finalforeach.cosmicreach.util.Identifier;
-import org.quiltmc.loader.api.ModContainer;
-
-import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.greenrobot.eventbus.Subscribe;
 
 public class SeamlessPortals implements ModInitializer {
+    public static boolean debugOutlines = true;
     public static PortalManager portalManager = new PortalManager();
     public static final String MOD_ID = "seamlessportals";
-    public static final Logger LOGGER = Logger.getLogger(MOD_ID);
+    public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     static String[] blockIds = {
             "portal_generator",
@@ -36,30 +42,45 @@ public class SeamlessPortals implements ModInitializer {
             "block_events_portal_generator_off",
             "block_events_portal_generator_on"
     };
+
     @Override
-    public void onInitialize(ModContainer modContainer) {
+    public void onInit() {
+        PuzzleRegistries.EVENT_BUS.register(this);
         LOGGER.info("Initialising Seamless Portals!");
+
+        SeamlessPortalsBlockEvents.registerSeamlessPortalsBlockEvents();
+        EntityCreator.registerEntityCreator("seamlessportals:entity_portal", Portal::readPortal);
+    }
+
+    @Subscribe
+    public void onEvent(OnRegisterBlockEvent event){
+        for (String id: blockIds){
+            event.registerBlock(() -> new DataModBlock(Identifier.of(MOD_ID, id + ".json")));
+        }
+        for (String id: blockEventIds){
+            LOGGER.info("Loading block event file: " + id + ".json");
+            BlockEvents.loadBlockEventsFromAsset(GameAssetLoader.loadAsset(Identifier.of(MOD_ID, "block_events/" + id + ".json")));
+        }
+    }
+
+    public static void extraInit(){
+        // No idea why, but this doesn't work without me doing it like this
         SeamlessPortalsRenderUtil.initialise();
         PulseEffect.create();
         PortalModel.create();
 
-        SeamlessPortalsBlockEvents.registerSeamlessPortalsBlockEvents();
-
-        for (String id: blockIds){
-            Block.loadBlock(GameAssetLoader.loadAsset(Identifier.of(MOD_ID, "blocks/" + id + ".json")));
-        }
-        for (String id: blockEventIds){
-            BlockEvents.loadBlockEventsFromAsset(GameAssetLoader.loadAsset(Identifier.of(MOD_ID, "block_events/" + id + ".json")));
-        }
-
-        EntityCreator.registerEntityCreator("seamlessportals:entity_portal", Portal::readPortal);
+        SeamlessPortalsRenderUtil.loadModel(Identifier.of(MOD_ID, "models/view/hpg.g3db"));
         ItemRenderer.registerItemModelCreator(HandheldPortalGen.class, (handheldPortalGen) -> {
-            EntityItemModel newModel = new EntityItemModel("handheld_portal_gen.json", "handheld_portal_gen.anim.json",
-                "animation.handheld_portal_generator.idle", "handheld_portal_gen.png");
+            ObjItemModel newModel = new ObjItemModel(Identifier.of(MOD_ID, "models/view/hpg.g3db"));
+            newModel.setAnimation("armature|anim_idle", -1);
+            newModel.setViewAnimation("armature|anim_idle", -1);
             newModel.heldModelMatrix.scale(0.5F, 0.5F, 0.5F);
             newModel.heldModelMatrix.translate(0.4F, -0.55F, -1.75F);
             newModel.heldModelMatrix.rotate(Vector3.Y, 175F);
             newModel.heldModelMatrix.translate(-0.25F, -0.25F, -0.25F);
+
+            newModel.onGroundModelMatrix.scale(2, 2, 2);
+            newModel.onGroundModelMatrix.translate(0.25f, 0.1f, 0.25f);
             return newModel;
         });
 

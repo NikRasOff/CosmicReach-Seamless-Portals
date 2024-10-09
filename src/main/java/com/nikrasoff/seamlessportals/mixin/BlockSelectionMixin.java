@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
-import com.nikrasoff.seamlessportals.config.SeamlessPortalsConfig;
 import com.nikrasoff.seamlessportals.effects.DestabiliserPulse;
 import com.nikrasoff.seamlessportals.extras.DirectionVector;
 import com.nikrasoff.seamlessportals.extras.ExtraPortalUtils;
@@ -44,7 +43,7 @@ public abstract class BlockSelectionMixin {
 
     @Inject(method = "render", at = @At("HEAD"))
     private void debugPortalRender(Camera worldCamera, CallbackInfo ci){
-        if (SeamlessPortalsConfig.INSTANCE.debugOutlines.value()){
+        if (SeamlessPortals.debugOutlines){
             shapeRenderer.setProjectionMatrix(worldCamera.combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             shapeRenderer.setColor(Color.RED);
@@ -118,88 +117,90 @@ public abstract class BlockSelectionMixin {
                 enabled = false;
 
                 PortalManager pm = SeamlessPortals.portalManager;
-                if (Controls.attackBreakJustPressed()){
-                    RaycastOutput result = ExtraPortalUtils.raycast(zone, worldCamera.position, worldCamera.direction, 100F);
-                    if (result != null){
-                        portalRaycastOriginDebug.set(worldCamera.position);
-                        portalRaycastHitDebug.set(result.hitPos());
-                        portalRaycastNormalDebug.set(result.hitNormal().getVector());
+                if (!UI.isInventoryOpen()){
+                    if (Controls.attackBreakJustPressed()){
+                        RaycastOutput result = ExtraPortalUtils.raycast(zone, worldCamera.position, worldCamera.direction, 100F);
+                        if (result != null){
+                            portalRaycastOriginDebug.set(worldCamera.position);
+                            portalRaycastHitDebug.set(result.hitPos());
+                            portalRaycastNormalDebug.set(result.hitNormal().getVector());
 
-                        if (pm.primaryPortalId == -1){
-                            Vector3 upDir = getUpVectorForPortals(result.hitNormal(), worldCamera);
-                            Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), zone);
-                            pm.primaryPortalId = newPortal.getPortalID();
-                            pm.primaryPortalChunkPos.x = Math.floorDiv((int) newPortal.position.x, 16);
-                            pm.primaryPortalChunkPos.y = Math.floorDiv((int) newPortal.position.y, 16);
-                            pm.primaryPortalChunkPos.z = Math.floorDiv((int) newPortal.position.z, 16);
-                            if (SeamlessPortals.portalManager.secondaryPortalId != -1){
-                                Portal secPortal = pm.getPortalWithGen(pm.secondaryPortalId, pm.secondaryPortalChunkPos, zone.zoneId);
-                                if (secPortal == null){
-                                    System.out.println("Fuck");
+                            if (pm.primaryPortalId == -1){
+                                Vector3 upDir = getUpVectorForPortals(result.hitNormal(), worldCamera);
+                                Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), zone);
+                                pm.primaryPortalId = newPortal.getPortalID();
+                                pm.primaryPortalChunkPos.x = Math.floorDiv((int) newPortal.position.x, 16);
+                                pm.primaryPortalChunkPos.y = Math.floorDiv((int) newPortal.position.y, 16);
+                                pm.primaryPortalChunkPos.z = Math.floorDiv((int) newPortal.position.z, 16);
+                                if (SeamlessPortals.portalManager.secondaryPortalId != -1){
+                                    Portal secPortal = pm.getPortalWithGen(pm.secondaryPortalId, pm.secondaryPortalChunkPos, zone.zoneId);
+                                    if (secPortal == null){
+                                        System.out.println("Fuck");
+                                    }
+                                    else{
+                                        newPortal.linkPortal(secPortal);
+                                        secPortal.linkPortal(newPortal);
+                                    }
                                 }
-                                else{
-                                    newPortal.linkPortal(secPortal);
-                                    secPortal.linkPortal(newPortal);
-                                }
-                            }
-                            zone.allEntities.add(newPortal);
-                        }
-                        else{
-                            Portal prPortal = pm.getPortalWithGen(pm.primaryPortalId, pm.primaryPortalChunkPos, zone.zoneId);
-                            if (prPortal == null){
-                                System.out.println("Fuck");
+                                zone.allEntities.add(newPortal);
                             }
                             else{
-                                prPortal.setPosition(getPositionForPortals(result.hitPos(), result.hitNormal()));
-                                prPortal.viewDirection = result.hitNormal().getVector().cpy().scl(-1);
-                                prPortal.upVector = getUpVectorForPortals(result.hitNormal(), worldCamera);
-                            }
-                        }
-                    }
-                    ItemRenderer.swingHeldItem();
-                }
-                if (Controls.usePlaceJustPressed()){
-                    RaycastOutput result = ExtraPortalUtils.raycast(zone, worldCamera.position, worldCamera.direction, 100F);
-                    if (result != null){
-                        portalRaycastOriginDebug.set(worldCamera.position);
-                        portalRaycastHitDebug.set(result.hitPos());
-                        portalRaycastNormalDebug.set(result.hitNormal().getVector());
-
-                        if (pm.secondaryPortalId == -1){
-                            Vector3 upDir = getUpVectorForPortals(result.hitNormal(), worldCamera);
-                            Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector(), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), zone);
-                            pm.secondaryPortalId = newPortal.getPortalID();
-                            pm.secondaryPortalChunkPos.x = Math.floorDiv((int) newPortal.position.x, 16);
-                            pm.secondaryPortalChunkPos.y = Math.floorDiv((int) newPortal.position.y, 16);
-                            pm.secondaryPortalChunkPos.z = Math.floorDiv((int) newPortal.position.z, 16);
-                            if (SeamlessPortals.portalManager.primaryPortalId != -1){
                                 Portal prPortal = pm.getPortalWithGen(pm.primaryPortalId, pm.primaryPortalChunkPos, zone.zoneId);
                                 if (prPortal == null){
                                     System.out.println("Fuck");
                                 }
                                 else{
-                                    newPortal.linkPortal(prPortal);
-                                    prPortal.linkPortal(newPortal);
+                                    prPortal.setPosition(getPositionForPortals(result.hitPos(), result.hitNormal()));
+                                    prPortal.viewDirection = result.hitNormal().getVector().cpy().scl(-1);
+                                    prPortal.upVector = getUpVectorForPortals(result.hitNormal(), worldCamera);
                                 }
                             }
-                            zone.allEntities.add(newPortal);
                         }
-                        else{
-                            Portal secPortal = pm.getPortalWithGen(pm.secondaryPortalId, pm.secondaryPortalChunkPos, zone.zoneId);
-                            if (secPortal == null){
-                                System.out.println("Fuck");
+                        ItemRenderer.swingHeldItem();
+                    }
+                    if (Controls.usePlaceJustPressed()){
+                        RaycastOutput result = ExtraPortalUtils.raycast(zone, worldCamera.position, worldCamera.direction, 100F);
+                        if (result != null){
+                            portalRaycastOriginDebug.set(worldCamera.position);
+                            portalRaycastHitDebug.set(result.hitPos());
+                            portalRaycastNormalDebug.set(result.hitNormal().getVector());
+
+                            if (pm.secondaryPortalId == -1){
+                                Vector3 upDir = getUpVectorForPortals(result.hitNormal(), worldCamera);
+                                Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector(), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), zone);
+                                pm.secondaryPortalId = newPortal.getPortalID();
+                                pm.secondaryPortalChunkPos.x = Math.floorDiv((int) newPortal.position.x, 16);
+                                pm.secondaryPortalChunkPos.y = Math.floorDiv((int) newPortal.position.y, 16);
+                                pm.secondaryPortalChunkPos.z = Math.floorDiv((int) newPortal.position.z, 16);
+                                if (SeamlessPortals.portalManager.primaryPortalId != -1){
+                                    Portal prPortal = pm.getPortalWithGen(pm.primaryPortalId, pm.primaryPortalChunkPos, zone.zoneId);
+                                    if (prPortal == null){
+                                        System.out.println("Fuck");
+                                    }
+                                    else{
+                                        newPortal.linkPortal(prPortal);
+                                        prPortal.linkPortal(newPortal);
+                                    }
+                                }
+                                zone.allEntities.add(newPortal);
                             }
                             else{
-                                secPortal.setPosition(getPositionForPortals(result.hitPos(), result.hitNormal()));
-                                secPortal.viewDirection = result.hitNormal().getVector();
-                                secPortal.upVector = getUpVectorForPortals(result.hitNormal(), worldCamera);
+                                Portal secPortal = pm.getPortalWithGen(pm.secondaryPortalId, pm.secondaryPortalChunkPos, zone.zoneId);
+                                if (secPortal == null){
+                                    System.out.println("Fuck");
+                                }
+                                else{
+                                    secPortal.setPosition(getPositionForPortals(result.hitPos(), result.hitNormal()));
+                                    secPortal.viewDirection = result.hitNormal().getVector();
+                                    secPortal.upVector = getUpVectorForPortals(result.hitNormal(), worldCamera);
+                                }
                             }
                         }
+                        ItemRenderer.swingHeldItem();
                     }
-                    ItemRenderer.swingHeldItem();
-                }
-                if (Controls.pickBlockPressed()){
-                    new DestabiliserPulse(worldCamera.position.cpy(), 3, zone);
+                    if (Controls.pickBlockPressed()){
+                        new DestabiliserPulse(worldCamera.position.cpy(), 3, zone);
+                    }
                 }
 
                 ci.cancel();

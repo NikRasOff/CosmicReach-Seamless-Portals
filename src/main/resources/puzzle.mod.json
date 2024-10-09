@@ -1,0 +1,27 @@
+{
+  "id": "${mod_id}",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
+  "description": "${mod_desc}",
+  "authors": [
+    "NikRasOff"
+  ],
+  "meta": {
+    "icon": "seamlessportals:seamless_portals.png"
+  },
+  "entrypoints": {
+    "preInit": [
+    ],
+    "init": [
+      "com.nikrasoff.seamlessportals.SeamlessPortals"
+    ]
+  },
+  "mixins": [
+    "seamlessportals.mixins.json"
+  ],
+  "dependencies": {
+    "cosmic-reach": ">=0.3.1",
+    "puzzle-loader": ">=1.5.8"
+  },
+  "accessManipulator": "seamlessportals.manipulator"
+}

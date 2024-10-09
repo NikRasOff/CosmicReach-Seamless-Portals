@@ -1,6 +1,7 @@
 package com.nikrasoff.seamlessportals.items;
 
 import finalforeach.cosmicreach.items.Item;
+import finalforeach.cosmicreach.lang.Lang;
 
 public class HandheldPortalGen implements Item {
     public static final String hpgID = "seamlessportals:handheld_portal_generator";
@@ -44,6 +45,6 @@ public class HandheldPortalGen implements Item {
 
     @Override
     public String getName() {
-        return null;
+        return Lang.get(hpgID);
     }
 }

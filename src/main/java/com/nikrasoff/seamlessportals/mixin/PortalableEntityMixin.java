@@ -36,8 +36,9 @@ import java.util.Map;
 
 @Mixin(Entity.class)
 public abstract class PortalableEntityMixin implements IPortalableEntity, IModEntity {
-    @Shadow public Vector3 position;
+    private static Vector3 portalPosCheckEpsilon = new Vector3(0f, 0.05f, 0f);
 
+    @Shadow public Vector3 position;
     @Shadow public Vector3 viewDirection;
     @Shadow private transient BoundingBox tmpEntityBoundingBox;
     @Shadow public Vector3 velocity;
@@ -112,14 +113,14 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
         Vector3 targetPosition = (new Vector3(this.position)).add(posDiff);
         this.tmpPortalNextPosition.set(targetPosition);
 
-        Ray posChange = new Ray(prevPos.cpy().add(new Vector3(0, 0.05F, 0)), targetPosition.cpy().add(new Vector3(0, 0.05F, 0)).sub(prevPos));
+        Ray posChange = new Ray(prevPos.cpy().add(portalPosCheckEpsilon), targetPosition.cpy().add(portalPosCheckEpsilon).sub(prevPos));
 
         for (Map.Entry<Integer, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
             Portal portal = portalEntry.getValue();
             if (portal.isPortalDestroyed || portal.linkedPortal == null) {
                 continue;
             }
-            if (portal.zoneID.equals(InGame.getLocalPlayer().zoneId) && !portal.isOnSameSideOfPortal(prevPos, targetPosition) && Intersector.intersectRayOrientedBounds(posChange, portal.getMeshBoundingBox(), new Vector3())){
+            if (portal.zoneID.equals(InGame.getLocalPlayer().zoneId) && !portal.isOnSameSideOfPortal(prevPos.cpy().add(portalPosCheckEpsilon), targetPosition.cpy().add(portalPosCheckEpsilon)) && Intersector.intersectRayOrientedBounds(posChange, portal.getMeshBoundingBox(), new Vector3())){
                 this.teleportThroughPortal(portal);
                 break;
             }

@@ -84,7 +84,7 @@ public abstract class BlockSelectionMixin {
     private Vector3 getPositionForPortals(Vector3 pos, DirectionVector normal){
         switch (normal.getName()){
             case "posY", "negY" -> {
-                Vector3 newPos = pos.cpy().add(normal.getVector().cpy().scl(0.05F));
+                Vector3 newPos = pos.cpy().add(normal.getVector().cpy().scl(0.04F));
                 newPos.x = (float) (Math.round(newPos.x * 2) / 2.0);
                 newPos.z = (float) (Math.round(newPos.z * 2) / 2.0);
                 return newPos;

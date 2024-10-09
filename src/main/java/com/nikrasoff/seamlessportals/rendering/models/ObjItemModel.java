@@ -38,6 +38,7 @@ public class ObjItemModel extends ItemModel {
         animationController = new AnimationController(modelInstance);
         viewAnimController = new AnimationController(viewModelInstance);
         viewAnimController.allowSameAnimation = true;
+        animArray.add(viewAnimController);
         animArray.add(animationController);
     }
 
@@ -99,7 +100,6 @@ public class ObjItemModel extends ItemModel {
 //        identMat4.rotate(Vector3.Y, 175F);
 //        identMat4.translate(-0.25F, -0.25F, -0.25F);
         if (viewModelInstance != null){
-            viewAnimController.update(Gdx.graphics.getDeltaTime());
             tmpMat4.set(heldModelMatrix);
             viewModelInstance.transform.set(tmpMat4);
             SeamlessPortalsRenderUtil.renderModel(viewModelInstance, heldItemCamera, true, worldPosition);

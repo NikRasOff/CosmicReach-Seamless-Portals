@@ -82,7 +82,7 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
         Vector3 checkEntityPos = checkCamPos.cpy().sub(playerCameraOffset);
 
         if (portalableEntity.isJustTeleported()){
-            checkEntityPos = this.player.getEntity().position;
+            checkEntityPos = this.player.getEntity().position.cpy().add(0, 0.05f, 0);
         }
 
         Ray ray = new Ray(checkEntityPos, checkCamPos.cpy().sub(checkEntityPos));

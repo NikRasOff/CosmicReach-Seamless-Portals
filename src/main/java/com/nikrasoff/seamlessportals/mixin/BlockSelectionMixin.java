@@ -148,6 +148,7 @@ public abstract class BlockSelectionMixin {
                             portalRaycastNormalDebug.set(result.hitNormal().getVector());
 
                             Portal prPortal = pm.getPortalWithGen(primaryPortalId, primaryPortalChunkPos, zone.zoneId);
+                            Portal secPortal = pm.getPortalWithGen(secondaryPortalId, secondaryPortalChunkPos, zone.zoneId);
                             if (prPortal == null){
                                 Vector3 upDir = getUpVectorForPortals(result.hitNormal(), worldCamera);
                                 Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), zone);
@@ -157,12 +158,12 @@ public abstract class BlockSelectionMixin {
                                 primaryPortalChunkPos.y = Math.floorDiv((int) newPortal.position.y, 16);
                                 primaryPortalChunkPos.z = Math.floorDiv((int) newPortal.position.z, 16);
                                 if (secondaryPortalId != -1){
-                                    Portal secPortal = pm.getPortalWithGen(secondaryPortalId, secondaryPortalChunkPos, zone.zoneId);
                                     if (secPortal == null){
                                         hpgProperties.put("portal2Id", -1);
                                         secondaryPortalId = -1;
                                     }
                                     else{
+                                        secPortal.playAnimation("start");
                                         newPortal.linkPortal(secPortal);
                                         secPortal.linkPortal(newPortal);
                                     }
@@ -170,6 +171,10 @@ public abstract class BlockSelectionMixin {
                                 zone.allEntities.add(newPortal);
                             }
                             else{
+                                if (secPortal != null){
+                                    secPortal.playAnimation("start");
+                                }
+                                prPortal.playAnimation("start");
                                 prPortal.setPosition(getPositionForPortals(result.hitPos(), result.hitNormal()));
                                 prPortal.viewDirection = result.hitNormal().getVector().cpy().scl(-1);
                                 prPortal.upVector = getUpVectorForPortals(result.hitNormal(), worldCamera);
@@ -184,6 +189,7 @@ public abstract class BlockSelectionMixin {
                             portalRaycastHitDebug.set(result.hitPos());
                             portalRaycastNormalDebug.set(result.hitNormal().getVector());
                             Portal secPortal = pm.getPortalWithGen(secondaryPortalId, secondaryPortalChunkPos, zone.zoneId);
+                            Portal prPortal = pm.getPortalWithGen(primaryPortalId, primaryPortalChunkPos, zone.zoneId);
 
                             if (secPortal == null){
                                 Vector3 upDir = getUpVectorForPortals(result.hitNormal(), worldCamera);
@@ -194,12 +200,12 @@ public abstract class BlockSelectionMixin {
                                 secondaryPortalChunkPos.y = Math.floorDiv((int) newPortal.position.y, 16);
                                 secondaryPortalChunkPos.z = Math.floorDiv((int) newPortal.position.z, 16);
                                 if (primaryPortalId != -1){
-                                    Portal prPortal = pm.getPortalWithGen(primaryPortalId, primaryPortalChunkPos, zone.zoneId);
                                     if (prPortal == null){
                                         hpgProperties.put("portal1Id", -1);
                                         primaryPortalId = -1;
                                     }
                                     else{
+                                        prPortal.playAnimation("start");
                                         newPortal.linkPortal(prPortal);
                                         prPortal.linkPortal(newPortal);
                                     }
@@ -207,6 +213,10 @@ public abstract class BlockSelectionMixin {
                                 zone.allEntities.add(newPortal);
                             }
                             else{
+                                if (prPortal != null){
+                                    prPortal.playAnimation("start");
+                                }
+                                secPortal.playAnimation("start");
                                 secPortal.setPosition(getPositionForPortals(result.hitPos(), result.hitNormal()));
                                 secPortal.viewDirection = result.hitNormal().getVector();
                                 secPortal.upVector = getUpVectorForPortals(result.hitNormal(), worldCamera);

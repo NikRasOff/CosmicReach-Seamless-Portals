@@ -207,7 +207,7 @@ public class PortalModelInstance implements IEntityModelInstance {
             this.updatePortalMeshScale((PerspectiveCamera) camera, (Portal) entity);
         }
         portalModel.renderDebug((Portal) entity, camera);
-        if (((Portal) entity).linkedPortal == null || ((Portal) entity).isPortalDestroyed){
+        if (((Portal) entity).isPortalDestroyed){
             return;
         }
         if (this.currentAnimation != null){
@@ -220,24 +220,42 @@ public class PortalModelInstance implements IEntityModelInstance {
             return;
         }
 
+        if (((Portal) entity).linkedPortal == null){
+            this.updatePortalMeshScale((PerspectiveCamera) camera, (Portal) entity);
+
+            PortalModel.nullPortalShader.begin(camera, SeamlessPortalsRenderUtil.renderContext);
+
+            tmpVec4[0] = this.colorOverlay.r;
+            tmpVec4[1] = this.colorOverlay.g;
+            tmpVec4[2] = this.colorOverlay.b;
+            tmpVec4[3] = this.colorOverlay.a;
+            PortalModel.nullPortalShader.program.setUniform4fv("overlayColor", tmpVec4, 0, 4);
+
+            PortalModel.renderable.worldTransform.set(matrix4).inv().translate(this.portalMeshLocalOffset).scale(this.portalMeshScale.x, this.portalMeshScale.y, this.portalMeshScale.z);
+            PortalModel.nullPortalShader.render(PortalModel.renderable);
+            PortalModel.nullPortalShader.end();
+            return;
+        }
+
         Texture portalTexture = this.createPortalTexture(camera, (Portal) entity);
         this.updatePortalMeshScale((PerspectiveCamera) camera, (Portal) entity);
 
-        PortalModel.shader.begin(camera, SeamlessPortalsRenderUtil.renderContext);
+        PortalModel.portalShader.begin(camera, SeamlessPortalsRenderUtil.renderContext);
 
         Vector2 screenSize = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         tmpVec2[0] = screenSize.x;
         tmpVec2[1] = screenSize.y;
-        PortalModel.shader.program.setUniform2fv("screenSize", tmpVec2, 0, 2);
+        PortalModel.portalShader.program.setUniform2fv("screenSize", tmpVec2, 0, 2);
         tmpVec4[0] = this.colorOverlay.r;
         tmpVec4[1] = this.colorOverlay.g;
         tmpVec4[2] = this.colorOverlay.b;
         tmpVec4[3] = this.colorOverlay.a;
-        PortalModel.shader.program.setUniform4fv("overlayColor", tmpVec4, 0, 4);
+        PortalModel.portalShader.program.setUniform4fv("overlayColor", tmpVec4, 0, 4);
         portalTexture.bind(1);
-        PortalModel.shader.program.setUniformi("screenTex", 1);
+        PortalModel.portalShader.program.setUniformi("screenTex", 1);
         PortalModel.renderable.worldTransform.set(matrix4).inv().translate(this.portalMeshLocalOffset).scale(this.portalMeshScale.x, this.portalMeshScale.y, this.portalMeshScale.z);
-        PortalModel.shader.render(PortalModel.renderable);
+        PortalModel.portalShader.render(PortalModel.renderable);
+        PortalModel.portalShader.end();
     }
 
     @Override

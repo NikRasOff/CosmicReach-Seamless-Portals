@@ -157,6 +157,11 @@ public class Portal extends Entity {
         }
     }
 
+    public void playAnimation(String animName){
+        if (this.isEndAnimationPlaying) return;
+        this.modelInstance.setCurrentAnimation(animName);
+    }
+
     public int getPortalID(){
         return this.portalID;
     }

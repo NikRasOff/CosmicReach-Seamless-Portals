@@ -20,13 +20,16 @@ public class PortalModel implements IEntityModel, Disposable {
     private static ShapeRenderer shapeRenderer;
     FrameBuffer portalFrameBuffer;
     public static Renderable renderable;
-    public static TwoSidedShader shader;
+    public static TwoSidedShader portalShader;
+    public static TwoSidedShader nullPortalShader;
 
     public static void create(){
         renderable = new Renderable();
         SeamlessPortalsRenderUtil.cubeModelInstance.getRenderable(renderable);
-        shader = new TwoSidedShader(Identifier.of(SeamlessPortals.MOD_ID, "shaders/default.vert.glsl"), Identifier.of(SeamlessPortals.MOD_ID, "shaders/portal.frag.glsl"));
-        shader.init();
+        portalShader = new TwoSidedShader(Identifier.of(SeamlessPortals.MOD_ID, "shaders/default.vert.glsl"), Identifier.of(SeamlessPortals.MOD_ID, "shaders/portal.frag.glsl"));
+        portalShader.init();
+        nullPortalShader = new TwoSidedShader(Identifier.of(SeamlessPortals.MOD_ID, "shaders/default.vert.glsl"), Identifier.of(SeamlessPortals.MOD_ID, "shaders/null_portal.frag.glsl"));
+        nullPortalShader.init();
     }
 
     public PortalModel(){

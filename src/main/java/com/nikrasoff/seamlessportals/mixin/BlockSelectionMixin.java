@@ -10,6 +10,7 @@ import com.nikrasoff.seamlessportals.effects.DestabiliserPulse;
 import com.nikrasoff.seamlessportals.extras.DirectionVector;
 import com.nikrasoff.seamlessportals.extras.ExtraPortalUtils;
 import com.nikrasoff.seamlessportals.extras.RaycastOutput;
+import com.nikrasoff.seamlessportals.extras.interfaces.IModItemStack;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.portals.PortalManager;
 import finalforeach.cosmicreach.BlockSelection;
@@ -25,6 +26,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Map;
 
 @Mixin(BlockSelection.class)
 public abstract class BlockSelectionMixin {
@@ -112,9 +115,28 @@ public abstract class BlockSelectionMixin {
     @Inject(method = "raycast", at = @At("HEAD"), cancellable = true)
     private void customRaycast(Zone zone, Camera worldCamera, CallbackInfo ci){
         if (InGame.getLocalPlayer() != null){
-            ItemStack heldItem = UI.hotbar.getSelectedItemStack();
-            if (heldItem != null && heldItem.getItem() != null && heldItem.getItem().getID().equals("seamlessportals:handheld_portal_generator")){
+            ItemStack heldItemStack = UI.hotbar.getSelectedItemStack();
+            if (heldItemStack != null && heldItemStack.getItem() != null && heldItemStack.getItem().getID().equals("seamlessportals:handheld_portal_generator")){
                 enabled = false;
+                Map<String, Object> hpgProperties = ((IModItemStack) heldItemStack).getCustomProperties();
+
+                if (!hpgProperties.containsKey("portal1Chunk")){
+                    hpgProperties.put("portal1Chunk", new Vector3());
+                }
+                if (!hpgProperties.containsKey("portal1Id")){
+                    hpgProperties.put("portal1Id", -1);
+                }
+                Vector3 primaryPortalChunkPos = (Vector3) hpgProperties.get("portal1Chunk");
+                int primaryPortalId = (int) hpgProperties.get("portal1Id");
+
+                if (!hpgProperties.containsKey("portal2Chunk")){
+                    hpgProperties.put("portal2Chunk", new Vector3());
+                }
+                if (!hpgProperties.containsKey("portal2Id")){
+                    hpgProperties.put("portal2Id", -1);
+                }
+                Vector3 secondaryPortalChunkPos = (Vector3) hpgProperties.get("portal2Chunk");
+                int secondaryPortalId = (int) hpgProperties.get("portal2Id");
 
                 PortalManager pm = SeamlessPortals.portalManager;
                 if (!UI.isInventoryOpen()){
@@ -125,15 +147,16 @@ public abstract class BlockSelectionMixin {
                             portalRaycastHitDebug.set(result.hitPos());
                             portalRaycastNormalDebug.set(result.hitNormal().getVector());
 
-                            if (pm.primaryPortalId == -1){
+                            if (primaryPortalId == -1){
                                 Vector3 upDir = getUpVectorForPortals(result.hitNormal(), worldCamera);
                                 Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), zone);
-                                pm.primaryPortalId = newPortal.getPortalID();
-                                pm.primaryPortalChunkPos.x = Math.floorDiv((int) newPortal.position.x, 16);
-                                pm.primaryPortalChunkPos.y = Math.floorDiv((int) newPortal.position.y, 16);
-                                pm.primaryPortalChunkPos.z = Math.floorDiv((int) newPortal.position.z, 16);
-                                if (SeamlessPortals.portalManager.secondaryPortalId != -1){
-                                    Portal secPortal = pm.getPortalWithGen(pm.secondaryPortalId, pm.secondaryPortalChunkPos, zone.zoneId);
+                                hpgProperties.put("portal1Id", newPortal.getPortalID());
+                                primaryPortalId = newPortal.getPortalID();
+                                primaryPortalChunkPos.x = Math.floorDiv((int) newPortal.position.x, 16);
+                                primaryPortalChunkPos.y = Math.floorDiv((int) newPortal.position.y, 16);
+                                primaryPortalChunkPos.z = Math.floorDiv((int) newPortal.position.z, 16);
+                                if (secondaryPortalId != -1){
+                                    Portal secPortal = pm.getPortalWithGen(secondaryPortalId, secondaryPortalChunkPos, zone.zoneId);
                                     if (secPortal == null){
                                         System.out.println("Fuck");
                                     }
@@ -145,7 +168,7 @@ public abstract class BlockSelectionMixin {
                                 zone.allEntities.add(newPortal);
                             }
                             else{
-                                Portal prPortal = pm.getPortalWithGen(pm.primaryPortalId, pm.primaryPortalChunkPos, zone.zoneId);
+                                Portal prPortal = pm.getPortalWithGen(primaryPortalId, primaryPortalChunkPos, zone.zoneId);
                                 if (prPortal == null){
                                     System.out.println("Fuck");
                                 }
@@ -165,15 +188,16 @@ public abstract class BlockSelectionMixin {
                             portalRaycastHitDebug.set(result.hitPos());
                             portalRaycastNormalDebug.set(result.hitNormal().getVector());
 
-                            if (pm.secondaryPortalId == -1){
+                            if (secondaryPortalId == -1){
                                 Vector3 upDir = getUpVectorForPortals(result.hitNormal(), worldCamera);
                                 Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector(), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), zone);
-                                pm.secondaryPortalId = newPortal.getPortalID();
-                                pm.secondaryPortalChunkPos.x = Math.floorDiv((int) newPortal.position.x, 16);
-                                pm.secondaryPortalChunkPos.y = Math.floorDiv((int) newPortal.position.y, 16);
-                                pm.secondaryPortalChunkPos.z = Math.floorDiv((int) newPortal.position.z, 16);
-                                if (SeamlessPortals.portalManager.primaryPortalId != -1){
-                                    Portal prPortal = pm.getPortalWithGen(pm.primaryPortalId, pm.primaryPortalChunkPos, zone.zoneId);
+                                hpgProperties.put("portal2Id", newPortal.getPortalID());
+                                secondaryPortalId = newPortal.getPortalID();
+                                secondaryPortalChunkPos.x = Math.floorDiv((int) newPortal.position.x, 16);
+                                secondaryPortalChunkPos.y = Math.floorDiv((int) newPortal.position.y, 16);
+                                secondaryPortalChunkPos.z = Math.floorDiv((int) newPortal.position.z, 16);
+                                if (primaryPortalId != -1){
+                                    Portal prPortal = pm.getPortalWithGen(primaryPortalId, primaryPortalChunkPos, zone.zoneId);
                                     if (prPortal == null){
                                         System.out.println("Fuck");
                                     }
@@ -185,7 +209,7 @@ public abstract class BlockSelectionMixin {
                                 zone.allEntities.add(newPortal);
                             }
                             else{
-                                Portal secPortal = pm.getPortalWithGen(pm.secondaryPortalId, pm.secondaryPortalChunkPos, zone.zoneId);
+                                Portal secPortal = pm.getPortalWithGen(secondaryPortalId, secondaryPortalChunkPos, zone.zoneId);
                                 if (secPortal == null){
                                     System.out.println("Fuck");
                                 }
@@ -199,7 +223,17 @@ public abstract class BlockSelectionMixin {
                         ItemRenderer.swingHeldItem();
                     }
                     if (Controls.pickBlockPressed()){
-                        new DestabiliserPulse(worldCamera.position.cpy(), 3, zone);
+                        if (primaryPortalId != -1){
+                            Portal primaryPortal = pm.getPortalWithGen(primaryPortalId, primaryPortalChunkPos, zone.zoneId);
+                            primaryPortal.startDestruction();
+                        }
+                        if (secondaryPortalId != -1){
+                            Portal secondaryPortal = pm.getPortalWithGen(secondaryPortalId, secondaryPortalChunkPos, zone.zoneId);
+                            secondaryPortal.startDestruction();
+                        }
+
+                        hpgProperties.put("portal1Id", -1);
+                        hpgProperties.put("portal2Id", -1);
                     }
                 }
 

@@ -20,12 +20,6 @@ public class PortalManager {
     public Vector3 prevPortalGenPos;
     public int maxPortalID = 0;
 
-    public Vector3 primaryPortalChunkPos = new Vector3();
-    public int primaryPortalId = -1;
-
-    public Vector3 secondaryPortalChunkPos = new Vector3();
-    public int secondaryPortalId = -1;
-
     public transient HashMap<Integer, Portal> createdPortals = new HashMap<>();
 
     public PortalManager(){}
@@ -70,12 +64,6 @@ public class PortalManager {
 
     public void removePortal(Portal portal){
         this.createdPortals.remove(portal.getPortalID());
-        if (portal.getPortalID() == this.primaryPortalId){
-            this.primaryPortalId = -1;
-        }
-        if (portal.getPortalID() == this.secondaryPortalId){
-            this.secondaryPortalId = -1;
-        }
     }
 
     public void createPortalPair(BlockPosition portalPos1, BlockPosition portalPos2, Zone zone1, Zone zone2){

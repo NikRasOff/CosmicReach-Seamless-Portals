@@ -1,8 +1,8 @@
 {
   "id": "${mod_id}",
   "version": "${mod_version}",
-  "name": "${mod_name}",
-  "description": "${mod_desc}",
+  "name": "Seamless Portals",
+  "description": "(mostly) Seamless Portals for Cosmic Reach!",
   "authors": [
     "NikRasOff"
   ],

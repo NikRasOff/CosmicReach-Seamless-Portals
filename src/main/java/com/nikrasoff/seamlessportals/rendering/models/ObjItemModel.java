@@ -1,19 +1,28 @@
 package com.nikrasoff.seamlessportals.rendering.models;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
+import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.items.Item;
 import finalforeach.cosmicreach.rendering.items.ItemModel;
 import finalforeach.cosmicreach.util.Identifier;
 
+import java.awt.*;
 import java.lang.ref.WeakReference;
 
 public class ObjItemModel extends ItemModel {
@@ -23,6 +32,7 @@ public class ObjItemModel extends ItemModel {
 
     private static Matrix4 tmpMat4 = new Matrix4();
 
+    private static FrameBuffer viewModelFrameBuffer;
     private static final PerspectiveCamera heldItemCamera;
 
     private final static Array<AnimationController> animArray = new Array<>();
@@ -93,12 +103,19 @@ public class ObjItemModel extends ItemModel {
         heldItemCamera.near = worldCamera.near;
         heldItemCamera.far = worldCamera.far;
         heldItemCamera.update();
-//        identMat4.idt();
+
+//        if (viewModelFrameBuffer == null){
+//            viewModelFrameBuffer = new FrameBuffer(Pixmap.Format.RGB888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+//        }
+//        else if (Gdx.graphics.getWidth() != viewModelFrameBuffer.getWidth() || Gdx.graphics.getHeight() != viewModelFrameBuffer.getHeight()){
+//            if (Gdx.graphics.getWidth() > 0 && Gdx.graphics.getHeight() > 0){
+//                viewModelFrameBuffer.dispose();
+//                viewModelFrameBuffer = new FrameBuffer(Pixmap.Format.RGB888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+//            }
+//        }
 //
-//        identMat4.scale(0.5F, 0.5F, 0.5F);
-//        identMat4.translate(0.4F, -0.55F, -1.75F);
-//        identMat4.rotate(Vector3.Y, 175F);
-//        identMat4.translate(-0.25F, -0.25F, -0.25F);
+//        viewModelFrameBuffer.begin();
+        Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
         if (viewModelInstance != null){
             tmpMat4.set(heldModelMatrix);
             viewModelInstance.transform.set(tmpMat4);
@@ -107,6 +124,16 @@ public class ObjItemModel extends ItemModel {
         else{
             this.render(worldPosition, heldItemCamera, heldModelMatrix, true);
         }
+
+//        viewModelFrameBuffer.end();
+//
+//        GameState.batch.begin();
+//        float w = Math.max(800, viewModelFrameBuffer.getWidth());
+//        float h = Math.max(600, viewModelFrameBuffer.getHeight());
+//        float x = -w / 2.0f;
+//        float y = -h / 2.0f;
+//        GameState.batch.draw(viewModelFrameBuffer.getColorBufferTexture(), x, y, w, h);
+//        GameState.batch.end();
     }
 
     @Override

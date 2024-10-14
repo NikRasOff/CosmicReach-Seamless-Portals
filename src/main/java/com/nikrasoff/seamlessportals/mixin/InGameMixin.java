@@ -26,7 +26,7 @@ public abstract class InGameMixin implements IPortalIngame {
     @Shadow private static PlayerController playerController;
 
     @Unique
-    private float tempFovForPortals = 0;
+    private float cosmicReach_Seamless_Portals$tempFovForPortals = 0;
 
     @Inject(method = "render", at = @At("HEAD"))
     private void startRenderContext(CallbackInfo ci){
@@ -36,10 +36,10 @@ public abstract class InGameMixin implements IPortalIngame {
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/badlogic/gdx/utils/viewport/Viewport;apply()V"))
     private void storeTempFOV(CallbackInfo ci){
-        this.tempFovForPortals = ((PerspectiveCamera)getWorldCamera()).fieldOfView;
+        this.cosmicReach_Seamless_Portals$tempFovForPortals = ((PerspectiveCamera)getWorldCamera()).fieldOfView;
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/ui/UI;render()V"))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/rendering/items/ItemRenderer;renderHeldItem(Lcom/badlogic/gdx/math/Vector3;Lfinalforeach/cosmicreach/items/ItemStack;Lcom/badlogic/gdx/graphics/PerspectiveCamera;)V"))
     private void seamlessPortalsCustomRender(CallbackInfo ci){
         Camera renderFromCamera = getWorldCamera();
 
@@ -62,6 +62,6 @@ public abstract class InGameMixin implements IPortalIngame {
 
     @Override
     public float getTempFovForPortals() {
-        return tempFovForPortals;
+        return cosmicReach_Seamless_Portals$tempFovForPortals;
     }
 }

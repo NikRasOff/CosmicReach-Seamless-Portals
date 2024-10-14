@@ -163,7 +163,7 @@ public abstract class BlockSelectionMixin {
                                         secondaryPortalId = -1;
                                     }
                                     else{
-                                        secPortal.playAnimation("start");
+                                        secPortal.playAnimation("rebind");
                                         newPortal.linkPortal(secPortal);
                                         secPortal.linkPortal(newPortal);
                                     }
@@ -172,7 +172,7 @@ public abstract class BlockSelectionMixin {
                             }
                             else{
                                 if (secPortal != null){
-                                    secPortal.playAnimation("start");
+                                    secPortal.playAnimation("rebind");
                                 }
                                 prPortal.playAnimation("start");
                                 prPortal.setPosition(getPositionForPortals(result.hitPos(), result.hitNormal()));
@@ -205,7 +205,7 @@ public abstract class BlockSelectionMixin {
                                         primaryPortalId = -1;
                                     }
                                     else{
-                                        prPortal.playAnimation("start");
+                                        prPortal.playAnimation("rebind");
                                         newPortal.linkPortal(prPortal);
                                         prPortal.linkPortal(newPortal);
                                     }
@@ -214,7 +214,7 @@ public abstract class BlockSelectionMixin {
                             }
                             else{
                                 if (prPortal != null){
-                                    prPortal.playAnimation("start");
+                                    prPortal.playAnimation("rebind");
                                 }
                                 secPortal.playAnimation("start");
                                 secPortal.setPosition(getPositionForPortals(result.hitPos(), result.hitNormal()));

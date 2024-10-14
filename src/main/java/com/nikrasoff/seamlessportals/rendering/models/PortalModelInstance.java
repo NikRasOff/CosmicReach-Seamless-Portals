@@ -51,9 +51,17 @@ public class PortalModelInstance implements IEntityModelInstance {
             colorOverlay.set(Color.BLUE);
             animModelScale.set(0);
         }));
-        startingAnimationSequence.add(new FloatAnimation(0, 1, 0.5F, this.animModelScale));
-        startingAnimationSequence.add(new ColorAnimation(new Color(0, 0, 1, 1), new Color(0, 0, 1,0), 0.5F, this.colorOverlay));
+        startingAnimationSequence.add(new FloatAnimation(0, 1, 0.25F, this.animModelScale));
+        startingAnimationSequence.add(new ColorAnimation(new Color(0, 0, 1, 1), new Color(0, 0, 1,0), 0.25F, this.colorOverlay));
         this.allAnimations.put("start", startingAnimationSequence);
+        SPAnimationSequence rebindAnimation = new SPAnimationSequence(false);
+        rebindAnimation.add(new DoThingAnimation<>(() -> {
+            colorOverlay.set(Color.BLUE);
+            animModelScale.set(1);
+        }));
+        rebindAnimation.add(new WaitAnimation(0.25f));
+        rebindAnimation.add(new ColorAnimation(new Color(0, 0, 1, 1), new Color(0, 0, 0, 0), 0.25f, this.colorOverlay));
+        this.allAnimations.put("rebind", rebindAnimation);
         SPAnimationSequence endingAnimationSequence = new SPAnimationSequence(true);
         endingAnimationSequence.add(new FloatAnimation(1, 0, 0.5F, this.animModelScale));
         endingAnimationSequence.add(new ColorAnimation(new Color(1, 0, 0, 0), new Color(1, 0, 0, 1), 0.25F, this.colorOverlay));

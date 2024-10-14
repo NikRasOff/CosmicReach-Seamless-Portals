@@ -23,7 +23,6 @@ processResources {
     // Left item is the name in the target, right is the variable name
     def replaceProperties = [
             "mod_version"     : version,
-            "mod_desc"       : desc,
             "mod_name"        : project.name,
             "mod_id"          : id,
     ]

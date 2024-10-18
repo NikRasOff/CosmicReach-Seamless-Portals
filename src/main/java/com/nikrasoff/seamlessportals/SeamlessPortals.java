@@ -4,10 +4,12 @@ import com.badlogic.gdx.math.Vector3;
 import com.github.puzzle.core.PuzzleRegistries;
 import com.github.puzzle.game.block.DataModBlock;
 import com.github.puzzle.game.events.OnRegisterBlockEvent;
+import com.github.puzzle.game.items.IModItem;
 import com.github.puzzle.loader.entrypoint.interfaces.ModInitializer;
 import com.github.puzzle.loader.entrypoint.interfaces.PostModInitializer;
 import com.nikrasoff.seamlessportals.effects.PulseEffect;
 import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
+import com.nikrasoff.seamlessportals.items.SyncedOmniumCrystal;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import com.nikrasoff.seamlessportals.rendering.models.ObjItemModel;
 import com.nikrasoff.seamlessportals.portals.Portal;
@@ -59,6 +61,10 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
 
         SeamlessPortalsBlockEvents.registerSeamlessPortalsBlockEvents();
         EntityCreator.registerEntityCreator("seamlessportals:entity_portal", Portal::readPortal);
+        for (String id : itemIds){
+            ItemThing.loadItemFromJson(GameAssetLoader.loadJson(GameAssetLoader.loadAsset(Identifier.of(MOD_ID, "items/" + id + ".json"))));
+        }
+        IModItem.registerItem(new SyncedOmniumCrystal());
     }
 
     @Subscribe
@@ -68,9 +74,6 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
         }
         for (String id: blockEventIds){
             BlockEvents.loadBlockEventsFromAsset(GameAssetLoader.loadAsset(Identifier.of(MOD_ID, "block_events/" + id + ".json")));
-        }
-        for (String id : itemIds){
-            ItemThing.loadItemFromJson(GameAssetLoader.loadJson(GameAssetLoader.loadAsset(Identifier.of(MOD_ID, "items/" + id + ".json"))));
         }
     }
 

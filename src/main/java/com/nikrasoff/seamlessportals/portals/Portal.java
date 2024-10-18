@@ -8,19 +8,12 @@ import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
 import com.nikrasoff.seamlessportals.rendering.models.PortalModel;
 import com.nikrasoff.seamlessportals.rendering.models.PortalModelInstance;
-import finalforeach.cosmicreach.Threads;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.io.CRBinDeserializer;
-import finalforeach.cosmicreach.rendering.MeshData;
-import finalforeach.cosmicreach.rendering.RenderOrder;
-import finalforeach.cosmicreach.rendering.meshes.GameMesh;
-import finalforeach.cosmicreach.rendering.shaders.ChunkShader;
 import finalforeach.cosmicreach.blocks.BlockPosition;
-import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.savelib.crbin.CRBSerialized;
 import finalforeach.cosmicreach.settings.GraphicsSettings;
-import finalforeach.cosmicreach.world.EntityRegion;
 import finalforeach.cosmicreach.world.Zone;
 
 public class Portal extends Entity {
@@ -31,7 +24,7 @@ public class Portal extends Entity {
     static private final PortalModel portalModel = new PortalModel();
 
     @CRBSerialized
-    private Vector3 linkedPortalChunkCoords = new Vector3();
+    private final Vector3 linkedPortalChunkCoords = new Vector3();
     @CRBSerialized
     private int linkedPortalID = -1;
     @CRBSerialized
@@ -53,14 +46,10 @@ public class Portal extends Entity {
         if (deserializer != null) {
             portal.read(deserializer);
             SeamlessPortals.portalManager.addPortal(portal);
-            Portal lPortal = SeamlessPortals.portalManager.getPortal(portal.linkedPortalID);
+            Portal lPortal = SeamlessPortals.portalManager.getPortalWithGen(portal.linkedPortalID, portal.linkedPortalChunkCoords, portal.zoneID);
             if (lPortal != null){
                 portal.linkPortal(lPortal);
                 lPortal.linkPortal(portal);
-            }
-            else {
-                Vector3 chunkCoords = portal.linkedPortalChunkCoords;
-                EntityRegion.readChunkColumn(InGame.world.getZone(portal.zoneID), (int) chunkCoords.x, (int) chunkCoords.z, Math.floorDiv((int) chunkCoords.x, 16), Math.floorDiv((int) chunkCoords.y, 16), Math.floorDiv((int) chunkCoords.z, 16));
             }
         }
         return portal;
@@ -261,8 +250,8 @@ public class Portal extends Entity {
         return (int) Math.signum(offset.dot(this.viewDirection));
     }
 
-    public boolean isOnSameSideOfPortal(Vector3 pos1, Vector3 pos2){
-        return getPortalSide(pos1) == getPortalSide(pos2);
+    public boolean isNotOnSameSideOfPortal(Vector3 pos1, Vector3 pos2){
+        return getPortalSide(pos1) != getPortalSide(pos2);
     }
 
     @Override

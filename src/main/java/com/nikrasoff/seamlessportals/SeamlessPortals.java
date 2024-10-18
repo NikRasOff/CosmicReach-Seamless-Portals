@@ -5,6 +5,7 @@ import com.github.puzzle.core.PuzzleRegistries;
 import com.github.puzzle.game.block.DataModBlock;
 import com.github.puzzle.game.events.OnRegisterBlockEvent;
 import com.github.puzzle.loader.entrypoint.interfaces.ModInitializer;
+import com.github.puzzle.loader.entrypoint.interfaces.PostModInitializer;
 import com.nikrasoff.seamlessportals.effects.PulseEffect;
 import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
@@ -16,13 +17,15 @@ import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.blockevents.BlockEvents;
 import finalforeach.cosmicreach.entities.EntityCreator;
 import finalforeach.cosmicreach.items.Item;
+import finalforeach.cosmicreach.items.ItemThing;
+import finalforeach.cosmicreach.items.recipes.CraftingRecipes;
 import finalforeach.cosmicreach.rendering.items.ItemRenderer;
 import finalforeach.cosmicreach.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.greenrobot.eventbus.Subscribe;
 
-public class SeamlessPortals implements ModInitializer {
+public class SeamlessPortals implements ModInitializer, PostModInitializer {
     public static boolean debugOutlines = true;
     public static PortalManager portalManager = new PortalManager();
     public static final String MOD_ID = "seamlessportals";
@@ -30,7 +33,16 @@ public class SeamlessPortals implements ModInitializer {
 
     static String[] blockIds = {
             "portal_generator",
-            "portal_destabiliser"
+            "portal_destabiliser",
+            "omnium_block"
+    };
+
+    static String[] itemIds = {
+            "omnium_crystal"
+    };
+
+    static String[] recipeIds = {
+            "crafting/omnium_block"
     };
 
     static String[] blockEventIds = {
@@ -55,8 +67,10 @@ public class SeamlessPortals implements ModInitializer {
             event.registerBlock(() -> new DataModBlock(Identifier.of(MOD_ID, id + ".json")));
         }
         for (String id: blockEventIds){
-            LOGGER.info("Loading block event file: " + id + ".json");
             BlockEvents.loadBlockEventsFromAsset(GameAssetLoader.loadAsset(Identifier.of(MOD_ID, "block_events/" + id + ".json")));
+        }
+        for (String id : itemIds){
+            ItemThing.loadItemFromJson(GameAssetLoader.loadJson(GameAssetLoader.loadAsset(Identifier.of(MOD_ID, "items/" + id + ".json"))));
         }
     }
 
@@ -82,5 +96,12 @@ public class SeamlessPortals implements ModInitializer {
         });
 
         Item.registerItem(new HandheldPortalGen());
+    }
+
+    @Override
+    public void onPostInit() {
+        for (String id : recipeIds){
+            CraftingRecipes.loadRecipe(GameAssetLoader.loadJson(GameAssetLoader.loadAsset(Identifier.of(MOD_ID, "recipes/" + id + ".json"))));
+        }
     }
 }

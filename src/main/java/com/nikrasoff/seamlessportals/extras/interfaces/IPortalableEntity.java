@@ -6,11 +6,11 @@ import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.world.Zone;
 
 public interface IPortalableEntity {
-    public void setIgnorePortals(boolean value);
-    public boolean isJustTeleported();
-    public BlockState checkIfShouldCollidePortal(Zone instance, int x, int y, int z, Operation<BlockState> original);
-    public Portal getTeleportingPortal(); // Not used, too lazy to remove
-    public static void setIgnorePortals(IPortalableEntity entity, boolean value){
-        entity.setIgnorePortals(value);
+    void cosmicReach_Seamless_Portals$setIgnorePortals(boolean value);
+    boolean cosmicReach_Seamless_Portals$isJustTeleported();
+    BlockState cosmicReach_Seamless_Portals$checkIfShouldCollidePortal(Zone instance, int x, int y, int z, Operation<BlockState> original);
+    Portal cosmicReach_Seamless_Portals$getTeleportingPortal(); // Not used, too lazy to remove
+    static void setIgnorePortals(IPortalableEntity entity, boolean value){
+        entity.cosmicReach_Seamless_Portals$setIgnorePortals(value);
     }
 }

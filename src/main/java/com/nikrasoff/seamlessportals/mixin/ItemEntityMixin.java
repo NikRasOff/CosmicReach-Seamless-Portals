@@ -34,7 +34,7 @@ public abstract class ItemEntityMixin extends Entity implements IModEntity {
     }
 
     @Override
-    public void renderNoAnim(Camera renderCamera){
+    public void cosmicReach_Seamless_Portals$renderNoAnim(Camera renderCamera){
         if (renderCamera.frustum.boundsInFrustum(this.globalBoundingBox)) {
             if (this.modelInstance == null && this.itemStack != null) {
                 this.modelInstance = GameSingletons.itemEntityModelLoader.load(this.itemStack);
@@ -55,7 +55,7 @@ public abstract class ItemEntityMixin extends Entity implements IModEntity {
                 tmpMatrix.rotate(Vector3.Y, spin);
                 tmpMatrix.translate(-0.5F, -0.5F, -0.5F);
                 tmpMatrix.translate(0.0F, this.renderSize / 2.0F + this.renderSize * hover / 2.0F, 0.0F);
-                this.renderAfterMatrixSetNoAnim(renderCamera, tmpMatrix);
+                this.cosmicReach_Seamless_Portals$renderAfterMatrixSetNoAnim(renderCamera, tmpMatrix);
             }
 
         }

@@ -40,8 +40,8 @@ public class PortalModelInstance implements IEntityModelInstance {
     private final Color colorOverlay = Color.CLEAR.cpy();
     private final PerspectiveCamera portalCamera;
 
-    private static float[] tmpVec2 = new float[2];
-    private static float[] tmpVec4 = new float[4];
+    private static final float[] tmpVec2 = new float[2];
+    private static final float[] tmpVec4 = new float[4];
 
     protected PortalModelInstance(PortalModel m){
         this.portalModel = m;
@@ -184,7 +184,7 @@ public class PortalModelInstance implements IEntityModelInstance {
             if (e instanceof Portal){
                 return;
             }
-            ((IModEntity) e).renderNoAnim(portalCamera);
+            ((IModEntity) e).cosmicReach_Seamless_Portals$renderNoAnim(portalCamera);
         });
 
         portalModel.portalFrameBuffer.end();
@@ -210,7 +210,6 @@ public class PortalModelInstance implements IEntityModelInstance {
 
     @Override
     public void render(Entity entity, Camera camera, Matrix4 matrix4) {
-//        System.out.println("Rendered: " + ((Portal) entity).getPortalID());
         if (!this.isPortalMeshGenerated){
             this.updatePortalMeshScale((PerspectiveCamera) camera, (Portal) entity);
         }
@@ -221,7 +220,7 @@ public class PortalModelInstance implements IEntityModelInstance {
         if (this.currentAnimation != null){
             this.currentAnimation.update(Gdx.graphics.getDeltaTime());
         }
-        if (!((Portal) entity).zoneID.equals(InGame.getLocalPlayer().zoneId) || ((Portal) entity).isPortalDestroyed || ((Portal) entity).position.dst(camera.position) > 50){
+        if (!((Portal) entity).zoneID.equals(InGame.getLocalPlayer().zoneId) || ((Portal) entity).isPortalDestroyed || (entity).position.dst(camera.position) > 50){
             return;
         }
         if (!camera.frustum.boundsInFrustum(this.getMeshBoundingBox(matrix4)) && ((Portal) entity).getDistanceToPortalPlane(camera.position) > camera.near){

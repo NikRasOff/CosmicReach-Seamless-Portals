@@ -33,47 +33,47 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
     @Shadow
     Camera playerCam;
     @Unique
-    public transient Quaternion upVectorRotation = new Quaternion();
+    public transient Quaternion cosmicReach_Seamless_Portals$upVectorRotation = new Quaternion();
     @Unique
-    public transient Vector3 upVectorOffset = new Vector3();
+    public transient Vector3 cosmicReach_Seamless_Portals$upVectorOffset = new Vector3();
 
     @Unique
-    public transient ISPAnimation cameraRotationAnimation;
+    public transient ISPAnimation cosmicReach_Seamless_Portals$cameraRotationAnimation;
 
     @Unique
-    private transient boolean alreadyTPdCamera = false;
+    private transient boolean cosmicReach_Seamless_Portals$alreadyTPdCamera = false;
 
     @Unique
-    private transient Vector3 preSavedCameraUp = new Vector3();
+    private transient Vector3 cosmicReach_Seamless_Portals$preSavedCameraUp = new Vector3();
 
     @Inject(method = "updateCamera", at = @At("HEAD"))
     private void preUpdateCamera(PerspectiveCamera playerCamera, CallbackInfo ci){
         IPortalableEntity playerEntity = (IPortalableEntity) this.player.getEntity();
-        if (playerEntity.isJustTeleported()){
-            if (this.alreadyTPdCamera){
+        if (playerEntity.cosmicReach_Seamless_Portals$isJustTeleported()){
+            if (this.cosmicReach_Seamless_Portals$alreadyTPdCamera){
                 return;
             }
-            this.alreadyTPdCamera = true;
-            this.lastCamPosition.set(playerEntity.getTeleportingPortal().getPortaledPos(this.lastCamPosition));
+            this.cosmicReach_Seamless_Portals$alreadyTPdCamera = true;
+            this.lastCamPosition.set(playerEntity.cosmicReach_Seamless_Portals$getTeleportingPortal().getPortaledPos(this.lastCamPosition));
         }
         else{
-            this.alreadyTPdCamera = false;
+            this.cosmicReach_Seamless_Portals$alreadyTPdCamera = false;
         }
     }
 
     @Inject(method = "updateCamera", at = @At("RETURN"))
     private void updateCameraForPortals(PerspectiveCamera playerCamera, CallbackInfo ci){
-        this.preSavedCameraUp.set(playerCamera.up);
+        this.cosmicReach_Seamless_Portals$preSavedCameraUp.set(playerCamera.up);
         Vector3 playerCameraOffset = this.player.getEntity().viewPositionOffset;
         Vector3 curPlayerPos = playerCamera.position.cpy().sub(playerCameraOffset);
 
-        if (this.cameraRotationAnimation != null && !this.cameraRotationAnimation.isFinished()){
-            this.cameraRotationAnimation.update(Gdx.graphics.getDeltaTime());
+        if (this.cosmicReach_Seamless_Portals$cameraRotationAnimation != null && !this.cosmicReach_Seamless_Portals$cameraRotationAnimation.isFinished()){
+            this.cosmicReach_Seamless_Portals$cameraRotationAnimation.update(Gdx.graphics.getDeltaTime());
         }
 
-        playerCameraOffset.mul(this.upVectorRotation);
-        playerCameraOffset.add(this.upVectorOffset);
-        playerCamera.up.mul(this.upVectorRotation);
+        playerCameraOffset.mul(this.cosmicReach_Seamless_Portals$upVectorRotation);
+        playerCameraOffset.add(this.cosmicReach_Seamless_Portals$upVectorOffset);
+        playerCamera.up.mul(this.cosmicReach_Seamless_Portals$upVectorRotation);
         playerCamera.position.set(curPlayerPos.add(playerCameraOffset));
 
         IPortalableEntity portalableEntity = (IPortalableEntity) this.player.getEntity();
@@ -81,14 +81,14 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
         Vector3 checkCamPos = playerCamera.position;
         Vector3 checkEntityPos = checkCamPos.cpy().sub(playerCameraOffset);
 
-        if (portalableEntity.isJustTeleported()){
+        if (portalableEntity.cosmicReach_Seamless_Portals$isJustTeleported()){
             checkEntityPos = this.player.getEntity().position.cpy().add(0, 0.05f, 0);
         }
 
         Ray ray = new Ray(checkEntityPos, checkCamPos.cpy().sub(checkEntityPos));
         for (Map.Entry<Integer, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
             Portal portal = portalEntry.getValue();
-            if (portal.linkedPortal != null && !portal.isOnSameSideOfPortal(checkEntityPos, checkCamPos) && (Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3()))){
+            if (portal.linkedPortal != null && portal.isNotOnSameSideOfPortal(checkEntityPos, checkCamPos) && (Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3()))){
                 playerCamera.position.set(portal.getPortaledPos(playerCamera.position));
                 playerCamera.direction.set(portal.getPortaledVector(playerCamera.direction));
                 playerCamera.up.set(portal.getPortaledVector(playerCamera.up));
@@ -99,20 +99,20 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
     }
 
     @Override
-    public void resetPlayerCameraUp(){
-        playerCam.up.set(this.preSavedCameraUp);
+    public void cosmicReach_Seamless_Portals$resetPlayerCameraUp(){
+        playerCam.up.set(this.cosmicReach_Seamless_Portals$preSavedCameraUp);
     }
 
     @Override
-    public void portalCurrentCameraTransform(Portal portal, Vector3 offset) {
+    public void cosmicReach_Seamless_Portals$portalCurrentCameraTransform(Portal portal, Vector3 offset) {
         Matrix4 upVectorTransform = new Matrix4();
-        upVectorTransform.set(this.upVectorOffset, this.upVectorRotation);
+        upVectorTransform.set(this.cosmicReach_Seamless_Portals$upVectorOffset, this.cosmicReach_Seamless_Portals$upVectorRotation);
         upVectorTransform.set(portal.getPortaledTransform(upVectorTransform));
         upVectorTransform.translate(offset);
         upVectorTransform.inv();
         SPAnimationSequence newAnim = new SPAnimationSequence(true);
-        newAnim.add(new QuaternionAnimation(upVectorTransform.getRotation(new Quaternion()), new Quaternion(), 0.5F, this.upVectorRotation));
-        newAnim.add(new Vector3Animation(upVectorTransform.getTranslation(new Vector3()), new Vector3(), 0.5F, this.upVectorOffset));
-        this.cameraRotationAnimation = newAnim;
+        newAnim.add(new QuaternionAnimation(upVectorTransform.getRotation(new Quaternion()), new Quaternion(), 0.5F, this.cosmicReach_Seamless_Portals$upVectorRotation));
+        newAnim.add(new Vector3Animation(upVectorTransform.getTranslation(new Vector3()), new Vector3(), 0.5F, this.cosmicReach_Seamless_Portals$upVectorOffset));
+        this.cosmicReach_Seamless_Portals$cameraRotationAnimation = newAnim;
     }
 }

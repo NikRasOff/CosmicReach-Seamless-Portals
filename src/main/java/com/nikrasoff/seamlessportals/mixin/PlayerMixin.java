@@ -18,12 +18,12 @@ public abstract class PlayerMixin {
     @WrapOperation(method = "proneCheck", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/Zone;getBlockState(III)Lfinalforeach/cosmicreach/blocks/BlockState;"))
     private BlockState proneCheckMixin(Zone instance, int x, int y, int z, Operation<BlockState> original){
         IPortalableEntity portalableEntity = (IPortalableEntity) this.entity;
-        return portalableEntity.checkIfShouldCollidePortal(instance, x, y, z, original);
+        return portalableEntity.cosmicReach_Seamless_Portals$checkIfShouldCollidePortal(instance, x, y, z, original);
     }
 
     @WrapOperation(method = "crouchCheck", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/Zone;getBlockState(III)Lfinalforeach/cosmicreach/blocks/BlockState;"))
     private BlockState sneakCheckMixin(Zone instance, int x, int y, int z, Operation<BlockState> original){
         IPortalableEntity portalableEntity = (IPortalableEntity) this.entity;
-        return portalableEntity.checkIfShouldCollidePortal(instance, x, y, z, original);
+        return portalableEntity.cosmicReach_Seamless_Portals$checkIfShouldCollidePortal(instance, x, y, z, original);
     }
 }

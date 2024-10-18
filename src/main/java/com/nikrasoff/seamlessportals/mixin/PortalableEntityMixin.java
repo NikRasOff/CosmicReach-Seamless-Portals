@@ -21,7 +21,6 @@ import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.InGame;
-import finalforeach.cosmicreach.rendering.entities.IEntityModel;
 import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
 import finalforeach.cosmicreach.world.Chunk;
 import finalforeach.cosmicreach.world.Zone;
@@ -36,7 +35,8 @@ import java.util.Map;
 
 @Mixin(Entity.class)
 public abstract class PortalableEntityMixin implements IPortalableEntity, IModEntity {
-    private static Vector3 portalPosCheckEpsilon = new Vector3(0f, 0.05f, 0f);
+    @Unique
+    private static Vector3 cosmicReach_Seamless_Portals$portalPosCheckEpsilon = new Vector3(0f, 0.05f, 0f);
 
     @Shadow public Vector3 position;
     @Shadow public Vector3 viewDirection;
@@ -53,50 +53,49 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
     @Shadow public abstract void setPosition(Vector3 position);
 
     @Shadow public IEntityModelInstance modelInstance;
+
+    @Shadow private transient float pendingDamage;
     @Unique
-    private transient boolean justTeleported = false;
+    private transient boolean cosmicReach_Seamless_Portals$justTeleported = false;
     @Unique
-    private transient Portal teleportPortal;
+    private transient Portal cosmicReach_Seamless_Portals$teleportPortal;
     @Unique
-    private transient boolean ignorePortals = false;
+    private transient boolean cosmicReach_Seamless_Portals$ignorePortals = false;
     @Unique
-    private static final float terminalVelocity = 100; // This value was chosen randomly
+    private static final float cosmicReach_Seamless_Portals$terminalVelocity = 100; // This value was chosen randomly
 
     @Unique
-    private transient Array<BlockPosition> tmpNonCollideBlocks = new Array<>();
+    private transient Array<BlockPosition> cosmicReach_Seamless_Portals$tmpNonCollideBlocks = new Array<>();
     @Unique
-    private transient Array<BlockPosition> tmpCollidedBlocks = new Array<>();
+    private transient Array<BlockPosition> cosmicReach_Seamless_Portals$tmpCollidedBlocks = new Array<>();
     @Unique
-    private transient OrientedBoundingBox tmpPortaledBoundingBox = new OrientedBoundingBox();
+    private transient OrientedBoundingBox cosmicReach_Seamless_Portals$tmpPortaledBoundingBox = new OrientedBoundingBox();
     @Unique
-    private transient BoundingBox tmpPortalCheckBlockBoundingBox = new BoundingBox();
+    private transient BoundingBox cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox = new BoundingBox();
     @Unique
-    private transient Matrix4 tmpPortalTransformMatrix = new Matrix4();
+    private transient Matrix4 cosmicReach_Seamless_Portals$tmpPortalTransformMatrix = new Matrix4();
     @Unique
-    private transient Vector3 tmpPortalNextPosition = new Vector3();
+    private transient Vector3 cosmicReach_Seamless_Portals$tmpPortalNextPosition = new Vector3();
 
     @Inject(method = "updatePositions", at = @At("HEAD"))
     private void onEntityUpdate(Zone zone, double deltaTime, CallbackInfo ci) {
-        if (this.velocity.cpy().len() > terminalVelocity){
-            this.velocity.clamp(0, terminalVelocity);
+        if (this.velocity.cpy().len() > cosmicReach_Seamless_Portals$terminalVelocity){
+            this.velocity.clamp(0, cosmicReach_Seamless_Portals$terminalVelocity);
         }
-        if (this.ignorePortals) return;
-        this.tmpNonCollideBlocks.clear();
-        this.tmpNonCollideBlocks.addAll(this.tmpCollidedBlocks);
-        this.tmpCollidedBlocks.clear();
-        this.tmpPortaledBoundingBox.setBounds(this.localBoundingBox);
-        this.tmpPortaledBoundingBox.getBounds().min.add(new Vector3(-0.01F, -0.01F, -0.01F));
-        this.tmpPortaledBoundingBox.getBounds().max.add(new Vector3(0.01F, 0.01F, 0.01F));
-        this.justTeleported = false;
-        this.teleportPortal = null;
-        // A bit of a hack since entities don't keep track of the zones they're in
-        // And since for now there's only one entity - the player
-        // TODO: Fix when more entities/multiplayer gets added
-        updateTrackedPortals(deltaTime);
+        if (this.cosmicReach_Seamless_Portals$ignorePortals) return;
+        this.cosmicReach_Seamless_Portals$tmpNonCollideBlocks.clear();
+        this.cosmicReach_Seamless_Portals$tmpNonCollideBlocks.addAll(this.cosmicReach_Seamless_Portals$tmpCollidedBlocks);
+        this.cosmicReach_Seamless_Portals$tmpCollidedBlocks.clear();
+        this.cosmicReach_Seamless_Portals$tmpPortaledBoundingBox.setBounds(this.localBoundingBox);
+        this.cosmicReach_Seamless_Portals$tmpPortaledBoundingBox.getBounds().min.add(new Vector3(-0.01F, -0.01F, -0.01F));
+        this.cosmicReach_Seamless_Portals$tmpPortaledBoundingBox.getBounds().max.add(new Vector3(0.01F, 0.01F, 0.01F));
+        this.cosmicReach_Seamless_Portals$justTeleported = false;
+        this.cosmicReach_Seamless_Portals$teleportPortal = null;
+        cosmicReach_Seamless_Portals$updateTrackedPortals(deltaTime, zone);
     }
 
     @Unique
-    private void updateTrackedPortals(double deltaTime){
+    private void cosmicReach_Seamless_Portals$updateTrackedPortals(double deltaTime, Zone zone){
         if (SeamlessPortals.portalManager.createdPortals.isEmpty()) return;
 
         Vector3 prevPos = this.position.cpy();
@@ -111,17 +110,21 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
         float vz = testVelocity.z * (float)deltaTime;
         Vector3 posDiff = new Vector3(vx, vy, vz);
         Vector3 targetPosition = (new Vector3(this.position)).add(posDiff);
-        this.tmpPortalNextPosition.set(targetPosition);
+        this.cosmicReach_Seamless_Portals$tmpPortalNextPosition.set(targetPosition);
 
-        Ray posChange = new Ray(prevPos.cpy().add(portalPosCheckEpsilon), targetPosition.cpy().add(portalPosCheckEpsilon).sub(prevPos));
+        Ray posChange = new Ray(prevPos.cpy().add(cosmicReach_Seamless_Portals$portalPosCheckEpsilon), targetPosition.cpy().add(cosmicReach_Seamless_Portals$portalPosCheckEpsilon).sub(prevPos));
 
         for (Map.Entry<Integer, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
             Portal portal = portalEntry.getValue();
-            if (portal.isPortalDestroyed || portal.linkedPortal == null) {
+            if (portal.isPortalDestroyed) {
                 continue;
             }
-            if (portal.zoneID.equals(InGame.getLocalPlayer().zoneId) && !portal.isOnSameSideOfPortal(prevPos.cpy().add(portalPosCheckEpsilon), targetPosition.cpy().add(portalPosCheckEpsilon)) && Intersector.intersectRayOrientedBounds(posChange, portal.getMeshBoundingBox(), new Vector3())){
-                this.teleportThroughPortal(portal);
+            if (portal.zoneID.equals(zone.zoneId) && portal.isNotOnSameSideOfPortal(prevPos.cpy().add(cosmicReach_Seamless_Portals$portalPosCheckEpsilon), targetPosition.cpy().add(cosmicReach_Seamless_Portals$portalPosCheckEpsilon)) && Intersector.intersectRayOrientedBounds(posChange, portal.getMeshBoundingBox(), new Vector3())){
+                if (portal.linkedPortal == null){
+                    this.pendingDamage += 1000000;
+                    break;
+                }
+                this.cosmicReach_Seamless_Portals$teleportThroughPortal(portal, zone);
                 break;
             }
         }
@@ -129,48 +132,48 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
 
     @WrapOperation(method = "updateConstraints", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/Zone;getBlockState(III)Lfinalforeach/cosmicreach/blocks/BlockState;"))
     private BlockState updateConstraintsMixin(Zone instance, int x, int y, int z, Operation<BlockState> original){
-        return this.checkIfShouldCollidePortal(instance, x, y, z, original);
+        return this.cosmicReach_Seamless_Portals$checkIfShouldCollidePortal(instance, x, y, z, original);
     }
 
-    public BlockState checkIfShouldCollidePortal(Zone instance, int x, int y, int z, Operation<BlockState> original){
+    public BlockState cosmicReach_Seamless_Portals$checkIfShouldCollidePortal(Zone instance, int x, int y, int z, Operation<BlockState> original){
         // Refer to the comment in method teleportThroughPortal for an explanation
         BlockState orBlockState = original.call(instance, x, y, z);
-        if (this.ignorePortals){
+        if (this.cosmicReach_Seamless_Portals$ignorePortals){
             return orBlockState;
         }
 
         Chunk c = instance.getChunkAtBlock(x, y, z);
         if (c == null) return orBlockState;
         BlockPosition curBlockPos = new BlockPosition(c, x - c.blockX, y - c.blockY, z - c.blockZ);
-        if (this.tmpNonCollideBlocks.contains(curBlockPos, false)){
-            if (!this.tmpCollidedBlocks.contains(curBlockPos, false)){
-                this.tmpCollidedBlocks.add(curBlockPos);
+        if (this.cosmicReach_Seamless_Portals$tmpNonCollideBlocks.contains(curBlockPos, false)){
+            if (!this.cosmicReach_Seamless_Portals$tmpCollidedBlocks.contains(curBlockPos, false)){
+                this.cosmicReach_Seamless_Portals$tmpCollidedBlocks.add(curBlockPos);
             }
             return null;
         }
 
         if (orBlockState != null && !orBlockState.walkThrough){
-            orBlockState.getBoundingBox(this.tmpPortalCheckBlockBoundingBox, x, y, z);
+            orBlockState.getBoundingBox(this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox, x, y, z);
             Vector3 checkCenter = new Vector3();
-            this.tmpPortalCheckBlockBoundingBox.getCenter(checkCenter);
-            Vector3 portalCollisionCheckPos = this.isJustTeleported() ? this.tmpPortalNextPosition : this.position.cpy();
+            this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox.getCenter(checkCenter);
+            Vector3 portalCollisionCheckPos = this.cosmicReach_Seamless_Portals$isJustTeleported() ? this.cosmicReach_Seamless_Portals$tmpPortalNextPosition : this.position.cpy();
             Ray ray = new Ray(portalCollisionCheckPos, checkCenter.cpy().sub(portalCollisionCheckPos));
             for (Map.Entry<Integer, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
                 Portal portal = portalEntry.getValue();
-                if (portal.linkedPortal != null && portal.zoneID.equals(InGame.getLocalPlayer().zoneId) && !portal.isOnSameSideOfPortal(portalCollisionCheckPos, checkCenter) && Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3())){
-                    if (!portal.getMeshBoundingBox().intersects(this.tmpPortalCheckBlockBoundingBox)){
+                if (portal.zoneID.equals(InGame.getLocalPlayer().zoneId) && portal.isNotOnSameSideOfPortal(portalCollisionCheckPos, checkCenter) && Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3())){
+                    if (!portal.getMeshBoundingBox().intersects(this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox)){
                         return null;
                     }
                     else{
-                        System.out.println(this.tmpPortalCheckBlockBoundingBox + " and [" + portal.getMeshBoundingBox().getCorner000(new Vector3()) + "|" + portal.getMeshBoundingBox().getCorner111(new Vector3()) + "]");
+                        System.out.println(this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox + " and [" + portal.getMeshBoundingBox().getCorner000(new Vector3()) + "|" + portal.getMeshBoundingBox().getCorner111(new Vector3()) + "]");
                     }
                 }
             }
 
-            if (this.isJustTeleported()){
-                if (!this.tmpPortaledBoundingBox.intersects(this.tmpPortalCheckBlockBoundingBox) && this.tmpEntityBoundingBox.intersects(this.tmpPortalCheckBlockBoundingBox)){
-                    this.tmpNonCollideBlocks.add(curBlockPos);
-                    this.tmpCollidedBlocks.add(curBlockPos);
+            if (this.cosmicReach_Seamless_Portals$isJustTeleported()){
+                if (!this.cosmicReach_Seamless_Portals$tmpPortaledBoundingBox.intersects(this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox) && this.tmpEntityBoundingBox.intersects(this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox)){
+                    this.cosmicReach_Seamless_Portals$tmpNonCollideBlocks.add(curBlockPos);
+                    this.cosmicReach_Seamless_Portals$tmpCollidedBlocks.add(curBlockPos);
                     return null;
                 }
             }
@@ -179,12 +182,15 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
     }
 
     @Unique
-    public void teleportThroughPortal(Portal portal) {
-        // TODO: Fix when more entities/multiplayer gets added
-        if (this.isLocalPlayer()){
+    public void cosmicReach_Seamless_Portals$teleportThroughPortal(Portal portal, Zone zone) {
+        if (this.cosmicReach_Seamless_Portals$isLocalPlayer()){
             InGame.getLocalPlayer().zoneId = portal.linkedPortal.zoneID;
         }
-        this.tmpPortalNextPosition.set(portal.getPortaledPos(this.tmpPortalNextPosition));
+        if (!portal.zoneID.equals(portal.linkedPortal.zoneID)){
+            InGame.world.getZone(portal.zoneID).allEntities.removeValue((Entity) (Object) this, true);
+            InGame.world.getZone(portal.linkedPortal.zoneID).allEntities.add((Entity) (Object) this);
+        }
+        this.cosmicReach_Seamless_Portals$tmpPortalNextPosition.set(portal.getPortaledPos(this.cosmicReach_Seamless_Portals$tmpPortalNextPosition));
         this.viewDirection = portal.getPortaledVector(this.viewDirection);
         this.velocity.sub(portal.velocity);
         this.velocity.sub(portal.onceVelocity);
@@ -202,24 +208,24 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
         // who happens to be looking through this code
 
         // sorry not sorry
-        this.snapOnGoThroughPortal(portal);
+        this.cosmicReach_Seamless_Portals$snapOnGoThroughPortal(portal, zone);
 
         // Animating camera turning
-        if (this.isLocalPlayer()){
+        if (this.cosmicReach_Seamless_Portals$isLocalPlayer()){
             IPortalablePlayerController locPlayer = (IPortalablePlayerController) ((IPortalIngame) GameState.IN_GAME).getPlayerController();
             Vector3 offset = originalPos.sub(this.position);
-            locPlayer.portalCurrentCameraTransform(portal, offset);
+            locPlayer.cosmicReach_Seamless_Portals$portalCurrentCameraTransform(portal, offset);
         }
 
-        this.justTeleported = true;
-        this.teleportPortal = portal;
+        this.cosmicReach_Seamless_Portals$justTeleported = true;
+        this.cosmicReach_Seamless_Portals$teleportPortal = portal;
         Vector3 orPos = new Vector3(this.position);
-        this.tmpPortalTransformMatrix.setToLookAt(orPos, orPos.cpy().add(portal.linkedPortal.getPortaledVector(new Vector3(0, 0, 1))), portal.linkedPortal.getPortaledVector(new Vector3(0, 1, 0))).inv();
-        this.tmpPortaledBoundingBox.setTransform(this.tmpPortalTransformMatrix);
+        this.cosmicReach_Seamless_Portals$tmpPortalTransformMatrix.setToLookAt(orPos, orPos.cpy().add(portal.linkedPortal.getPortaledVector(new Vector3(0, 0, 1))), portal.linkedPortal.getPortaledVector(new Vector3(0, 1, 0))).inv();
+        this.cosmicReach_Seamless_Portals$tmpPortaledBoundingBox.setTransform(this.cosmicReach_Seamless_Portals$tmpPortalTransformMatrix);
     }
 
     @Unique
-    private void snapOnGoThroughPortal(Portal portal){
+    private void cosmicReach_Seamless_Portals$snapOnGoThroughPortal(Portal portal, Zone zone){
         // Making this is pure suffering
         // Why is collision with blocks so hard to do?
         // Isn't it, like, THE thing this game should be good at?
@@ -272,29 +278,26 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
 
         // And now for the actual checking collisions part
 
-        // TODO: Fix when more entities/multiplayer gets added
-        Zone curZone = InGame.getLocalPlayer().getZone(InGame.world); // For now just assume that this entity is the player
-
         float highestPoint = 0;
         for (int bx = minbx; bx <= maxbx; ++bx){
             for (int by = minby; by <= maxby; ++by){
                 for (int bz = minbz; bz <= maxbz; ++bz){
-                    BlockState checkBlock = curZone.getBlockState(bx, by, bz);
+                    BlockState checkBlock = zone.getBlockState(bx, by, bz);
                     if (checkBlock != null && !checkBlock.walkThrough){
-                        checkBlock.getBoundingBox(this.tmpPortalCheckBlockBoundingBox, bx, by, bz);
+                        checkBlock.getBoundingBox(this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox, bx, by, bz);
                         // Figure out if the block can just be discarded (to prevent some weirdness)
                         float checkPoint;
                         switch (direction.getName()){
-                            case "negZ", "negX", "negY" -> checkPoint = portal.linkedPortal.getPortaledPos(this.tmpPortalCheckBlockBoundingBox.min).y;
-                            default -> checkPoint = portal.linkedPortal.getPortaledPos(this.tmpPortalCheckBlockBoundingBox.max).y;
+                            case "negZ", "negX", "negY" -> checkPoint = portal.linkedPortal.getPortaledPos(this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox.min).y;
+                            default -> checkPoint = portal.linkedPortal.getPortaledPos(this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox.max).y;
                         }
                         if (checkPoint > portal.linkedPortal.getPortaledPos(this.position).y + 0.01) continue;
 
-                        if (this.tmpEntityBoundingBox.intersects(this.tmpPortalCheckBlockBoundingBox)){
+                        if (this.tmpEntityBoundingBox.intersects(this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox)){
                             // Figure out how high the player should be snapped
                             float curPoint;
-                            Vector3 blockOffsetMin = this.tmpPortalCheckBlockBoundingBox.max.cpy().sub(this.tmpEntityBoundingBox.min);
-                            Vector3 blockOffsetMax = this.tmpPortalCheckBlockBoundingBox.min.cpy().sub(this.tmpEntityBoundingBox.max).scl(-1);
+                            Vector3 blockOffsetMin = this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox.max.cpy().sub(this.tmpEntityBoundingBox.min);
+                            Vector3 blockOffsetMax = this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox.min.cpy().sub(this.tmpEntityBoundingBox.max).scl(-1);
                             switch (direction.getName()){
                                 case "negZ" -> curPoint = blockOffsetMax.z;
                                 case "posX" -> curPoint = blockOffsetMin.x;
@@ -315,31 +318,31 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
         // finally, snap the player in the chosen direction by the chosen amount
         Vector3 bump = direction.getVector().cpy().scl(highestPoint);
         this.position.add(bump);
-        this.tmpPortalNextPosition.add(bump);
+        this.cosmicReach_Seamless_Portals$tmpPortalNextPosition.add(bump);
     }
 
     @Unique
-    private boolean isLocalPlayer(){
-        return ((IPortalableEntity) InGame.getLocalPlayer().getEntity() == this);
+    private boolean cosmicReach_Seamless_Portals$isLocalPlayer(){
+        return (IPortalableEntity) InGame.getLocalPlayer().getEntity() == this;
     }
 
     @Unique
-    public boolean isJustTeleported(){
-        return this.justTeleported;
+    public boolean cosmicReach_Seamless_Portals$isJustTeleported(){
+        return this.cosmicReach_Seamless_Portals$justTeleported;
     }
 
     @Unique
-    public void setIgnorePortals(boolean value){
-        this.ignorePortals = value;
+    public void cosmicReach_Seamless_Portals$setIgnorePortals(boolean value){
+        this.cosmicReach_Seamless_Portals$ignorePortals = value;
     }
 
     @Unique
-    public Portal getTeleportingPortal(){
-        return this.teleportPortal;
+    public Portal cosmicReach_Seamless_Portals$getTeleportingPortal(){
+        return this.cosmicReach_Seamless_Portals$teleportPortal;
     }
 
     @Override
-    public void renderNoAnim(Camera renderCamera) {
+    public void cosmicReach_Seamless_Portals$renderNoAnim(Camera renderCamera) {
         if (this.modelInstance != null) {
             Vector3 tmpPos = new Vector3();
             tmpPos.set(this.lastRenderPosition);
@@ -363,7 +366,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
     }
 
     @Override
-    public void renderAfterMatrixSetNoAnim(Camera renderCamera, Matrix4 customMatrix) {
+    public void cosmicReach_Seamless_Portals$renderAfterMatrixSetNoAnim(Camera renderCamera, Matrix4 customMatrix) {
         float r = this.modelLightColor.r;
         float g = this.modelLightColor.g;
         float b = this.modelLightColor.b;

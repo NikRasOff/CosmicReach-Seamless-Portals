@@ -5,12 +5,15 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.github.puzzle.game.items.data.DataTag;
+import com.github.puzzle.game.items.data.DataTagManifest;
+import com.github.puzzle.game.items.data.attributes.IntDataAttribute;
+import com.github.puzzle.game.items.data.attributes.Vector3DataAttribute;
+import com.github.puzzle.game.util.DataTagUtil;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
-import com.nikrasoff.seamlessportals.effects.DestabiliserPulse;
 import com.nikrasoff.seamlessportals.extras.DirectionVector;
 import com.nikrasoff.seamlessportals.extras.ExtraPortalUtils;
 import com.nikrasoff.seamlessportals.extras.RaycastOutput;
-import com.nikrasoff.seamlessportals.extras.interfaces.IModItemStack;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.portals.PortalManager;
 import finalforeach.cosmicreach.BlockSelection;
@@ -27,22 +30,20 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Map;
-
 @Mixin(BlockSelection.class)
 public abstract class BlockSelectionMixin {
     @Shadow public static boolean enabled;
 
     @Shadow public static ShapeRenderer shapeRenderer;
     @Unique
-    private Vector3 portalRaycastHitDebug = new Vector3();
+    private Vector3 cosmicReach_Seamless_Portals$portalRaycastHitDebug = new Vector3();
     @Unique
-    private Vector3 portalRaycastOriginDebug = new Vector3();
+    private Vector3 cosmicReach_Seamless_Portals$portalRaycastOriginDebug = new Vector3();
     @Unique
-    private Vector3 portalRaycastNormalDebug = new Vector3();
+    private Vector3 cosmicReach_Seamless_Portals$portalRaycastNormalDebug = new Vector3();
 
     @Unique
-    private static Vector3 tmpVectorForPortals = new Vector3();
+    private static Vector3 cosmicReach_Seamless_Portals$tmpVectorForPortals = new Vector3();
 
     @Inject(method = "render", at = @At("HEAD"))
     private void debugPortalRender(Camera worldCamera, CallbackInfo ci){
@@ -50,15 +51,15 @@ public abstract class BlockSelectionMixin {
             shapeRenderer.setProjectionMatrix(worldCamera.combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             shapeRenderer.setColor(Color.RED);
-            shapeRenderer.line(portalRaycastOriginDebug, portalRaycastHitDebug);
+            shapeRenderer.line(cosmicReach_Seamless_Portals$portalRaycastOriginDebug, cosmicReach_Seamless_Portals$portalRaycastHitDebug);
             shapeRenderer.setColor(Color.BLUE);
-            shapeRenderer.line(portalRaycastHitDebug, tmpVectorForPortals.set(portalRaycastHitDebug).add(portalRaycastNormalDebug));
+            shapeRenderer.line(cosmicReach_Seamless_Portals$portalRaycastHitDebug, cosmicReach_Seamless_Portals$tmpVectorForPortals.set(cosmicReach_Seamless_Portals$portalRaycastHitDebug).add(cosmicReach_Seamless_Portals$portalRaycastNormalDebug));
             shapeRenderer.end();
         }
     }
 
     @Unique
-    private Vector3 getUpVectorForPortals(DirectionVector dv, Camera cam){
+    private Vector3 cosmicReach_Seamless_Portals$getUpVectorForPortals(DirectionVector dv, Camera cam){
         switch (dv.getName()){
             case "posY" -> {
                 Vector3 upDir = new Vector3(cam.direction);
@@ -84,7 +85,7 @@ public abstract class BlockSelectionMixin {
     }
 
     @Unique
-    private Vector3 getPositionForPortals(Vector3 pos, DirectionVector normal){
+    private Vector3 cosmicReach_Seamless_Portals$getPositionForPortals(Vector3 pos, DirectionVector normal){
         switch (normal.getName()){
             case "posY", "negY" -> {
                 Vector3 newPos = pos.cpy().add(normal.getVector().cpy().scl(0.04F));
@@ -118,49 +119,45 @@ public abstract class BlockSelectionMixin {
             ItemStack heldItemStack = UI.hotbar.getSelectedItemStack();
             if (heldItemStack != null && heldItemStack.getItem() != null && heldItemStack.getItem().getID().equals("seamlessportals:handheld_portal_generator")){
                 enabled = false;
-                Map<String, Object> hpgProperties = ((IModItemStack) heldItemStack).getCustomProperties();
+                DataTagManifest hpgManifest = DataTagUtil.getManifestFromStack(heldItemStack);
 
-                if (!hpgProperties.containsKey("portal1Chunk")){
-                    hpgProperties.put("portal1Chunk", new Vector3());
+                if (!hpgManifest.hasTag("portal1Chunk")){
+                    hpgManifest.setTag("portal1Chunk", new DataTag<>("p1Chunk", new Vector3DataAttribute(new Vector3())));
                 }
-                if (!hpgProperties.containsKey("portal1Id")){
-                    hpgProperties.put("portal1Id", -1);
+                if (!hpgManifest.hasTag("portal1Id")){
+                    hpgManifest.setTag("portal1Id", new DataTag<>("p1Id", new IntDataAttribute(-1)));
                 }
-                Vector3 primaryPortalChunkPos = (Vector3) hpgProperties.get("portal1Chunk");
-                int primaryPortalId = (int) hpgProperties.get("portal1Id");
+                DataTag<Vector3> primaryPortalChunkPos = hpgManifest.getTag("portal1Chunk");
+                DataTag<Integer> primaryPortalId = hpgManifest.getTag("portal1Id");
 
-                if (!hpgProperties.containsKey("portal2Chunk")){
-                    hpgProperties.put("portal2Chunk", new Vector3());
+                if (!hpgManifest.hasTag("portal2Chunk")){
+                    hpgManifest.setTag("portal2Chunk", new DataTag<>("p2Chunk", new Vector3DataAttribute(new Vector3())));
                 }
-                if (!hpgProperties.containsKey("portal2Id")){
-                    hpgProperties.put("portal2Id", -1);
+                if (!hpgManifest.hasTag("portal2Id")){
+                    hpgManifest.setTag("portal2Id", new DataTag<>("p2Id", new IntDataAttribute(-1)));
                 }
-                Vector3 secondaryPortalChunkPos = (Vector3) hpgProperties.get("portal2Chunk");
-                int secondaryPortalId = (int) hpgProperties.get("portal2Id");
+                DataTag<Vector3> secondaryPortalChunkPos = hpgManifest.getTag("portal2Chunk");
+                DataTag<Integer> secondaryPortalId = hpgManifest.getTag("portal2Id");
 
                 PortalManager pm = SeamlessPortals.portalManager;
                 if (!UI.isInventoryOpen()){
                     if (Controls.attackBreakJustPressed()){
-                        RaycastOutput result = ExtraPortalUtils.raycast(zone, worldCamera.position, worldCamera.direction, 100F);
+                        RaycastOutput result = ExtraPortalUtils.raycast(zone, worldCamera.position, worldCamera.direction, 1000F);
                         if (result != null){
-                            portalRaycastOriginDebug.set(worldCamera.position);
-                            portalRaycastHitDebug.set(result.hitPos());
-                            portalRaycastNormalDebug.set(result.hitNormal().getVector());
+                            cosmicReach_Seamless_Portals$portalRaycastOriginDebug.set(worldCamera.position);
+                            cosmicReach_Seamless_Portals$portalRaycastHitDebug.set(result.hitPos());
+                            cosmicReach_Seamless_Portals$portalRaycastNormalDebug.set(result.hitNormal().getVector());
 
-                            Portal prPortal = pm.getPortalWithGen(primaryPortalId, primaryPortalChunkPos, zone.zoneId);
-                            Portal secPortal = pm.getPortalWithGen(secondaryPortalId, secondaryPortalChunkPos, zone.zoneId);
+                            Portal prPortal = pm.getPortalWithGen(primaryPortalId.getValue(), primaryPortalChunkPos.getValue(), zone.zoneId);
+                            Portal secPortal = pm.getPortalWithGen(secondaryPortalId.getValue(), secondaryPortalChunkPos.getValue(), zone.zoneId);
                             if (prPortal == null){
-                                Vector3 upDir = getUpVectorForPortals(result.hitNormal(), worldCamera);
-                                Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), zone);
-                                hpgProperties.put("portal1Id", newPortal.getPortalID());
-                                primaryPortalId = newPortal.getPortalID();
-                                primaryPortalChunkPos.x = Math.floorDiv((int) newPortal.position.x, 16);
-                                primaryPortalChunkPos.y = Math.floorDiv((int) newPortal.position.y, 16);
-                                primaryPortalChunkPos.z = Math.floorDiv((int) newPortal.position.z, 16);
-                                if (secondaryPortalId != -1){
+                                Vector3 upDir = cosmicReach_Seamless_Portals$getUpVectorForPortals(result.hitNormal(), worldCamera);
+                                Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, cosmicReach_Seamless_Portals$getPositionForPortals(result.hitPos(), result.hitNormal()), zone);
+                                primaryPortalId.attribute.setValue(newPortal.getPortalID());
+                                primaryPortalChunkPos.attribute.getValue().set(Math.floorDiv((int) newPortal.position.x, 16), Math.floorDiv((int) newPortal.position.y, 16), Math.floorDiv((int) newPortal.position.z, 16));
+                                if (secondaryPortalId.getValue() != -1){
                                     if (secPortal == null){
-                                        hpgProperties.put("portal2Id", -1);
-                                        secondaryPortalId = -1;
+                                        secondaryPortalId.attribute.setValue(-1);
                                     }
                                     else{
                                         secPortal.playAnimation("rebind");
@@ -175,34 +172,30 @@ public abstract class BlockSelectionMixin {
                                     secPortal.playAnimation("rebind");
                                 }
                                 prPortal.playAnimation("start");
-                                prPortal.setPosition(getPositionForPortals(result.hitPos(), result.hitNormal()));
+                                prPortal.setPosition(cosmicReach_Seamless_Portals$getPositionForPortals(result.hitPos(), result.hitNormal()));
                                 prPortal.viewDirection = result.hitNormal().getVector().cpy().scl(-1);
-                                prPortal.upVector = getUpVectorForPortals(result.hitNormal(), worldCamera);
+                                prPortal.upVector = cosmicReach_Seamless_Portals$getUpVectorForPortals(result.hitNormal(), worldCamera);
                             }
                         }
                         ItemRenderer.swingHeldItem();
                     }
                     if (Controls.usePlaceJustPressed()){
-                        RaycastOutput result = ExtraPortalUtils.raycast(zone, worldCamera.position, worldCamera.direction, 100F);
+                        RaycastOutput result = ExtraPortalUtils.raycast(zone, worldCamera.position, worldCamera.direction, 1000F);
                         if (result != null){
-                            portalRaycastOriginDebug.set(worldCamera.position);
-                            portalRaycastHitDebug.set(result.hitPos());
-                            portalRaycastNormalDebug.set(result.hitNormal().getVector());
-                            Portal secPortal = pm.getPortalWithGen(secondaryPortalId, secondaryPortalChunkPos, zone.zoneId);
-                            Portal prPortal = pm.getPortalWithGen(primaryPortalId, primaryPortalChunkPos, zone.zoneId);
+                            cosmicReach_Seamless_Portals$portalRaycastOriginDebug.set(worldCamera.position);
+                            cosmicReach_Seamless_Portals$portalRaycastHitDebug.set(result.hitPos());
+                            cosmicReach_Seamless_Portals$portalRaycastNormalDebug.set(result.hitNormal().getVector());
+                            Portal secPortal = pm.getPortalWithGen(secondaryPortalId.getValue(), secondaryPortalChunkPos.getValue(), zone.zoneId);
+                            Portal prPortal = pm.getPortalWithGen(primaryPortalId.getValue(), primaryPortalChunkPos.getValue(), zone.zoneId);
 
                             if (secPortal == null){
-                                Vector3 upDir = getUpVectorForPortals(result.hitNormal(), worldCamera);
-                                Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector(), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), zone);
-                                hpgProperties.put("portal2Id", newPortal.getPortalID());
-                                secondaryPortalId = newPortal.getPortalID();
-                                secondaryPortalChunkPos.x = Math.floorDiv((int) newPortal.position.x, 16);
-                                secondaryPortalChunkPos.y = Math.floorDiv((int) newPortal.position.y, 16);
-                                secondaryPortalChunkPos.z = Math.floorDiv((int) newPortal.position.z, 16);
-                                if (primaryPortalId != -1){
+                                Vector3 upDir = cosmicReach_Seamless_Portals$getUpVectorForPortals(result.hitNormal(), worldCamera);
+                                Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector(), upDir, cosmicReach_Seamless_Portals$getPositionForPortals(result.hitPos(), result.hitNormal()), zone);
+                                secondaryPortalId.attribute.setValue(newPortal.getPortalID());
+                                secondaryPortalChunkPos.attribute.getValue().set(Math.floorDiv((int) newPortal.position.x, 16), Math.floorDiv((int) newPortal.position.y, 16), Math.floorDiv((int) newPortal.position.z, 16));
+                                if (primaryPortalId.getValue() != -1){
                                     if (prPortal == null){
-                                        hpgProperties.put("portal1Id", -1);
-                                        primaryPortalId = -1;
+                                        primaryPortalId.attribute.setValue(-1);
                                     }
                                     else{
                                         prPortal.playAnimation("rebind");
@@ -217,29 +210,29 @@ public abstract class BlockSelectionMixin {
                                     prPortal.playAnimation("rebind");
                                 }
                                 secPortal.playAnimation("start");
-                                secPortal.setPosition(getPositionForPortals(result.hitPos(), result.hitNormal()));
+                                secPortal.setPosition(cosmicReach_Seamless_Portals$getPositionForPortals(result.hitPos(), result.hitNormal()));
                                 secPortal.viewDirection = result.hitNormal().getVector();
-                                secPortal.upVector = getUpVectorForPortals(result.hitNormal(), worldCamera);
+                                secPortal.upVector = cosmicReach_Seamless_Portals$getUpVectorForPortals(result.hitNormal(), worldCamera);
                             }
                         }
                         ItemRenderer.swingHeldItem();
                     }
                     if (Controls.pickBlockPressed()){
-                        if (primaryPortalId != -1){
-                            Portal primaryPortal = pm.getPortalWithGen(primaryPortalId, primaryPortalChunkPos, zone.zoneId);
+                        if (primaryPortalId.getValue() != -1){
+                            Portal primaryPortal = pm.getPortalWithGen(primaryPortalId.getValue(), primaryPortalChunkPos.getValue(), zone.zoneId);
                             if (primaryPortal != null){
                                 primaryPortal.startDestruction();
                             }
                         }
-                        if (secondaryPortalId != -1){
-                            Portal secondaryPortal = pm.getPortalWithGen(secondaryPortalId, secondaryPortalChunkPos, zone.zoneId);
+                        if (secondaryPortalId.getValue() != -1){
+                            Portal secondaryPortal = pm.getPortalWithGen(secondaryPortalId.getValue(), secondaryPortalChunkPos.getValue(), zone.zoneId);
                             if (secondaryPortal != null){
                                 secondaryPortal.startDestruction();
                             }
                         }
 
-                        hpgProperties.put("portal1Id", -1);
-                        hpgProperties.put("portal2Id", -1);
+                        primaryPortalId.attribute.setValue(-1);
+                        secondaryPortalId.attribute.setValue(-1);
                     }
                 }
 

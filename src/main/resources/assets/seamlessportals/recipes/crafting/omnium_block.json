@@ -1,0 +1,34 @@
+{
+    "recipes":
+    [
+        {
+            "pattern": [
+                "***",
+                "***",
+                "***"
+            ],
+            "inputs":
+            {
+                "*": "seamlessportals:omnium_crystal"
+            },
+            "output": 
+            {
+                "item": "seamlessportals:omnium_block[default]",
+                "amount": 1
+            }
+        },
+        {
+            "inputs":
+            [
+                {
+                    "seamlessportals:omnium_block[default]": 1
+                }
+            ],
+            "output": 
+            {
+                "item": "seamlessportals:omnium_crystal",
+                "amount": 9
+            }
+        }
+    ]
+}

@@ -12,6 +12,9 @@
   "entrypoints": {
     "init": [
       "com.nikrasoff.seamlessportals.SeamlessPortals"
+    ],
+    "postInit": [
+      "com.nikrasoff.seamlessportals.SeamlessPortals"
     ]
   },
   "mixins": [

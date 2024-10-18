@@ -1,0 +1,9 @@
+{
+    "id": "seamlessportals:omnium_crystal",
+
+    "itemProperties": 
+    {
+        "texture": "seamlessportals:textures/items/omnium_crystal.png",
+        "modelType": "base:item3D"
+    }
+}

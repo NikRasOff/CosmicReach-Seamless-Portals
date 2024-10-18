@@ -12,7 +12,6 @@
     "InGameMixin",
     "ItemEntityMixin",
     "ItemRendererMixin",
-    "ItemStackMixin",
     "LangMixin",
     "PlayerControllerMixin",
     "PlayerMixin",

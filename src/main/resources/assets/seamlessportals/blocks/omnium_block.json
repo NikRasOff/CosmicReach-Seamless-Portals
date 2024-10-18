@@ -1,0 +1,11 @@
+{
+    "stringId": "seamlessportals:omnium_block",
+    "blockStates":
+    {
+        "default":
+        {
+            "modelName": "seamlessportals:models/blocks/omnium_block.json",
+            "dropId": "seamlessportals:omnium_block[default]"
+        }
+    }
+}

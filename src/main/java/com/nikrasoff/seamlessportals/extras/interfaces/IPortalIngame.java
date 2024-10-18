@@ -4,5 +4,5 @@ import finalforeach.cosmicreach.entities.PlayerController;
 
 public interface IPortalIngame {
     PlayerController getPlayerController();
-    float getTempFovForPortals();
+    float cosmicReach_Seamless_Portals$getTempFovForPortals();
 }

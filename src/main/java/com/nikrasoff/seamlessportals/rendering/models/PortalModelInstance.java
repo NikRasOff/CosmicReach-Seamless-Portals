@@ -142,16 +142,12 @@ public class PortalModelInstance implements IEntityModelInstance {
         }
         this.portalCamera.combined.set(this.portalCamera.projection);
         Matrix4.mul(this.portalCamera.combined.val, this.portalCamera.view.val);
-        // Not updating the frustum because that causes a bunch of artifacts
-//        this.portalCamera.invProjectionView.set(this.portalCamera.combined);
-//        Matrix4.inv(this.portalCamera.invProjectionView.val);
-//        this.portalCamera.frustum.update(this.portalCamera.invProjectionView);
     }
 
     private void updatePortalCamera(Camera playerCamera, Portal portal){
         this.portalCamera.viewportHeight = playerCamera.viewportHeight;
         this.portalCamera.viewportWidth = playerCamera.viewportWidth;
-        this.portalCamera.fieldOfView = ((IPortalIngame) GameState.IN_GAME).getTempFovForPortals();
+        this.portalCamera.fieldOfView = ((IPortalIngame) GameState.IN_GAME).cosmicReach_Seamless_Portals$getTempFovForPortals();
         this.portalCamera.near = playerCamera.near;
         this.portalCamera.far = playerCamera.far;
 

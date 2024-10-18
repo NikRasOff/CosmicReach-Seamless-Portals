@@ -49,7 +49,7 @@ public abstract class InGameMixin implements IPortalIngame {
     @Inject(method = "render", at = @At("RETURN"))
     private void resetPlayerCamera(CallbackInfo ci){
         SeamlessPortalsRenderUtil.renderContext.end();
-        ((IPortalablePlayerController) playerController).resetPlayerCameraUp();
+        ((IPortalablePlayerController) playerController).cosmicReach_Seamless_Portals$resetPlayerCameraUp();
     }
 
     @Inject(method = "loadWorld(Lfinalforeach/cosmicreach/world/World;)V", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/io/PlayerSaver;loadPlayers(Lfinalforeach/cosmicreach/world/World;)V"))
@@ -61,7 +61,7 @@ public abstract class InGameMixin implements IPortalIngame {
     public abstract PlayerController getPlayerController();
 
     @Override
-    public float getTempFovForPortals() {
+    public float cosmicReach_Seamless_Portals$getTempFovForPortals() {
         return cosmicReach_Seamless_Portals$tempFovForPortals;
     }
 }

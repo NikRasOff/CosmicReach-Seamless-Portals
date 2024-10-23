@@ -8,12 +8,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
 import com.nikrasoff.seamlessportals.items.containers.OmniumCalibratorSlotContainer;
+import com.nikrasoff.seamlessportals.ui.widgets.DoubleProgressTexture;
 import finalforeach.cosmicreach.items.ItemSlot;
 import finalforeach.cosmicreach.items.screens.BaseItemScreen;
 import finalforeach.cosmicreach.ui.UI;
 import finalforeach.cosmicreach.ui.widgets.ItemSlotWidget;
-import finalforeach.cosmicreach.ui.widgets.ProgressArrowTexture;
-import finalforeach.cosmicreach.util.Orientation2D;
 
 public class OmniumCalibratorScreen extends BaseItemScreen {
     BlockEntityOmniumCalibrator omniumCalibrator;
@@ -38,7 +37,7 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
         this.slotWidgets[2] = w;
 
         functionalTable.add(this.slotWidgets[1]);
-        final ProgressArrowTexture progressArrow = new ProgressArrowTexture(SeamlessPortalsConstants.UI_LASER_WHOLE_OFF, SeamlessPortalsConstants.UI_LASER_WHOLE_ON, Orientation2D.RIGHT);
+        final DoubleProgressTexture progressArrow = new DoubleProgressTexture(SeamlessPortalsConstants.UI_LASER_WHOLE_OFF, SeamlessPortalsConstants.UI_LASER_WHOLE_ON, DoubleProgressTexture.Orientation.HORIZONTAL);
         progressArrow.addAction(new Action() {
             public boolean act(float delta) {
                 progressArrow.setProgress(omniumCalibrator.getProgressRatio());

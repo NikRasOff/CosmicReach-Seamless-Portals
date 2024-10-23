@@ -87,6 +87,7 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
 
     public static void extraInit(){
         // No idea why, but this doesn't work without me doing it like this
+        SeamlessPortalsConstants.init();
         SeamlessPortalsRenderUtil.initialise();
         PulseEffect.create();
         PortalModel.create();

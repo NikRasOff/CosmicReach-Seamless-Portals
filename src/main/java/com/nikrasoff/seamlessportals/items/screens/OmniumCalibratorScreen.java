@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
 import com.nikrasoff.seamlessportals.items.containers.OmniumCalibratorSlotContainer;
 import finalforeach.cosmicreach.items.ItemSlot;
@@ -21,7 +22,7 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
         OmniumCalibratorSlotContainer container = omniumCalibrator.slotContainer;
         Stack stack = new Stack();
         Actor background = new Image(UI.containerBackground9Patch);
-        Table table = new Table();
+        Table functionalTable = new Table();
         this.slotWidgets = new ItemSlotWidget[container.numberOfSlots - 1];
 
         ItemSlot s = container.getInputSlot();
@@ -36,24 +37,39 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
         w = new ItemSlotWidget(container, s, s.isOutputOnly());
         this.slotWidgets[2] = w;
 
-        table.add(this.slotWidgets[1]);
-        final ProgressArrowTexture progressArrow = new ProgressArrowTexture(UI.progressArrowEmptyTex, UI.progressArrowFullTex, Orientation2D.RIGHT);
+        functionalTable.add(this.slotWidgets[1]);
+        final ProgressArrowTexture progressArrow = new ProgressArrowTexture(SeamlessPortalsConstants.UI_LASER_WHOLE_OFF, SeamlessPortalsConstants.UI_LASER_WHOLE_ON, Orientation2D.RIGHT);
         progressArrow.addAction(new Action() {
             public boolean act(float delta) {
                 progressArrow.setProgress(omniumCalibrator.getProgressRatio());
                 return false;
             }
         });
-        table.add(progressArrow);
-        table.add(this.slotWidgets[2]);
-        table.row();
-        table.add(this.slotWidgets[0]);
-        table.setWidth(128.0F);
-        table.setHeight(128.0F);
-        background.setWidth(table.getWidth() + 8.0F);
-        background.setHeight(table.getHeight() + 8.0F);
+        functionalTable.add(progressArrow).width(96);
+        functionalTable.add(this.slotWidgets[2]);
+        functionalTable.row();
+        functionalTable.add().height(32);
+        functionalTable.row();
+        functionalTable.add();
+        functionalTable.add(this.slotWidgets[0]);
+        functionalTable.setWidth(128.0F);
+        functionalTable.setHeight(128.0F);
+        background.setWidth(functionalTable.getWidth() + 8.0F);
+        background.setHeight(functionalTable.getHeight() + 8.0F);
+
+        Table decorationTable = new Table();
+        decorationTable.add(new Image(SeamlessPortalsConstants.UI_LASER_RIGHT_ON)).width(32);
+        decorationTable.add().width(160).height(32);
+        decorationTable.add(new Image(SeamlessPortalsConstants.UI_LASER_LEFT_ON)).width(32);
+        decorationTable.row();
+        decorationTable.add().height(32);
+        decorationTable.add(new Image(SeamlessPortalsConstants.UI_ARROW_OMNIUM_CALIBRATOR));
+        decorationTable.row();
+        decorationTable.add().height(32);
+
         stack.add(background);
-        stack.add(table);
+        stack.add(functionalTable);
+        stack.add(decorationTable);
         stack.setBounds(background.getX(), background.getY(), background.getWidth(), background.getHeight());
         this.slotActor = stack;
         stack.setHeight(stack.getHeight() + 16.0F);

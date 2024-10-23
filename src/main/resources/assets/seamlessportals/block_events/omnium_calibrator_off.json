@@ -1,53 +1,14 @@
 {
     "parent":"base:block_events_default",
-    "stringId": "seamlessportals:block_events_portal_generator_off",
+    "stringId": "seamlessportals:block_events_omnium_calibrator_off",
     "triggers":
     {
-        "onInteract":
-        [
-            {
-                "actionId": "base:set_block_state_params",
-                "parameters":
-                {
-                    "xOff": 0,
-                    "yOff": 0,
-                    "zOff": 0,
-                    "params":
-                    {
-                        "active":"true"
-                    }
-                }
-            },
-            {
-                "actionId": "seamlessportals:register_portal_gen"
-            },
-            {
-                "actionId": "base:play_sound_2d",
-                "parameters":
-                {
-                    "sound": "seamlessportals:sounds/blocks/block_switch.ogg",
-                    "volume": 1,
-                    "pitch": 1,
-                    "pan": 0
-                }
-            },
-            {
-                "actionId": "base:play_sound_2d",
-                "parameters":
-                {
-                    "sound": "seamlessportals:sounds/blocks/portal_generator_power_up.ogg",
-                    "volume": 1,
-                    "pitch": 1,
-                    "pan": 0
-                }
-            }
-        ],
         "onPlace":
         [
             {
                 "actionId": "seamlessportals:face_away_from_player",
                 "parameters": {
-                    "vertical": true
+                    "invert": true
                 }
             },
             {

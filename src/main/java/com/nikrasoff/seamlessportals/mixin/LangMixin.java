@@ -8,6 +8,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.extras.interfaces.ILang;
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.lang.Lang;
@@ -32,7 +33,7 @@ public abstract class LangMixin implements ILang {
                 "portal_items"
         };
         for (String file : modLangFiles){
-            Identifier fileIdentifier = Identifier.of(SeamlessPortals.MOD_ID, "lang/" + langTag + "/" + file + ".json");
+            Identifier fileIdentifier = Identifier.of(SeamlessPortalsConstants.MOD_ID, "lang/" + langTag + "/" + file + ".json");
             if (Gdx.files.classpath("assets/" + fileIdentifier.toPath()).exists()){
                 JsonValue jv = GameAssetLoader.loadJson(GameAssetLoader.loadAsset(fileIdentifier));
 

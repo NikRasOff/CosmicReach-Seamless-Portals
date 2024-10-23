@@ -1,0 +1,32 @@
+{
+    "stringId": "seamlessportals:omnium_calibrator",
+    "blockEntityId": "seamlessportals:omnium_calibrator",
+    "defaultParams":
+    {
+        "active": "false"
+    },
+    "blockStates":
+    {
+        "active=false":
+        {
+            "modelName": "seamlessportals:models/blocks/omnium_calibrator_off.json",
+            "blockEventsId": "seamlessportals:block_events_omnium_calibrator_off",
+            "dropId": "seamlessportals:omnium_calibrator[active=false]",
+            "stateGenerators": ["seamlessportals:directional_blocks_horizontal"],
+            "tags": [
+                "tool_pickaxe_effective"
+            ]
+        },
+        "active=true": {
+            "modelName": "seamlessportals:models/blocks/omnium_calibrator_on.json",
+            "blockEventsId": "seamlessportals:block_events_omnium_calibrator_on",
+            "catalogHidden": true,
+            "lightLevelBlue": 8,
+            "dropId": "seamlessportals:omnium_calibrator[active=false]",
+            "stateGenerators": ["seamlessportals:directional_blocks_horizontal"],
+            "tags": [
+                "tool_pickaxe_effective"
+            ]
+        }
+    }
+}

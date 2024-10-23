@@ -5,14 +5,14 @@ import com.github.puzzle.game.items.data.DataTagManifest;
 import finalforeach.cosmicreach.lang.Lang;
 import finalforeach.cosmicreach.util.Identifier;
 
-import static com.nikrasoff.seamlessportals.SeamlessPortals.MOD_ID;
+import static com.nikrasoff.seamlessportals.SeamlessPortalsConstants.CALIBRATED_OMNIUM_ID;
+import static com.nikrasoff.seamlessportals.SeamlessPortalsConstants.MOD_ID;
 
 public class SyncedOmniumCrystal implements IModItem {
-    public static final Identifier socID = Identifier.of(MOD_ID, "synced_omnium_crystal");
     public final DataTagManifest tagManifest = new DataTagManifest();
 
     public SyncedOmniumCrystal(){
-        this.addTexture(IModItem.MODEL_2_5D_ITEM, Identifier.of(MOD_ID, "omnium_crystal_linked.png"));
+        this.addTexture(IModItem.MODEL_2_5D_ITEM, Identifier.of(MOD_ID, "omnium_crystal_calibrated.png"));
     }
 
     @Override
@@ -22,17 +22,17 @@ public class SyncedOmniumCrystal implements IModItem {
 
     @Override
     public Identifier getIdentifier() {
-        return socID;
+        return CALIBRATED_OMNIUM_ID;
     }
 
     @Override
     public String getName() {
-        return Lang.get(socID.toString());
+        return Lang.get(CALIBRATED_OMNIUM_ID.toString());
     }
 
     @Override
     public int getMaxStackSize() {
-        return 1;
+        return 2;
     }
 
     @Override

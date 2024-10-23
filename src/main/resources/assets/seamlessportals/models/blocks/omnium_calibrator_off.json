@@ -1,0 +1,28 @@
+{
+    "parent": "seamlessportals:models/blocks/directional_cube.json",
+
+    "textures":
+    {
+        "front":
+        {
+            "fileName": "seamlessportals:textures/blocks/omnium_calibrator_front_off.png"
+        },
+        "back":
+        {
+            "fileName": "seamlessportals:textures/blocks/omnium_calibrator_back.png"
+        },
+        "side":
+        {
+            "fileName": "seamlessportals:textures/blocks/omnium_calibrator_side.png"
+        },
+        "bottom":
+        {
+            "fileName": "seamlessportals:textures/blocks/omnium_calibrator_top.png"
+        },
+        "top":
+        {
+            "fileName": "seamlessportals:textures/blocks/omnium_calibrator_top.png"
+        }
+    }
+    
+}

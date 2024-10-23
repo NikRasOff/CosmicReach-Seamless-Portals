@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.animations.ColorAnimation;
 import com.nikrasoff.seamlessportals.animations.SPAnimationSequence;
 import com.nikrasoff.seamlessportals.animations.Vector3Animation;
@@ -50,7 +50,7 @@ public class PulseEffect {
     public static void create(){
         renderable = new Renderable();
         SeamlessPortalsRenderUtil.cubeModelInstance.getRenderable(renderable);
-        shader = new TwoSidedShader(Identifier.of(SeamlessPortals.MOD_ID, "shaders/default.vert.glsl"), Identifier.of(SeamlessPortals.MOD_ID, "shaders/effect_pulse.frag.glsl"));
+        shader = new TwoSidedShader(Identifier.of(SeamlessPortalsConstants.MOD_ID, "shaders/default.vert.glsl"), Identifier.of(SeamlessPortalsConstants.MOD_ID, "shaders/effect_pulse.frag.glsl"));
         shader.init();
     }
 

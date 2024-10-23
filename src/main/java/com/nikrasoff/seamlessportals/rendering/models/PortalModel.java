@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.badlogic.gdx.utils.Disposable;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import com.nikrasoff.seamlessportals.rendering.shaders.TwoSidedShader;
@@ -26,9 +27,9 @@ public class PortalModel implements IEntityModel, Disposable {
     public static void create(){
         renderable = new Renderable();
         SeamlessPortalsRenderUtil.cubeModelInstance.getRenderable(renderable);
-        portalShader = new TwoSidedShader(Identifier.of(SeamlessPortals.MOD_ID, "shaders/default.vert.glsl"), Identifier.of(SeamlessPortals.MOD_ID, "shaders/portal.frag.glsl"));
+        portalShader = new TwoSidedShader(Identifier.of(SeamlessPortalsConstants.MOD_ID, "shaders/default.vert.glsl"), Identifier.of(SeamlessPortalsConstants.MOD_ID, "shaders/portal.frag.glsl"));
         portalShader.init();
-        nullPortalShader = new TwoSidedShader(Identifier.of(SeamlessPortals.MOD_ID, "shaders/default.vert.glsl"), Identifier.of(SeamlessPortals.MOD_ID, "shaders/null_portal.frag.glsl"));
+        nullPortalShader = new TwoSidedShader(Identifier.of(SeamlessPortalsConstants.MOD_ID, "shaders/default.vert.glsl"), Identifier.of(SeamlessPortalsConstants.MOD_ID, "shaders/null_portal.frag.glsl"));
         nullPortalShader.init();
     }
 

@@ -1,7 +1,6 @@
 package com.nikrasoff.seamlessportals.blockevents;
 
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Queue;
 import com.nikrasoff.seamlessportals.extras.DirectionVector;
 import finalforeach.cosmicreach.blockevents.actions.ActionId;
 import finalforeach.cosmicreach.blockevents.actions.IBlockAction;
@@ -19,6 +18,10 @@ import java.util.Map;
         id = "seamlessportals:face_away_from_player"
 )
 public class BlockActionFaceAwayFromPlayer implements IBlockAction {
+
+    public boolean vertical = false;
+    public boolean invert = false;
+
     @Override
     public void act(BlockState blockState, BlockEventTrigger blockEventTrigger, Zone zone, Map<String, Object> map) {
         this.act(blockState, zone, (BlockPosition) map.get("blockPos"));
@@ -26,13 +29,14 @@ public class BlockActionFaceAwayFromPlayer implements IBlockAction {
 
     public void act(BlockState blockState, Zone zone, BlockPosition targetBlockPosition) {
         Entity playerEntity = InGame.getLocalPlayer().getEntity();
-        Vector3 playerEntityViewDir = playerEntity.viewDirection;
+        Vector3 playerEntityViewDir = playerEntity.viewDirection.cpy();
+        if (invert) playerEntityViewDir.scl(-1);
         String directionString = "";
         String horDirString;
 
-        horDirString = new String(DirectionVector.getClosestHorizontalDirection(playerEntityViewDir).getName());
+        horDirString = DirectionVector.getClosestHorizontalDirection(playerEntityViewDir).getName();
 
-        if (!DirectionVector.getClosestDirection(playerEntityViewDir).getName().equals(horDirString)){
+        if (this.vertical && !DirectionVector.getClosestDirection(playerEntityViewDir).getName().equals(horDirString)){
             directionString = DirectionVector.getClosestVerticalDirection(playerEntityViewDir).getName();
         }
 

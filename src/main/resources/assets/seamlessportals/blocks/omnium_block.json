@@ -5,7 +5,10 @@
         "default":
         {
             "modelName": "seamlessportals:models/blocks/omnium_block.json",
-            "dropId": "seamlessportals:omnium_block[default]"
+            "dropId": "seamlessportals:omnium_block[default]",
+            "tags": [
+                "tool_pickaxe_effective"
+            ]
         }
     }
 }

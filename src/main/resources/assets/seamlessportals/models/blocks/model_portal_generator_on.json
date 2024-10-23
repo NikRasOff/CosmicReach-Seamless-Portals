@@ -15,6 +15,14 @@
         {
             "fileName": "seamlessportals:textures/blocks/portal_generator_side_on.png"
         },
+        "bottom":
+        {
+            "fileName": "seamlessportals:textures/blocks/portal_generator_side_on.png"
+        },
+        "top":
+        {
+            "fileName": "seamlessportals:textures/blocks/portal_generator_side_on.png"
+        },
         "front_vertical":
         {
             "fileName": "seamlessportals:textures/blocks/portal_gen_front_vertical_on.png"

@@ -11,7 +11,10 @@
             "modelName": "seamlessportals:models/blocks/model_portal_generator_off.json",
             "blockEventsId": "seamlessportals:block_events_portal_generator_off",
             "dropId": "seamlessportals:portal_generator[active=false]",
-            "stateGenerators": ["seamlessportals:directional_blocks"]
+            "stateGenerators": ["seamlessportals:directional_blocks"],
+            "tags": [
+                "tool_pickaxe_effective"
+            ]
         },
         "active=true": {
             "modelName": "seamlessportals:models/blocks/model_portal_generator_on.json",
@@ -20,7 +23,10 @@
             "lightLevelGreen": 8,
             "lightLevelBlue": 8,
             "dropId": "seamlessportals:portal_generator[active=false]",
-            "stateGenerators": ["seamlessportals:directional_blocks"]
+            "stateGenerators": ["seamlessportals:directional_blocks"],
+            "tags": [
+                "tool_pickaxe_effective"
+            ]
         }
     }
 }

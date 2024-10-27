@@ -18,6 +18,7 @@ public class PortalManager {
     public int saveDataVersion = 1;
     public String prevPortalGenZone;
     public Vector3 prevPortalGenPos;
+    public int maxOmniumFrequency = 0;
     public int maxPortalID = 0;
 
     public transient HashMap<Integer, Portal> createdPortals = new HashMap<>();
@@ -42,6 +43,11 @@ public class PortalManager {
     public int getNextPortalID(){
         this.maxPortalID += 1;
         return this.maxPortalID - 1;
+    }
+
+    public int getNextOmniumFrequency(){
+        this.maxOmniumFrequency += 1;
+        return this.maxOmniumFrequency - 1;
     }
 
     public Portal getPortalWithGen(int portalID, Vector3 chunkCoords, String zoneID){

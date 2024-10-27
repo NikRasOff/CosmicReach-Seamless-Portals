@@ -1,8 +1,14 @@
 package com.nikrasoff.seamlessportals.items.containers;
 
+import com.github.puzzle.game.items.data.DataTag;
+import com.github.puzzle.game.items.data.DataTagManifest;
+import com.github.puzzle.game.items.data.attributes.IntDataAttribute;
+import com.github.puzzle.game.util.DataTagUtil;
+import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.SeamlessPortalsItems;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
+import com.nikrasoff.seamlessportals.portals.PortalManager;
 import finalforeach.cosmicreach.io.CRBinDeserializer;
 import finalforeach.cosmicreach.items.Item;
 import finalforeach.cosmicreach.items.ItemSlot;
@@ -53,8 +59,17 @@ public class OmniumCalibratorSlotContainer extends SlotContainer {
 
     public void onProcessComplete(){
         this.getProcessSlot().addAmount(-2);
-        this.getOutputSlot1().addItemStack(SeamlessPortalsItems.CALIBRATED_OMNIUM_CRYSTAL, 1);
-        this.getOutputSlot2().addItemStack(SeamlessPortalsItems.CALIBRATED_OMNIUM_CRYSTAL, 1);
+        int freq = SeamlessPortals.portalManager.getNextOmniumFrequency();
+
+        ItemStack calibOmnium1 = new ItemStack(SeamlessPortalsItems.CALIBRATED_OMNIUM_CRYSTAL, 1);
+        DataTagManifest omnium1Data = DataTagUtil.getManifestFromStack(calibOmnium1);
+        omnium1Data.addTag(new DataTag<>("frequency", new IntDataAttribute(freq)));
+        this.getOutputSlot1().setItemStack(calibOmnium1);
+
+        ItemStack calibOmnium2 = new ItemStack(SeamlessPortalsItems.CALIBRATED_OMNIUM_CRYSTAL, 1);
+        DataTagManifest omnium2Data = DataTagUtil.getManifestFromStack(calibOmnium2);
+        omnium2Data.addTag(new DataTag<>("frequency", new IntDataAttribute(freq)));
+        this.getOutputSlot2().setItemStack(calibOmnium2);
     }
 
     public void checkProcess(){

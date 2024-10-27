@@ -6,5 +6,6 @@
   "seamlessportals:omnium_cluster": "Кластер Омниума",
   "seamlessportals:omnium_block": "Блок Омниума",
   "seamlessportals:calibrated_omnium_crystal": "Калиброванный Кристалл Омниума",
-  "seamlessportals:omnium_calibrator": "Калибратор Омниума"
+  "seamlessportals:omnium_calibrator": "Калибратор Омниума",
+  "seamlessportals:calibrated_omnium_crystal.frequency": "Частота:"
 }

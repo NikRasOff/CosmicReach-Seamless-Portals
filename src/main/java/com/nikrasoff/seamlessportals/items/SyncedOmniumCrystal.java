@@ -2,6 +2,8 @@ package com.nikrasoff.seamlessportals.items;
 
 import com.github.puzzle.game.items.IModItem;
 import com.github.puzzle.game.items.data.DataTagManifest;
+import com.github.puzzle.game.util.DataTagUtil;
+import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.lang.Lang;
 import finalforeach.cosmicreach.util.Identifier;
 
@@ -30,9 +32,17 @@ public class SyncedOmniumCrystal implements IModItem {
         return Lang.get(CALIBRATED_OMNIUM_ID.toString());
     }
 
+    public String getName(ItemStack stack){
+        DataTagManifest manifest = DataTagUtil.getManifestFromStack(stack);
+        if (manifest.hasTag("frequency")) {
+            return Lang.get("seamlessportals:calibrated_omnium_crystal.frequency") + manifest.getTag("frequency").getValue() + "\n" + Lang.get(CALIBRATED_OMNIUM_ID.toString());
+        }
+        return this.getName();
+    }
+
     @Override
     public int getMaxStackSize() {
-        return 2;
+        return 1;
     }
 
     @Override

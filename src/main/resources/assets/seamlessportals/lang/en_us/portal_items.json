@@ -6,5 +6,6 @@
   "seamlessportals:omnium_cluster": "Omnium Cluster",
   "seamlessportals:omnium_block": "Omnium Block",
   "seamlessportals:calibrated_omnium_crystal": "Calibrated Omnium Crystal",
-  "seamlessportals:omnium_calibrator": "Omnium Calibrator"
+  "seamlessportals:omnium_calibrator": "Omnium Calibrator",
+  "seamlessportals:calibrated_omnium_crystal.frequency": "Frequency:"
 }

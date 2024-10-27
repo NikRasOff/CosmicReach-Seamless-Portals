@@ -45,10 +45,6 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
             "omnium_calibrator"
     };
 
-    static String[] itemIds = {
-            "omnium_crystal"
-    };
-
     static String[] recipeIds = {
             "crafting/omnium_block"
     };
@@ -69,10 +65,6 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
 
         SeamlessPortalsBlockEvents.registerSeamlessPortalsBlockEvents();
         EntityCreator.registerEntityCreator("seamlessportals:entity_portal", Portal::readPortal);
-        for (String id : itemIds){
-            ItemThing.loadItemFromJson(GameAssetLoader.loadJson(GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "items/" + id + ".json"))));
-        }
-        IModItem.registerItem(new SyncedOmniumCrystal());
     }
 
     @Subscribe
@@ -106,13 +98,12 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
             newModel.onGroundModelMatrix.translate(0.25f, 0.1f, 0.25f);
             return newModel;
         });
-
-        Item.registerItem(new HandheldPortalGen());
     }
 
     @Override
     public void onPostInit() {
         // Yet again more post-post-inits because it do be like this
+        SeamlessPortalsItems.registerItems();
         for (String id : recipeIds){
             CraftingRecipes.loadRecipe(GameAssetLoader.loadJson(GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "recipes/" + id + ".json"))));
         }

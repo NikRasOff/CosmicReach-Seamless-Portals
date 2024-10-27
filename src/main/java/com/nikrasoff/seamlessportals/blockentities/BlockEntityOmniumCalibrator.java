@@ -1,6 +1,8 @@
 package com.nikrasoff.seamlessportals.blockentities;
 
+import com.badlogic.gdx.utils.Array;
 import com.nikrasoff.seamlessportals.items.containers.OmniumCalibratorSlotContainer;
+import com.nikrasoff.seamlessportals.items.screens.OmniumCalibratorScreen;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blockentities.BlockEntity;
 import finalforeach.cosmicreach.blockentities.BlockEntityCreator;

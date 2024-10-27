@@ -6,9 +6,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
+import com.nikrasoff.seamlessportals.SeamlessPortalsItems;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
 import com.nikrasoff.seamlessportals.items.containers.OmniumCalibratorSlotContainer;
 import com.nikrasoff.seamlessportals.ui.widgets.DoubleProgressTexture;
+import com.nikrasoff.seamlessportals.ui.widgets.FakeItemSlotWidget;
+import com.nikrasoff.seamlessportals.ui.widgets.TextureSwitchWidget;
 import finalforeach.cosmicreach.items.ItemSlot;
 import finalforeach.cosmicreach.items.screens.BaseItemScreen;
 import finalforeach.cosmicreach.ui.UI;
@@ -17,7 +20,8 @@ import finalforeach.cosmicreach.ui.widgets.ItemSlotWidget;
 public class OmniumCalibratorScreen extends BaseItemScreen {
     BlockEntityOmniumCalibrator omniumCalibrator;
 
-    public OmniumCalibratorScreen(final BlockEntityOmniumCalibrator omniumCalibrator) {
+    public OmniumCalibratorScreen(BlockEntityOmniumCalibrator omniumCalibrator) {
+        this.omniumCalibrator = omniumCalibrator;
         OmniumCalibratorSlotContainer container = omniumCalibrator.slotContainer;
         Stack stack = new Stack();
         Actor background = new Image(UI.containerBackground9Patch);
@@ -29,12 +33,28 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
         this.slotWidgets[0] = w;
 
         s = container.getOutputSlot1();
-        w = new ItemSlotWidget(container, s, s.isOutputOnly());
-        this.slotWidgets[1] = w;
+        FakeItemSlotWidget w1 = new FakeItemSlotWidget(container, s, s.isOutputOnly());
+        w1.setFakeItem(SeamlessPortalsItems.OMNIUM_CRYSTAL);
+        w1.addAction(new Action() {
+            @Override
+            public boolean act(float delta) {
+                w1.fakeItemVisible = omniumCalibrator.slotContainer.isProcessGoing();
+                return false;
+            }
+        });
+        this.slotWidgets[1] = w1;
 
         s = container.getOutputSlot2();
-        w = new ItemSlotWidget(container, s, s.isOutputOnly());
-        this.slotWidgets[2] = w;
+        FakeItemSlotWidget w2 = new FakeItemSlotWidget(container, s, s.isOutputOnly());
+        w2.setFakeItem(SeamlessPortalsItems.OMNIUM_CRYSTAL);
+        w2.addAction(new Action() {
+            @Override
+            public boolean act(float delta) {
+                w2.fakeItemVisible = omniumCalibrator.slotContainer.isProcessGoing();
+                return false;
+            }
+        });
+        this.slotWidgets[2] = w2;
 
         functionalTable.add(this.slotWidgets[1]);
         final DoubleProgressTexture progressArrow = new DoubleProgressTexture(SeamlessPortalsConstants.UI_LASER_WHOLE_OFF, SeamlessPortalsConstants.UI_LASER_WHOLE_ON, DoubleProgressTexture.Orientation.HORIZONTAL);
@@ -57,9 +77,29 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
         background.setHeight(functionalTable.getHeight() + 8.0F);
 
         Table decorationTable = new Table();
-        decorationTable.add(new Image(SeamlessPortalsConstants.UI_LASER_RIGHT_ON)).width(32);
+
+        TextureSwitchWidget laserRight = new TextureSwitchWidget(SeamlessPortalsConstants.UI_LASER_RIGHT_OFF, SeamlessPortalsConstants.UI_LASER_RIGHT_ON);
+        laserRight.addAction(new Action() {
+            @Override
+            public boolean act(float v) {
+                laserRight.setCurrentTexture(omniumCalibrator.slotContainer.isProcessGoing() ? 1 : 0);
+                return false;
+            }
+        });
+
+        decorationTable.add(laserRight).width(32);
         decorationTable.add().width(160).height(32);
-        decorationTable.add(new Image(SeamlessPortalsConstants.UI_LASER_LEFT_ON)).width(32);
+
+        TextureSwitchWidget laserLeft = new TextureSwitchWidget(SeamlessPortalsConstants.UI_LASER_LEFT_OFF, SeamlessPortalsConstants.UI_LASER_LEFT_ON);
+        laserLeft.addAction(new Action() {
+            @Override
+            public boolean act(float v) {
+                laserLeft.setCurrentTexture(omniumCalibrator.slotContainer.isProcessGoing() ? 1 : 0);
+                return false;
+            }
+        });
+
+        decorationTable.add(laserLeft).width(32);
         decorationTable.row();
         decorationTable.add().height(32);
         decorationTable.add(new Image(SeamlessPortalsConstants.UI_ARROW_OMNIUM_CALIBRATOR));

@@ -42,7 +42,8 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
             "portal_generator",
             "portal_destabiliser",
             "omnium_block",
-            "omnium_calibrator"
+            "omnium_calibrator",
+            "spacial_anchor"
     };
 
     static String[] recipeIds = {
@@ -55,7 +56,8 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
             "block_events_portal_generator_off",
             "block_events_portal_generator_on",
             "omnium_calibrator_on",
-            "omnium_calibrator_off"
+            "omnium_calibrator_off",
+            "spacial_anchor"
     };
 
     @Override

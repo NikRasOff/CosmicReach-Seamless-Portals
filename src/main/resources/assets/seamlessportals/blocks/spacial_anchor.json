@@ -1,0 +1,16 @@
+{
+    "stringId": "seamlessportals:spacial_anchor",
+    "blockStates":
+    {
+        "default":
+        {
+            "modelName": "seamlessportals:models/blocks/spacial_anchor.json",
+            "blockEventsId": "seamlessportals:block_events_spacial_anchor",
+            "dropId": "seamlessportals:spacial_anchor[default]",
+            "stateGenerators": ["seamlessportals:directional_blocks"],
+            "tags": [
+                "tool_pickaxe_effective"
+            ]
+        }
+    }
+}

@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.extras.IntVector3;
 import finalforeach.cosmicreach.WorldLoader;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.blocks.BlockPosition;
@@ -22,6 +23,7 @@ public class PortalManager {
     public int maxPortalID = 0;
 
     public transient HashMap<Integer, Portal> createdPortals = new HashMap<>();
+    public HashMap<Integer, Array<IntVector3>> spacialAnchors = new HashMap<>();
 
     public PortalManager(){}
     
@@ -48,6 +50,17 @@ public class PortalManager {
     public int getNextOmniumFrequency(){
         this.maxOmniumFrequency += 1;
         return this.maxOmniumFrequency - 1;
+    }
+
+    public void registerSpacialAnchor(IntVector3 position, int frequency){
+        if (!this.spacialAnchors.containsKey(frequency)) this.spacialAnchors.put(frequency, new Array<>());
+        this.spacialAnchors.get(frequency).add(position);
+    }
+
+    public void deregisterSpacialAnchor(IntVector3 position, int frequency){
+        if (!this.spacialAnchors.containsKey(frequency)) return;
+        this.spacialAnchors.get(frequency).removeValue(position, false);
+        if (this.spacialAnchors.get(frequency).isEmpty()) this.spacialAnchors.remove(frequency);
     }
 
     public Portal getPortalWithGen(int portalID, Vector3 chunkCoords, String zoneID){

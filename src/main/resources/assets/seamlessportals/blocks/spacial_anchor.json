@@ -1,5 +1,6 @@
 {
     "stringId": "seamlessportals:spacial_anchor",
+    "blockEntityId": "seamlessportals:spacial_anchor",
     "blockStates":
     {
         "default":

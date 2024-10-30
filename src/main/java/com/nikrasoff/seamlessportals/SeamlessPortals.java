@@ -9,10 +9,12 @@ import com.github.puzzle.game.items.IModItem;
 import com.github.puzzle.loader.entrypoint.interfaces.ModInitializer;
 import com.github.puzzle.loader.entrypoint.interfaces.PostModInitializer;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
+import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
 import com.nikrasoff.seamlessportals.effects.PulseEffect;
 import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
 import com.nikrasoff.seamlessportals.items.SyncedOmniumCrystal;
 import com.nikrasoff.seamlessportals.items.screens.OmniumCalibratorScreen;
+import com.nikrasoff.seamlessportals.items.screens.SpacialAnchorScreen;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import com.nikrasoff.seamlessportals.rendering.models.ObjItemModel;
 import com.nikrasoff.seamlessportals.portals.Portal;
@@ -110,10 +112,26 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
             CraftingRecipes.loadRecipe(GameAssetLoader.loadJson(GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "recipes/" + id + ".json"))));
         }
         BlockEntityOmniumCalibrator.registerBlockEntityCreator();
+        BlockEntitySpacialAnchor.registerBlockEntityCreator();
         GameSingletons.blockEntityScreenOpeners.put("seamlessportals:omnium_calibrator", (player, zone, blockEntity) -> {
             BlockEntityOmniumCalibrator omniumCalibrator = (BlockEntityOmniumCalibrator) blockEntity;
             final OmniumCalibratorScreen screen = new OmniumCalibratorScreen((BlockEntityOmniumCalibrator) blockEntity);
             UI.addOpenBaseItemScreen(omniumCalibrator.slotContainer, screen);
+            screen.getActor().addAction(new Action() {
+                public boolean act(float delta) {
+                    if (!blockEntity.loaded) {
+                        screen.closeRequested = true;
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            });
+        });
+        GameSingletons.blockEntityScreenOpeners.put("seamlessportals:spacial_anchor", (player, zone, blockEntity) -> {
+            BlockEntitySpacialAnchor spacialAnchor = (BlockEntitySpacialAnchor) blockEntity;
+            final SpacialAnchorScreen screen = new SpacialAnchorScreen((BlockEntitySpacialAnchor) blockEntity);
+            UI.addOpenBaseItemScreen(spacialAnchor.slotContainer, screen);
             screen.getActor().addAction(new Action() {
                 public boolean act(float delta) {
                     if (!blockEntity.loaded) {

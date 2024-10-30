@@ -8,7 +8,8 @@
             {
                 "actionId": "seamlessportals:face_away_from_player",
                 "parameters": {
-                    "vertical": true
+                    "vertical": true,
+                    "invert": true
                 }
             },
             {

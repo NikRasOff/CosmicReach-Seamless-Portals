@@ -7,11 +7,12 @@ import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.lang.Lang;
 import finalforeach.cosmicreach.util.Identifier;
 
-import static com.nikrasoff.seamlessportals.SeamlessPortalsConstants.CALIBRATED_OMNIUM_ID;
 import static com.nikrasoff.seamlessportals.SeamlessPortalsConstants.MOD_ID;
 
 public class SyncedOmniumCrystal implements IModItem {
     public final DataTagManifest tagManifest = new DataTagManifest();
+    public static Identifier CALIBRATED_OMNIUM_ID = Identifier.of(MOD_ID, "calibrated_omnium_crystal");
+
 
     public SyncedOmniumCrystal(){
         this.addTexture(IModItem.MODEL_2_5D_ITEM, Identifier.of(MOD_ID, "omnium_crystal_calibrated.png"));

@@ -174,9 +174,9 @@ public class PortalModelInstance implements IEntityModelInstance {
         portalModel.portalFrameBuffer.begin();
         ScreenUtils.clear(Sky.currentSky.currentSkyColor, true);
         Sky.currentSky.drawSky(this.portalCamera);
-        GameSingletons.zoneRenderer.render(InGame.world.getZone(portal.zoneID), this.portalCamera);
+        GameSingletons.zoneRenderer.render(portal.zone, this.portalCamera);
         Gdx.gl.glDepthMask(true);
-        InGame.world.getZone(portal.linkedPortal.zoneID).forEachEntity((e) -> {
+        portal.linkedPortal.zone.forEachEntity((e) -> {
             if (e instanceof Portal){
                 return;
             }
@@ -216,7 +216,7 @@ public class PortalModelInstance implements IEntityModelInstance {
         if (this.currentAnimation != null){
             this.currentAnimation.update(Gdx.graphics.getDeltaTime());
         }
-        if (!((Portal) entity).zoneID.equals(InGame.getLocalPlayer().zoneId) || ((Portal) entity).isPortalDestroyed || (entity).position.dst(camera.position) > 50){
+        if (entity.zone != GameSingletons.client().getLocalPlayer().getZone() || ((Portal) entity).isPortalDestroyed || (entity).position.dst(camera.position) > 50){
             return;
         }
         if (!camera.frustum.boundsInFrustum(this.getMeshBoundingBox(matrix4)) && ((Portal) entity).getDistanceToPortalPlane(camera.position) > camera.near){

@@ -1,8 +1,8 @@
 package com.nikrasoff.seamlessportals.extras;
 
 import com.badlogic.gdx.math.Vector3;
+import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blocks.BlockPosition;
-import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.world.Chunk;
 
 import java.util.Objects;
@@ -76,7 +76,7 @@ public class IntVector3 {
     }
 
     public BlockPosition toBlockPosition(){
-        Chunk c = InGame.world.getDefaultZone().getChunkAtBlock(x, y, z);
+        Chunk c = GameSingletons.world.getDefaultZone().getChunkAtBlock(x, y, z);
         return new BlockPosition(c, x - c.getBlockX(), y - c.getBlockY(), z - c.getBlockZ());
     }
 

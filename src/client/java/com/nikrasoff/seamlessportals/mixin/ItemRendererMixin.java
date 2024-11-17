@@ -40,6 +40,7 @@ public abstract class ItemRendererMixin{
 
     @Inject(method = "swingHeldItem", at = @At("HEAD"))
     static private void fireHpgAnim(CallbackInfo ci){
+        if (!isHpgEquipped) return;
         ObjItemModel hpgModel = (ObjItemModel) getModel(Item.getItem(HandheldPortalGen.hpgID), false);
         if (hpgModel == null) return;
 

@@ -5,15 +5,16 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
-import finalforeach.cosmicreach.WorldLoader;
-import finalforeach.cosmicreach.gamestates.InGame;
+import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.ZoneLoaders;
 import finalforeach.cosmicreach.blocks.BlockPosition;
+import finalforeach.cosmicreach.networking.server.ServerSingletons;
+import finalforeach.cosmicreach.networking.server.ServerZoneLoader;
 import finalforeach.cosmicreach.world.Chunk;
 import finalforeach.cosmicreach.world.EntityRegion;
 import finalforeach.cosmicreach.world.Zone;
 
 import java.util.HashMap;
-import java.util.WeakHashMap;
 
 public class PortalManager {
     public int saveDataVersion = 1;
@@ -29,13 +30,14 @@ public class PortalManager {
     
     public BlockPosition getPrevGenBlockPos(){
         if (this.prevPortalGenPos == null) return null;
-        Zone cur_zone = InGame.world.getZone(this.prevPortalGenZone);
-        Chunk c = cur_zone.getChunkAtBlock((int) this.prevPortalGenPos.x, (int) this.prevPortalGenPos.y, (int) this.prevPortalGenPos.z);
+        Zone curZone = GameSingletons.world.getZoneCreateIfNull(this.prevPortalGenZone);
+        Chunk c = curZone.getChunkAtBlock((int) this.prevPortalGenPos.x, (int) this.prevPortalGenPos.y, (int) this.prevPortalGenPos.z);
         if (c == null){
-            WorldLoader.INSTANCE.getChunkColumn(cur_zone, Math.floorDiv((int) this.prevPortalGenPos.x, 16), Math.floorDiv((int) this.prevPortalGenPos.y, 256) * 16, Math.floorDiv((int) this.prevPortalGenPos.z, 16), true);
-            c = cur_zone.getChunkAtBlock((int) this.prevPortalGenPos.x, (int) this.prevPortalGenPos.y, (int) this.prevPortalGenPos.z);
+
+//            WorldLoader.INSTANCE.getChunkColumn(curZone, Math.floorDiv((int) this.prevPortalGenPos.x, 16), Math.floorDiv((int) this.prevPortalGenPos.y, 256) * 16, Math.floorDiv((int) this.prevPortalGenPos.z, 16), true);
+            c = curZone.getChunkAtBlock((int) this.prevPortalGenPos.x, (int) this.prevPortalGenPos.y, (int) this.prevPortalGenPos.z);
             if (c == null){
-                SeamlessPortals.LOGGER.warn("Couldn't gen previous portal generator location");
+                SeamlessPortals.LOGGER.warn("Couldn't get previous portal generator location");
                 return null;
             }
         }
@@ -68,7 +70,7 @@ public class PortalManager {
         if (result != null){
             return result;
         }
-        EntityRegion.readChunkColumn(InGame.world.getZone(zoneID), (int) chunkCoords.x, (int) chunkCoords.z, Math.floorDiv((int) chunkCoords.x, 16), Math.floorDiv((int) chunkCoords.y, 16), Math.floorDiv((int) chunkCoords.z, 16));
+        EntityRegion.readChunkColumn(GameSingletons.world.getZoneIfExists(zoneID), (int) chunkCoords.x, (int) chunkCoords.z, Math.floorDiv((int) chunkCoords.x, 16), Math.floorDiv((int) chunkCoords.y, 16), Math.floorDiv((int) chunkCoords.z, 16));
         result = getPortal(portalID);
         return result;
     }
@@ -90,8 +92,8 @@ public class PortalManager {
         Portal portal2 = Portal.fromBlockPos(new Vector2(3, 3), portalPos2, zone2);
         portal1.linkPortal(portal2);
         portal2.linkPortal(portal1);
-        zone1.allEntities.add(portal1);
-        zone2.allEntities.add(portal2);
+        zone1.addEntity(portal1);
+        zone2.addEntity(portal2);
     }
 
     public void printExistingIDs(){

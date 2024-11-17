@@ -5,10 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import finalforeach.cosmicreach.items.ISlotContainer;
-import finalforeach.cosmicreach.items.Item;
-import finalforeach.cosmicreach.items.ItemSlot;
-import finalforeach.cosmicreach.items.ItemStack;
+import finalforeach.cosmicreach.items.*;
 import finalforeach.cosmicreach.rendering.items.ItemRenderer;
 import finalforeach.cosmicreach.ui.widgets.ItemSlotWidget;
 
@@ -17,16 +14,16 @@ public class FakeItemSlotWidget extends ItemSlotWidget {
     public boolean fakeItemVisible = false;
     public static Vector2 tmpVec = new Vector2();
 
-    public FakeItemSlotWidget(ISlotContainer container, ItemSlot itemSlot) {
-        super(container, itemSlot);
+    public FakeItemSlotWidget(ISlotContainerParent parent, ISlotContainer container, int itemSlotId) {
+        super(parent, container, itemSlotId);
     }
 
-    public FakeItemSlotWidget(ISlotContainer container, ItemSlot itemSlot, boolean isOutput) {
-        super(container, itemSlot, isOutput);
+    public FakeItemSlotWidget(ISlotContainerParent parent, ISlotContainer container, int itemSlotId, boolean isOutput) {
+        super(parent, container, itemSlotId, isOutput);
     }
 
-    public FakeItemSlotWidget(ISlotContainer container, ItemSlot itemSlot, Drawable imageDrawable, Drawable imageHoveredDrawable, Drawable imageSelectedDrawable) {
-        super(container, itemSlot, imageDrawable, imageHoveredDrawable, imageSelectedDrawable);
+    public FakeItemSlotWidget(ISlotContainerParent parent, ISlotContainer container, int itemSlotId, Drawable imageDrawable, Drawable imageHoveredDrawable, Drawable imageSelectedDrawable) {
+        super(parent, container, itemSlotId, imageDrawable, imageHoveredDrawable, imageSelectedDrawable);
     }
 
     public void setFakeItem(Item fakeItem){
@@ -35,7 +32,7 @@ public class FakeItemSlotWidget extends ItemSlotWidget {
 
     @Override
     public void drawItem(Viewport itemViewport) {
-        ItemStack itemStack = this.itemSlot.itemStack;
+        ItemStack itemStack = this.getItemSlot().itemStack;
         Item drawnItem = null;
         if (this.fakeItemVisible){
             drawnItem = this.fakeItem;

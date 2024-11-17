@@ -5,17 +5,12 @@ import com.github.puzzle.game.items.data.DataTagManifest;
 import com.github.puzzle.game.items.data.attributes.IntDataAttribute;
 import com.github.puzzle.game.util.DataTagUtil;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
-import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.SeamlessPortalsItems;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
-import com.nikrasoff.seamlessportals.portals.PortalManager;
-import finalforeach.cosmicreach.io.CRBinDeserializer;
-import finalforeach.cosmicreach.items.Item;
 import finalforeach.cosmicreach.items.ItemSlot;
 import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.items.containers.SlotContainer;
-
-import static com.nikrasoff.seamlessportals.SeamlessPortalsConstants.CALIBRATED_OMNIUM_ID;
+import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
 
 public class OmniumCalibratorSlotContainer extends SlotContainer {
 

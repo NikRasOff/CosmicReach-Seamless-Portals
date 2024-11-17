@@ -8,9 +8,9 @@ import finalforeach.cosmicreach.blockentities.BlockEntityCreator;
 import finalforeach.cosmicreach.blockentities.IBlockEntityWithContainer;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.entities.player.Player;
-import finalforeach.cosmicreach.io.CRBinDeserializer;
-import finalforeach.cosmicreach.io.CRBinSerializer;
 import finalforeach.cosmicreach.items.ItemSlot;
+import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
+import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
 import finalforeach.cosmicreach.world.Zone;
 
 import java.util.function.Predicate;
@@ -20,6 +20,7 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
     public PortalGeneratorSlotContainer slotContainer;
     public Vector2 portalSize = new Vector2(3, 3);
     public Vector2 entrancePortalOffset = new Vector2();
+    public Vector2 exitPortalOffset = new Vector2();
 
     public BlockEntityPortalGenerator(Zone zone, int globalX, int globalY, int globalZ){
         super(zone, globalX, globalY, globalZ);
@@ -44,11 +45,23 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
         super.read(deserial);
         this.slotContainer = deserial.readObj("slotContainer", PortalGeneratorSlotContainer.class);
         this.slotContainer.setPortalGenerator(this);
+        this.portalSize.x = deserial.readFloat("portalSizeX", 3);
+        this.portalSize.y = deserial.readFloat("portalSizeY", 3);
+        this.entrancePortalOffset.x = deserial.readFloat("portal1OffsetX", 0);
+        this.entrancePortalOffset.y = deserial.readFloat("portal1OffsetY", 0);
+        this.exitPortalOffset.x = deserial.readFloat("portal2OffsetX", 0);
+        this.exitPortalOffset.y = deserial.readFloat("portal2OffsetY", 0);
     }
 
     public void write(CRBinSerializer serial) {
         super.write(serial);
         serial.writeObj("slotContainer", this.slotContainer);
+        serial.writeFloat("portalSizeX", this.portalSize.x);
+        serial.writeFloat("portalSizeY", this.portalSize.y);
+        serial.writeFloat("portal1OffsetX", this.entrancePortalOffset.x);
+        serial.writeFloat("portal1OffsetY", this.entrancePortalOffset.y);
+        serial.writeFloat("portal2OffsetX", this.exitPortalOffset.x);
+        serial.writeFloat("portal2OffsetY", this.exitPortalOffset.y);
     }
 
     public static void registerBlockEntityCreator() {

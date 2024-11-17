@@ -2,16 +2,12 @@ package com.nikrasoff.seamlessportals.items.containers;
 
 import com.github.puzzle.game.items.data.DataTagManifest;
 import com.github.puzzle.game.util.DataTagUtil;
-import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsItems;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
-import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
-import com.nikrasoff.seamlessportals.extras.IntVector3;
-import finalforeach.cosmicreach.io.CRBinDeserializer;
-import finalforeach.cosmicreach.io.CRBinSerializer;
 import finalforeach.cosmicreach.items.ItemSlot;
-import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.items.containers.SlotContainer;
+import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
+import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
 
 public class PortalGeneratorSlotContainer extends SlotContainer {
 

@@ -1,5 +1,6 @@
 {
     "stringId": "seamlessportals:portal_generator",
+    "blockEntityId": "seamlessportals:portal_generator",
     "defaultParams":
     {
         "active": "false"

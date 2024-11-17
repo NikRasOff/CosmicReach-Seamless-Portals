@@ -1,3 +1,4 @@
 public method finalforeach/cosmicreach/items/recipes/CraftingRecipes loadRecipe (Lcom/badlogic/gdx/utils/JsonValue;)V
+public method finalforeach/cosmicreach/blocks/BlockStateGenerator loadGeneratorsFromFile (Lcom/badlogic/gdx/files/FileHandle;)V
 
 public field finalforeach/cosmicreach/blockentities/BlockEntity zone

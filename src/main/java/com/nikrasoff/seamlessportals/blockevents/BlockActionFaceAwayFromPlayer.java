@@ -2,12 +2,12 @@ package com.nikrasoff.seamlessportals.blockevents;
 
 import com.badlogic.gdx.math.Vector3;
 import com.nikrasoff.seamlessportals.extras.DirectionVector;
+import finalforeach.cosmicreach.blockevents.BlockEventArgs;
 import finalforeach.cosmicreach.blockevents.actions.ActionId;
 import finalforeach.cosmicreach.blockevents.actions.IBlockAction;
-import finalforeach.cosmicreach.gamestates.InGame;
+import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.world.BlockSetter;
-import finalforeach.cosmicreach.blockevents.BlockEventTrigger;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.world.Zone;
@@ -22,13 +22,8 @@ public class BlockActionFaceAwayFromPlayer implements IBlockAction {
     public boolean vertical = false;
     public boolean invert = false;
 
-    @Override
-    public void act(BlockState blockState, BlockEventTrigger blockEventTrigger, Zone zone, Map<String, Object> map) {
-        this.act(blockState, zone, (BlockPosition) map.get("blockPos"));
-    }
-
-    public void act(BlockState blockState, Zone zone, BlockPosition targetBlockPosition) {
-        Entity playerEntity = InGame.getLocalPlayer().getEntity();
+    public void act(BlockState blockState, Zone zone, BlockPosition targetBlockPosition, Player player) {
+        Entity playerEntity = player.getEntity();
         Vector3 playerEntityViewDir = playerEntity.viewDirection.cpy();
         if (invert) playerEntityViewDir.scl(-1);
         String directionString = "";
@@ -71,5 +66,10 @@ public class BlockActionFaceAwayFromPlayer implements IBlockAction {
         }
 
         return blockState.getBlockId() + "[" + newBlockStateID + "]";
+    }
+
+    @Override
+    public void act(BlockEventArgs blockEventArgs) {
+        this.act(blockEventArgs.srcBlockState, blockEventArgs.zone, blockEventArgs.blockPos, blockEventArgs.srcIdentity.getPlayer());
     }
 }

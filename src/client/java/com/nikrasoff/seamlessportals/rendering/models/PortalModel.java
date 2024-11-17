@@ -12,8 +12,10 @@ import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import com.nikrasoff.seamlessportals.rendering.shaders.TwoSidedShader;
+import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.entities.IEntityModel;
 import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
+import finalforeach.cosmicreach.ui.UI;
 import finalforeach.cosmicreach.util.Identifier;
 
 public class PortalModel implements IEntityModel, Disposable {
@@ -23,6 +25,7 @@ public class PortalModel implements IEntityModel, Disposable {
     public static Renderable renderable;
     public static TwoSidedShader portalShader;
     public static TwoSidedShader nullPortalShader;
+    public static PortalModel model;
 
     public static void create(){
         renderable = new Renderable();
@@ -31,6 +34,7 @@ public class PortalModel implements IEntityModel, Disposable {
         portalShader.init();
         nullPortalShader = new TwoSidedShader(Identifier.of(SeamlessPortalsConstants.MOD_ID, "shaders/default.vert.glsl"), Identifier.of(SeamlessPortalsConstants.MOD_ID, "shaders/null_portal.frag.glsl"));
         nullPortalShader.init();
+        model = new PortalModel();
     }
 
     public PortalModel(){
@@ -52,7 +56,7 @@ public class PortalModel implements IEntityModel, Disposable {
     }
 
     void renderDebug(Portal portal, Camera camera){
-        if (SeamlessPortals.debugOutlines){
+        if (UI.renderDebugInfo){
             if (!debugReady) initialiseDebug();
         }
         else if (debugReady){

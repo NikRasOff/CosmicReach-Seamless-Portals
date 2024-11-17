@@ -165,7 +165,7 @@ public abstract class BlockSelectionMixin {
                                         secPortal.linkPortal(newPortal);
                                     }
                                 }
-                                zone.allEntities.add(newPortal);
+                                zone.addEntity(newPortal);
                             }
                             else{
                                 if (secPortal != null){
@@ -203,7 +203,7 @@ public abstract class BlockSelectionMixin {
                                         prPortal.linkPortal(newPortal);
                                     }
                                 }
-                                zone.allEntities.add(newPortal);
+                                zone.addEntity(newPortal);
                             }
                             else{
                                 if (prPortal != null){

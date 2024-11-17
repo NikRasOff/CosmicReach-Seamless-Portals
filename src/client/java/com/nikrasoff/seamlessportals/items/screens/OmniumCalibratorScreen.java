@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.nikrasoff.seamlessportals.SPClientConstants;
 import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.SeamlessPortalsItems;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
@@ -21,6 +22,7 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
     BlockEntityOmniumCalibrator omniumCalibrator;
 
     public OmniumCalibratorScreen(BlockEntityOmniumCalibrator omniumCalibrator) {
+        super(omniumCalibrator);
         this.omniumCalibrator = omniumCalibrator;
         OmniumCalibratorSlotContainer container = omniumCalibrator.slotContainer;
         Stack stack = new Stack();
@@ -29,11 +31,11 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
         this.slotWidgets = new ItemSlotWidget[container.numberOfSlots - 1];
 
         ItemSlot s = container.getInputSlot();
-        ItemSlotWidget w = new ItemSlotWidget(container, s, s.isOutputOnly());
+        ItemSlotWidget w = new ItemSlotWidget(omniumCalibrator, container, s.getSlotId(), s.isOutputOnly());
         this.slotWidgets[0] = w;
 
         s = container.getOutputSlot1();
-        FakeItemSlotWidget w1 = new FakeItemSlotWidget(container, s, s.isOutputOnly());
+        FakeItemSlotWidget w1 = new FakeItemSlotWidget(omniumCalibrator, container, s.getSlotId(), s.isOutputOnly());
         w1.setFakeItem(SeamlessPortalsItems.OMNIUM_CRYSTAL);
         w1.addAction(new Action() {
             @Override
@@ -45,7 +47,7 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
         this.slotWidgets[1] = w1;
 
         s = container.getOutputSlot2();
-        FakeItemSlotWidget w2 = new FakeItemSlotWidget(container, s, s.isOutputOnly());
+        FakeItemSlotWidget w2 = new FakeItemSlotWidget(omniumCalibrator, container, s.getSlotId(), s.isOutputOnly());
         w2.setFakeItem(SeamlessPortalsItems.OMNIUM_CRYSTAL);
         w2.addAction(new Action() {
             @Override
@@ -57,7 +59,7 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
         this.slotWidgets[2] = w2;
 
         functionalTable.add(this.slotWidgets[1]);
-        final DoubleProgressTexture progressArrow = new DoubleProgressTexture(SeamlessPortalsConstants.UI_LASER_WHOLE_OFF, SeamlessPortalsConstants.UI_LASER_WHOLE_ON, DoubleProgressTexture.Orientation.HORIZONTAL);
+        final DoubleProgressTexture progressArrow = new DoubleProgressTexture(SPClientConstants.UI_LASER_WHOLE_OFF, SPClientConstants.UI_LASER_WHOLE_ON, DoubleProgressTexture.Orientation.HORIZONTAL);
         progressArrow.addAction(new Action() {
             public boolean act(float delta) {
                 progressArrow.setProgress(omniumCalibrator.getProgressRatio());
@@ -78,7 +80,7 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
 
         Table decorationTable = new Table();
 
-        TextureSwitchWidget laserRight = new TextureSwitchWidget(SeamlessPortalsConstants.UI_LASER_RIGHT_OFF, SeamlessPortalsConstants.UI_LASER_RIGHT_ON);
+        TextureSwitchWidget laserRight = new TextureSwitchWidget(SPClientConstants.UI_LASER_RIGHT_OFF, SPClientConstants.UI_LASER_RIGHT_ON);
         laserRight.addAction(new Action() {
             @Override
             public boolean act(float v) {
@@ -90,7 +92,7 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
         decorationTable.add(laserRight).width(32);
         decorationTable.add().width(160).height(32);
 
-        TextureSwitchWidget laserLeft = new TextureSwitchWidget(SeamlessPortalsConstants.UI_LASER_LEFT_OFF, SeamlessPortalsConstants.UI_LASER_LEFT_ON);
+        TextureSwitchWidget laserLeft = new TextureSwitchWidget(SPClientConstants.UI_LASER_LEFT_OFF, SPClientConstants.UI_LASER_LEFT_ON);
         laserLeft.addAction(new Action() {
             @Override
             public boolean act(float v) {
@@ -102,7 +104,7 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
         decorationTable.add(laserLeft).width(32);
         decorationTable.row();
         decorationTable.add().height(32);
-        decorationTable.add(new Image(SeamlessPortalsConstants.UI_ARROW_OMNIUM_CALIBRATOR));
+        decorationTable.add(new Image(SPClientConstants.UI_ARROW_OMNIUM_CALIBRATOR));
         decorationTable.row();
         decorationTable.add().height(32);
 

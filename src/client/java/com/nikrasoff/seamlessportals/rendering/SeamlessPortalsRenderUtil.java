@@ -51,7 +51,7 @@ public class SeamlessPortalsRenderUtil {
 
     public static void renderModel(ModelInstance instance, Camera camera, boolean useAmbientLight, Vector3 worldPos){
         // I'm not using ModelBatch primarily because I need to render the same ModelInstance several times over in a single frame
-        Zone z = InGame.getLocalPlayer().getZone(InGame.world);
+        Zone z = InGame.getLocalPlayer().getZone();
         Sky s = Sky.getCurrentSky(z);
         shader.begin(camera, renderContext);
         ((TextureAttribute) instance.materials.get(0).get(TextureAttribute.Diffuse)).textureDescription.texture.bind(1);

@@ -6,22 +6,20 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
-import com.nikrasoff.seamlessportals.rendering.models.PortalModel;
-import com.nikrasoff.seamlessportals.rendering.models.PortalModelInstance;
-import finalforeach.cosmicreach.gamestates.InGame;
-import finalforeach.cosmicreach.io.CRBinDeserializer;
+import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.ZoneLoader;
+import finalforeach.cosmicreach.ZoneLoaders;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.savelib.crbin.CRBSerialized;
-import finalforeach.cosmicreach.settings.GraphicsSettings;
+import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
+import finalforeach.cosmicreach.util.ArrayUtils;
 import finalforeach.cosmicreach.world.Zone;
 
 public class Portal extends Entity {
     public transient boolean isPortalDestroyed = false;
 
     public transient Portal linkedPortal;
-
-    static private final PortalModel portalModel = new PortalModel();
 
     @CRBSerialized
     private final Vector3 linkedPortalChunkCoords = new Vector3();
@@ -35,9 +33,9 @@ public class Portal extends Entity {
     public Vector3 upVector = new Vector3(0, 1,0 );
 
     @CRBSerialized
-    public String zoneID;
-
     private boolean isEndAnimationPlaying = false;
+    @CRBSerialized
+    private float endAnimationTimer = 0f;
     public static final Object lock = new Object();
 
     public static Portal readPortal(CRBinDeserializer deserializer){
@@ -46,7 +44,7 @@ public class Portal extends Entity {
         if (deserializer != null) {
             portal.read(deserializer);
             SeamlessPortals.portalManager.addPortal(portal);
-            Portal lPortal = SeamlessPortals.portalManager.getPortalWithGen(portal.linkedPortalID, portal.linkedPortalChunkCoords, portal.zoneID);
+            Portal lPortal = SeamlessPortals.portalManager.getPortalWithGen(portal.linkedPortalID, portal.linkedPortalChunkCoords, portal.zone.zoneId);
             if (lPortal != null){
                 portal.linkPortal(lPortal);
                 lPortal.linkPortal(portal);
@@ -61,8 +59,9 @@ public class Portal extends Entity {
         this.hasGravity = false;
         this.noClip = true;
         IPortalableEntity.setIgnorePortals((IPortalableEntity) this, true);
-        this.zoneID = "base:moon";
-        this.modelInstance = portalModel.getNewModelInstance();
+        if (GameSingletons.isClient){
+            this.modelInstance = SeamlessPortals.clientConstants.getNewPortalModelInstance();
+        }
     }
 
     public Portal(Vector2 size, Vector3 viewDir, Vector3 upDir, Vector3 portalPos, Zone zone){
@@ -79,7 +78,6 @@ public class Portal extends Entity {
         this.upVector = upDir;
 
         this.localBoundingBox.update();
-        this.zoneID = zone.zoneId;
         this.portalSize = new Vector3(size.x, size.y, 0);
         this.viewPositionOffset = new Vector3(0, 0, 0);
         this.modelInstance.setCurrentAnimation("start");
@@ -258,10 +256,10 @@ public class Portal extends Entity {
     public void update(Zone zone, double deltaTime) {
         super.update(zone, deltaTime);
         if (isEndAnimationPlaying){
-            PortalModelInstance pm = (PortalModelInstance) this.modelInstance;
-            if (pm.isAnimationOver()){
+            this.endAnimationTimer += (float) deltaTime;
+            if (this.endAnimationTimer >= 0.75f){
                 this.isPortalDestroyed = true;
-                this.onDeath(zone);
+                this.onDeath();
             }
         }
     }
@@ -275,23 +273,23 @@ public class Portal extends Entity {
 
     public void startDestruction(){
         if (isEndAnimationPlaying) return;
+        this.endAnimationTimer = 0;
         this.isEndAnimationPlaying = true;
         this.modelInstance.setCurrentAnimation("end");
     }
 
     @Override
-    protected void onDeath(Zone zone) {
+    protected void onDeath() {
         SeamlessPortals.portalManager.removePortal(this);
-        super.onDeath(zone);
+        super.onDeath();
     }
 
-    public boolean isPortalInRange(boolean byProxy){
-        int renderDistance = GraphicsSettings.renderDistanceInChunks.getValue();
-        if (this.position.dst2(InGame.getLocalPlayer().getPosition()) <= renderDistance * renderDistance * 256){
-            return true;
+    public boolean isPortalInRange(boolean byProxy, int renderDistance){
+        if (ArrayUtils.any(GameSingletons.world.players, (p) -> this.position.dst2(p.getPosition()) <= renderDistance * renderDistance * 256)){
+            return false;
         }
         if (byProxy && this.linkedPortal != null){
-            return this.linkedPortal.isPortalInRange(false);
+            return this.linkedPortal.isPortalInRange(false, renderDistance);
         }
         return false;
     }

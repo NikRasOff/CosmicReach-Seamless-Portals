@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector4;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.animations.*;
 import com.nikrasoff.seamlessportals.extras.FloatContainer;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntity;
@@ -269,7 +270,12 @@ public class PortalModelInstance implements IEntityModelInstance {
     @Override
     public void setCurrentAnimation(String s) {
         this.currentAnimation = this.allAnimations.get(s);
-        this.currentAnimation.restart();
+        if (this.currentAnimation != null){
+            this.currentAnimation.restart();
+        }
+        else {
+            SeamlessPortals.LOGGER.warn("Couldn't find portal animation: " + s);
+        }
     }
 
     @Override

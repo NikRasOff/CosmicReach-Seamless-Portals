@@ -25,8 +25,8 @@
     "seamlessportals.mixins.json"
   ],
   "dependencies": {
-    "cosmic-reach": ">=0.3.6",
-    "puzzle-loader": ">=2.1.5"
+    "cosmic-reach": ">=${cr_version}",
+    "puzzle-loader": ">=${puzzle_version}"
   },
-  "accessManipulator": "seamlessportals.manipulator"
+  "accessTransformers": ["seamlessportals.manipulator"]
 }

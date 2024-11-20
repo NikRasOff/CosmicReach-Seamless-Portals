@@ -2,15 +2,32 @@ package com.nikrasoff.seamlessportals.extras;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Queue;
+import com.github.puzzle.game.items.data.DataTag;
+import com.github.puzzle.game.items.data.DataTagManifest;
+import com.github.puzzle.game.items.data.attributes.IntDataAttribute;
+import com.github.puzzle.game.items.data.attributes.StringDataAttribute;
+import com.github.puzzle.game.items.data.attributes.Vector3DataAttribute;
+import com.github.puzzle.game.util.DataTagUtil;
+import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
+import com.nikrasoff.seamlessportals.portals.Portal;
+import com.nikrasoff.seamlessportals.portals.PortalManager;
+import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.blocks.PooledBlockPosition;
+import finalforeach.cosmicreach.entities.player.Player;
+import finalforeach.cosmicreach.items.ItemStack;
+import finalforeach.cosmicreach.networking.NetworkIdentity;
+import finalforeach.cosmicreach.networking.packets.ContainerSyncPacket;
+import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.world.Chunk;
 import finalforeach.cosmicreach.world.Zone;
 
@@ -21,7 +38,7 @@ public class ExtraPortalUtils {
     private static final Queue<BlockPosition> blockQueue = new Queue<>();
     private static final Array<BlockPosition> positionsToFree = new Array<>();
     private static final BoundingBox tmpBoundingBox = new BoundingBox();
-    private static final Array<BoundingBox> tmpBoundingBoxes = new Array(BoundingBox.class);
+    private static final Array<BoundingBox> tmpBoundingBoxes = new Array<>(BoundingBox.class);
     private static final Vector3 intersection = new Vector3();
     static Pool<BlockPosition> positionPool = new Pool<BlockPosition>() {
         protected BlockPosition newObject() {
@@ -183,5 +200,237 @@ public class ExtraPortalUtils {
         Vector3 blockPosVec = new Vector3(hitBlockPos.getGlobalX() + 0.5F, hitBlockPos.getGlobalY() + 0.5F, hitBlockPos.getGlobalZ() + 0.5F);
 
         return new RaycastOutput(intersection, DirectionVector.getClosestDirection(intersection.cpy().sub(blockPosVec)), hitBlockPos);
+    }
+    public static void fireHpg(Player player, boolean isSecondPortal, ItemStack hpgItemStack){
+        DataTagManifest hpgManifest = DataTagUtil.getManifestFromStack(hpgItemStack);
+
+        if (!hpgManifest.hasTag("portal1Chunk")){
+            hpgManifest.setTag("portal1Chunk", new DataTag<>("p1Chunk", new Vector3DataAttribute(new Vector3())));
+        }
+        if (!hpgManifest.hasTag("portal1Id")){
+            hpgManifest.setTag("portal1Id", new DataTag<>("p1Id", new IntDataAttribute(-1)));
+        }
+        if (!hpgManifest.hasTag("portal1Zone")){
+            hpgManifest.setTag("portal1Zone", new DataTag<>("p1Zone", new StringDataAttribute(GameSingletons.world.defaultZoneId)));
+        }
+        DataTag<Vector3> primaryPortalChunkPos = hpgManifest.getTag("portal1Chunk");
+        DataTag<Integer> primaryPortalId = hpgManifest.getTag("portal1Id");
+        DataTag<String> primaryPortalZone = hpgManifest.getTag("portal1Zone");
+
+        if (!hpgManifest.hasTag("portal2Chunk")){
+            hpgManifest.setTag("portal2Chunk", new DataTag<>("p2Chunk", new Vector3DataAttribute(new Vector3())));
+        }
+        if (!hpgManifest.hasTag("portal2Id")){
+            hpgManifest.setTag("portal2Id", new DataTag<>("p2Id", new IntDataAttribute(-1)));
+        }
+        if (!hpgManifest.hasTag("portal2Zone")){
+            hpgManifest.setTag("portal2Zone", new DataTag<>("p2Zone", new StringDataAttribute(GameSingletons.world.defaultZoneId)));
+        }
+        DataTag<Vector3> secondaryPortalChunkPos = hpgManifest.getTag("portal2Chunk");
+        DataTag<Integer> secondaryPortalId = hpgManifest.getTag("portal2Id");
+        DataTag<String> secondaryPortalZone = hpgManifest.getTag("portal2Zone");
+
+        PortalManager pm = SeamlessPortals.portalManager;
+        workingPos.set(player.getPosition()).add(player.getEntity().viewPositionOffset);
+        RaycastOutput result = raycast(player.getZone(), workingPos, player.getEntity().viewDirection, 1000F);
+        if (!isSecondPortal){
+            if (result != null){
+                Portal prPortal = pm.getPortalWithGen(primaryPortalId.getValue(), primaryPortalChunkPos.getValue(), primaryPortalZone.getValue());
+                Portal secPortal = pm.getPortalWithGen(secondaryPortalId.getValue(), secondaryPortalChunkPos.getValue(), secondaryPortalZone.getValue());
+                if (prPortal == null){
+                    Vector3 upDir = getUpVectorForPortals(result.hitNormal(), player);
+                    Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), player.getZone());
+                    primaryPortalId.attribute.setValue(newPortal.getPortalID());
+                    primaryPortalChunkPos.attribute.getValue().set(Math.floorDiv((int) newPortal.position.x, 16), Math.floorDiv((int) newPortal.position.y, 16), Math.floorDiv((int) newPortal.position.z, 16));
+                    primaryPortalZone.attribute.setValue(player.zoneId);
+                    if (secondaryPortalId.getValue() != -1){
+                        if (secPortal == null){
+                            secondaryPortalId.attribute.setValue(-1);
+                        }
+                        else{
+                            newPortal.linkPortal(secPortal);
+                            secPortal.linkPortal(newPortal);
+                            if (GameSingletons.isClient){
+                                secPortal.playAnimation("rebind");
+                            }
+                            if (GameSingletons.isHost && ServerSingletons.SERVER != null) {
+                                ServerSingletons.SERVER.broadcast(secPortal.zone, new PortalAnimationPacket(secPortal.getPortalID(), "rebind"));
+                            }
+                        }
+                    }
+                    player.getZone().addEntity(newPortal);
+                }
+                else{
+                    prPortal.setPosition(getPositionForPortals(result.hitPos(), result.hitNormal()));
+                    prPortal.viewDirection = result.hitNormal().getVector().cpy().scl(-1);
+                    prPortal.upVector = getUpVectorForPortals(result.hitNormal(), player);
+                    if (GameSingletons.isClient){
+                        if (secPortal != null){
+                            secPortal.playAnimation("rebind");
+                        }
+                        prPortal.playAnimation("start");
+                    }
+                    if (GameSingletons.isHost && ServerSingletons.SERVER != null) {
+                        if (secPortal != null){
+                            ServerSingletons.SERVER.broadcast(secPortal.zone, new PortalAnimationPacket(secPortal.getPortalID(), "rebind"));
+                        }
+                        ServerSingletons.SERVER.broadcast(prPortal.zone, new PortalAnimationPacket(prPortal.getPortalID(), "start"));
+                    }
+                }
+            }
+        }
+        else {
+            if (result != null){
+                Portal secPortal = pm.getPortalWithGen(secondaryPortalId.getValue(), secondaryPortalChunkPos.getValue(), primaryPortalZone.getValue());
+                Portal prPortal = pm.getPortalWithGen(primaryPortalId.getValue(), primaryPortalChunkPos.getValue(), secondaryPortalZone.getValue());
+
+                if (secPortal == null){
+                    Vector3 upDir = getUpVectorForPortals(result.hitNormal(), player);
+                    Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector(), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), player.getZone());
+                    secondaryPortalId.attribute.setValue(newPortal.getPortalID());
+                    secondaryPortalChunkPos.attribute.getValue().set(Math.floorDiv((int) newPortal.position.x, 16), Math.floorDiv((int) newPortal.position.y, 16), Math.floorDiv((int) newPortal.position.z, 16));
+                    secondaryPortalZone.attribute.setValue(player.zoneId);
+                    if (primaryPortalId.getValue() != -1){
+                        if (prPortal == null){
+                            primaryPortalId.attribute.setValue(-1);
+                        }
+                        else{
+                            newPortal.linkPortal(prPortal);
+                            prPortal.linkPortal(newPortal);
+                            if (GameSingletons.isClient){
+                                prPortal.playAnimation("rebind");
+                            }
+                            if (GameSingletons.isHost && ServerSingletons.SERVER != null) {
+                                ServerSingletons.SERVER.broadcast(prPortal.zone, new PortalAnimationPacket(prPortal.getPortalID(), "rebind"));
+                            }
+                        }
+                    }
+                    player.getZone().addEntity(newPortal);
+                }
+                else{
+                    secPortal.setPosition(getPositionForPortals(result.hitPos(), result.hitNormal()));
+                    secPortal.viewDirection = result.hitNormal().getVector();
+                    secPortal.upVector = getUpVectorForPortals(result.hitNormal(), player);
+                    if (GameSingletons.isClient){
+                        if (prPortal != null){
+                            prPortal.playAnimation("rebind");
+                        }
+                        secPortal.playAnimation("start");
+                    }
+                    if (GameSingletons.isHost && ServerSingletons.SERVER != null) {
+                        if (prPortal != null){
+                            ServerSingletons.SERVER.broadcast(prPortal.zone, new PortalAnimationPacket(prPortal.getPortalID(), "rebind"));
+                        }
+                        ServerSingletons.SERVER.broadcast(secPortal.zone, new PortalAnimationPacket(secPortal.getPortalID(), "start"));
+                    }
+                }
+            }
+        }
+        if (!GameSingletons.isClient || GameSingletons.client().getLocalPlayer() != player){
+            ServerSingletons.getConnection(player).send(new ContainerSyncPacket(0, player.inventory));
+        }
+    }
+    private static Vector3 getUpVectorForPortals(DirectionVector dv, Player pl){
+        switch (dv.getName()){
+            case "posY" -> {
+                Vector3 upDir = new Vector3(pl.getEntity().viewDirection);
+                upDir.y = 0;
+                upDir.nor();
+                DirectionVector closestVec = DirectionVector.getClosestHorizontalDirection(upDir);
+                if (closestVec.getVector().dot(upDir) > 0.96) return closestVec.getVector().cpy();
+                return upDir;
+            }
+            case "negY" -> {
+                Vector3 upDir = new Vector3(pl.getEntity().viewDirection);
+                upDir.y = 0;
+                upDir.scl(-1);
+                upDir.nor();
+                DirectionVector closestVec = DirectionVector.getClosestHorizontalDirection(upDir);
+                if (closestVec.getVector().dot(upDir) > 0.96) return closestVec.getVector().cpy();
+                return upDir;
+            }
+            default -> {
+                return new Vector3(0 ,1, 0);
+            }
+        }
+    }
+
+    private static Vector3 getPositionForPortals(Vector3 pos, DirectionVector normal){
+        switch (normal.getName()){
+            case "posY", "negY" -> {
+                Vector3 newPos = pos.cpy().add(normal.getVector().cpy().scl(0.04F));
+                newPos.x = (float) (Math.round(newPos.x * 2) / 2.0);
+                newPos.z = (float) (Math.round(newPos.z * 2) / 2.0);
+                return newPos;
+            }
+            case "posX", "negX" -> {
+                Vector3 newPos = pos.cpy().add(normal.getVector().cpy().scl(0.05F));
+                newPos.y = (float) Math.round(newPos.y);
+                newPos.z = (float) (Math.round(newPos.z * 2) / 2.0);
+                return newPos;
+            }
+            case "posZ", "negZ" -> {
+                Vector3 newPos = pos.cpy().add(normal.getVector().cpy().scl(0.05F));
+                newPos.y = (float) Math.round(newPos.y);
+                newPos.x = (float) (Math.round(newPos.x * 2) / 2.0);
+                return newPos;
+            }
+            default -> {
+                Vector3 newPos = pos.cpy().add(normal.getVector().cpy().scl(0.05F));
+                newPos.y = (float) Math.floor(newPos.y + 0.5);
+                return newPos;
+            }
+        }
+    }
+    public static void clearPortals(Player player, ItemStack hpgItemStack){
+        DataTagManifest hpgManifest = DataTagUtil.getManifestFromStack(hpgItemStack);
+
+        if (!hpgManifest.hasTag("portal1Chunk")){
+            hpgManifest.setTag("portal1Chunk", new DataTag<>("p1Chunk", new Vector3DataAttribute(new Vector3())));
+        }
+        if (!hpgManifest.hasTag("portal1Id")){
+            hpgManifest.setTag("portal1Id", new DataTag<>("p1Id", new IntDataAttribute(-1)));
+        }
+        if (!hpgManifest.hasTag("portal1Zone")){
+            hpgManifest.setTag("portal1Zone", new DataTag<>("p1Zone", new StringDataAttribute(GameSingletons.world.defaultZoneId)));
+        }
+        DataTag<Vector3> primaryPortalChunkPos = hpgManifest.getTag("portal1Chunk");
+        DataTag<Integer> primaryPortalId = hpgManifest.getTag("portal1Id");
+        DataTag<String> primaryPortalZone = hpgManifest.getTag("portal1Zone");
+
+        if (!hpgManifest.hasTag("portal2Chunk")){
+            hpgManifest.setTag("portal2Chunk", new DataTag<>("p2Chunk", new Vector3DataAttribute(new Vector3())));
+        }
+        if (!hpgManifest.hasTag("portal2Id")){
+            hpgManifest.setTag("portal2Id", new DataTag<>("p2Id", new IntDataAttribute(-1)));
+        }
+        if (!hpgManifest.hasTag("portal2Zone")){
+            hpgManifest.setTag("portal2Zone", new DataTag<>("p2Zone", new StringDataAttribute(GameSingletons.world.defaultZoneId)));
+        }
+        DataTag<Vector3> secondaryPortalChunkPos = hpgManifest.getTag("portal2Chunk");
+        DataTag<Integer> secondaryPortalId = hpgManifest.getTag("portal2Id");
+        DataTag<String> secondaryPortalZone = hpgManifest.getTag("portal2Zone");
+
+        PortalManager pm = SeamlessPortals.portalManager;
+
+        if (primaryPortalId.getValue() != -1){
+            Portal primaryPortal = pm.getPortalWithGen(primaryPortalId.getValue(), primaryPortalChunkPos.getValue(), primaryPortalZone.getValue());
+            if (primaryPortal != null){
+                primaryPortal.startDestruction();
+            }
+        }
+        if (secondaryPortalId.getValue() != -1){
+            Portal secondaryPortal = pm.getPortalWithGen(secondaryPortalId.getValue(), secondaryPortalChunkPos.getValue(), secondaryPortalZone.getValue());
+            if (secondaryPortal != null){
+                secondaryPortal.startDestruction();
+            }
+        }
+
+        primaryPortalId.attribute.setValue(-1);
+        secondaryPortalId.attribute.setValue(-1);
+
+        if (!GameSingletons.isClient || GameSingletons.client().getLocalPlayer() != player){
+            ServerSingletons.getConnection(player).send(new ContainerSyncPacket(0, player.inventory));
+        }
     }
 }

@@ -27,7 +27,7 @@ public abstract class LangMixin implements ILang {
     @Accessor("mappedStrings")
     public abstract Map<String, String> getMappedStrings();
 
-    @Inject(method = "loadLang", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/GameAssetLoader;getAllNamespaces()Ljava/util/HashSet;"))
+    @Inject(method = "loadLang", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/GameAssetLoader;getAllNamespaces()Lcom/badlogic/gdx/utils/ObjectSet;"))
     private static void addModLang(Json json, String langTag, String langPath, FileHandle langGameFile, CallbackInfo ci, @Local Lang lang){
         String[] modLangFiles = {
                 "portal_items"

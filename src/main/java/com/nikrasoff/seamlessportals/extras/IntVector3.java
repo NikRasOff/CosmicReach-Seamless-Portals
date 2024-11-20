@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector3;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.world.Chunk;
+import finalforeach.cosmicreach.world.Zone;
 
 import java.util.Objects;
 
@@ -75,9 +76,12 @@ public class IntVector3 {
         return new Vector3(this.x, this.y, this.z);
     }
 
-    public BlockPosition toBlockPosition(){
-        Chunk c = GameSingletons.world.getDefaultZone().getChunkAtBlock(x, y, z);
+    public BlockPosition toBlockPosition(Zone zone){
+        Chunk c = zone.getChunkAtBlock(x, y, z);
         return new BlockPosition(c, x - c.getBlockX(), y - c.getBlockY(), z - c.getBlockZ());
+    }
+    public BlockPosition toBlockPosition(){
+        return this.toBlockPosition(GameSingletons.world.getDefaultZone());
     }
 
     public static IntVector3 lesserVector(IntVector3 first, IntVector3 second){

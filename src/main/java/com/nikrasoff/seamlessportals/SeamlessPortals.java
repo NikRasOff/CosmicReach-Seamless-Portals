@@ -1,7 +1,9 @@
 package com.nikrasoff.seamlessportals;
 
+import com.github.puzzle.access_manipulators.AccessManipulators;
 import com.github.puzzle.core.loader.provider.mod.entrypoint.impls.ModInitializer;
 import com.github.puzzle.core.loader.provider.mod.entrypoint.impls.PostModInitializer;
+import com.github.puzzle.core.loader.util.ModLocator;
 import com.github.puzzle.game.PuzzleRegistries;
 import com.github.puzzle.game.block.DataModBlock;
 import com.github.puzzle.game.events.OnRegisterBlockEvent;
@@ -10,6 +12,9 @@ import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
 import com.nikrasoff.seamlessportals.effects.IEffectManager;
 import com.nikrasoff.seamlessportals.entities.DestabiliserPulseEntity;
+import com.nikrasoff.seamlessportals.networking.packets.HpgFiredPacket;
+import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
+import com.nikrasoff.seamlessportals.networking.packets.PortalClearPacket;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.portals.PortalManager;
 import finalforeach.cosmicreach.GameAssetLoader;
@@ -17,6 +22,7 @@ import finalforeach.cosmicreach.blockevents.BlockEvents;
 import finalforeach.cosmicreach.blocks.BlockStateGenerator;
 import finalforeach.cosmicreach.entities.EntityCreator;
 import finalforeach.cosmicreach.items.recipes.CraftingRecipes;
+import finalforeach.cosmicreach.networking.GamePacket;
 import finalforeach.cosmicreach.util.Identifier;
 import meteordevelopment.orbit.EventHandler;
 import org.apache.logging.log4j.LogManager;
@@ -55,6 +61,9 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
     public void onInit() {
         PuzzleRegistries.EVENT_BUS.subscribe(this);
         LOGGER.info("Initialising Seamless Portals!");
+        GamePacket.registerPacket(HpgFiredPacket.class);
+        GamePacket.registerPacket(PortalAnimationPacket.class);
+        GamePacket.registerPacket(PortalClearPacket.class);
 
         SeamlessPortalsBlockEvents.registerSeamlessPortalsBlockEvents();
         EntityCreator.registerEntityCreator("seamlessportals:entity_portal", Portal::readPortal);

@@ -5,14 +5,18 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
+import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.ZoneLoader;
 import finalforeach.cosmicreach.ZoneLoaders;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.savelib.crbin.CRBSerialized;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
+import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
 import finalforeach.cosmicreach.util.ArrayUtils;
 import finalforeach.cosmicreach.world.Zone;
 
@@ -43,14 +47,35 @@ public class Portal extends Entity {
         Portal portal = new Portal();
         if (deserializer != null) {
             portal.read(deserializer);
+            String zoneId = deserializer.readString("zoneId");
+            if (zoneId == null){
+                zoneId = GameSingletons.world.defaultZoneId;
+            }
             SeamlessPortals.portalManager.addPortal(portal);
-            Portal lPortal = SeamlessPortals.portalManager.getPortalWithGen(portal.linkedPortalID, portal.linkedPortalChunkCoords, portal.zone.zoneId);
+            Portal lPortal;
+            if (!GameSingletons.isClient){
+                lPortal = SeamlessPortals.portalManager.getPortalWithGen(portal.linkedPortalID, portal.linkedPortalChunkCoords, zoneId);
+            }
+            else {
+                lPortal = SeamlessPortals.portalManager.getPortal(portal.linkedPortalID);
+            }
             if (lPortal != null){
                 portal.linkPortal(lPortal);
                 lPortal.linkPortal(portal);
             }
         }
         return portal;
+    }
+
+    @Override
+    public void write(CRBinSerializer serial) {
+        super.write(serial);
+        if (this.zone == null){
+            serial.writeString("zoneId", GameSingletons.world.defaultZoneId);
+        }
+        else{
+            serial.writeString("zoneId", this.zone.zoneId);
+        }
     }
 
     public Portal(){
@@ -80,7 +105,9 @@ public class Portal extends Entity {
         this.localBoundingBox.update();
         this.portalSize = new Vector3(size.x, size.y, 0);
         this.viewPositionOffset = new Vector3(0, 0, 0);
-        this.modelInstance.setCurrentAnimation("start");
+        if (GameSingletons.isClient){
+            this.modelInstance.setCurrentAnimation("start");
+        }
     }
 
     public Portal(Vector2 size, String viewDir, Vector3 portalPos, Zone zone){
@@ -156,8 +183,8 @@ public class Portal extends Entity {
     @Override
     public void hit(float amount) {}
 
-    public static Portal fromBlockPos(Vector2 size, BlockPosition blPos, Zone zone){
-        String[] strId = blPos.getBlockState().stringId.split(",");
+    public static Portal fromBlockInfo(PortalSpawnBlockInfo info, Vector2 size){
+        String[] strId = info.blockState.split(",");
         String dirString = "";
         for (String id : strId){
             String[] i = id.split("=");
@@ -168,7 +195,7 @@ public class Portal extends Entity {
             }
         }
 
-        return new Portal(size, dirString, new Vector3(blPos.getGlobalX() + 0.5F, blPos.getGlobalY(), blPos.getGlobalZ() + 0.5F), zone);
+        return new Portal(size, dirString, info.position.toVector3().add(new Vector3(0.5f, 0, 0.5f)), GameSingletons.world.getZoneCreateIfNull(info.zoneId));
     }
 
     public void linkPortal(Portal to){
@@ -274,8 +301,13 @@ public class Portal extends Entity {
     public void startDestruction(){
         if (isEndAnimationPlaying) return;
         this.endAnimationTimer = 0;
+        if (GameSingletons.isClient){
+            playAnimation("end");
+        }
+        if (GameSingletons.isHost && ServerSingletons.SERVER != null) {
+            ServerSingletons.SERVER.broadcast(this.zone, new PortalAnimationPacket(this.getPortalID(), "end"));
+        }
         this.isEndAnimationPlaying = true;
-        this.modelInstance.setCurrentAnimation("end");
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.entities.DestabiliserPulseEntity;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.gamestates.GameState;
@@ -23,6 +24,7 @@ public class EffectManager implements IEffectManager {
         IEffect newEffect = effectMap.get(effectId).get();
         newEffect.setupEffect(startingTime, position, zone, argMap);
         effectArray.add(newEffect);
+        SeamlessPortals.LOGGER.info("Effect created: " + effectId.toString());
     }
     public void render(Camera renderFromCamera){
         float delta = Gdx.graphics.getDeltaTime();

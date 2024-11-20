@@ -5,6 +5,7 @@ import com.nikrasoff.seamlessportals.extras.DirectionVector;
 import finalforeach.cosmicreach.blockevents.BlockEventArgs;
 import finalforeach.cosmicreach.blockevents.actions.ActionId;
 import finalforeach.cosmicreach.blockevents.actions.IBlockAction;
+import finalforeach.cosmicreach.blocks.MissingBlockStateResult;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.world.BlockSetter;
@@ -38,7 +39,7 @@ public class BlockActionFaceAwayFromPlayer implements IBlockAction {
         directionString += horDirString;
 
         String newSaveKey = getNewSaveKey(blockState, directionString);
-        BlockState newBlockState = BlockState.getInstance(newSaveKey);
+        BlockState newBlockState = BlockState.getInstance(newSaveKey, MissingBlockStateResult.MISSING_OBJECT);
         BlockSetter.get().replaceBlock(zone, newBlockState, targetBlockPosition);
     }
 

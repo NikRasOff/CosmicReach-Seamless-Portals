@@ -42,7 +42,7 @@ public abstract class BlockSelectionMixin {
 
     @Inject(method = "render", at = @At("HEAD"))
     private void debugPortalRender(Camera worldCamera, CallbackInfo ci){
-        if (SeamlessPortals.debugOutlines){
+        if (UI.renderDebugInfo){
             shapeRenderer.setProjectionMatrix(worldCamera.combined);
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             shapeRenderer.setColor(Color.RED);

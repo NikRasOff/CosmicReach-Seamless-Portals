@@ -12,10 +12,7 @@ import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
 import com.nikrasoff.seamlessportals.effects.IEffectManager;
 import com.nikrasoff.seamlessportals.entities.DestabiliserPulseEntity;
-import com.nikrasoff.seamlessportals.networking.packets.CreateEffectPacket;
-import com.nikrasoff.seamlessportals.networking.packets.HpgFiredPacket;
-import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
-import com.nikrasoff.seamlessportals.networking.packets.PortalClearPacket;
+import com.nikrasoff.seamlessportals.networking.packets.*;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.portals.PortalManager;
 import finalforeach.cosmicreach.GameAssetLoader;
@@ -66,6 +63,8 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
         GamePacket.registerPacket(PortalAnimationPacket.class);
         GamePacket.registerPacket(PortalClearPacket.class);
         GamePacket.registerPacket(CreateEffectPacket.class);
+        GamePacket.registerPacket(UpdatePortalPacket.class);
+        GamePacket.registerPacket(PortalDeletePacket.class);
 
         SeamlessPortalsBlockEvents.registerSeamlessPortalsBlockEvents();
         EntityCreator.registerEntityCreator("seamlessportals:entity_portal", Portal::readPortal);

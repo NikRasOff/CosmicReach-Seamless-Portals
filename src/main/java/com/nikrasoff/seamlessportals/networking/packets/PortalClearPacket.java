@@ -6,6 +6,7 @@ import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.networking.GamePacket;
 import finalforeach.cosmicreach.networking.NetworkIdentity;
 import finalforeach.cosmicreach.networking.NetworkSide;
+import finalforeach.cosmicreach.networking.packets.MessagePacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -32,6 +33,9 @@ public class PortalClearPacket extends GamePacket {
             ItemStack hpgStack = pl.inventory.getSlot(this.hpgSlotNum).itemStack;
             if (hpgStack != null && hpgStack.getItem() != null && hpgStack.getItem().getID().equals("seamlessportals:handheld_portal_generator")){
                 ExtraPortalUtils.clearPortals(networkIdentity.getPlayer(), hpgStack);
+            }
+            else {
+                networkIdentity.send(new MessagePacket("<Seamless portals>: Handheld portal generators gotten from the item catalog don't work"));
             }
         }
     }

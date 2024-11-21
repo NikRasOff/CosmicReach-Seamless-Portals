@@ -1,6 +1,5 @@
 package com.nikrasoff.seamlessportals.extras;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -17,6 +16,7 @@ import com.github.puzzle.game.items.data.attributes.Vector3DataAttribute;
 import com.github.puzzle.game.util.DataTagUtil;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
+import com.nikrasoff.seamlessportals.networking.packets.UpdatePortalPacket;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.portals.PortalManager;
 import finalforeach.cosmicreach.GameSingletons;
@@ -25,7 +25,6 @@ import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.blocks.PooledBlockPosition;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.items.ItemStack;
-import finalforeach.cosmicreach.networking.NetworkIdentity;
 import finalforeach.cosmicreach.networking.packets.ContainerSyncPacket;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.world.Chunk;
@@ -69,7 +68,7 @@ public class ExtraPortalUtils {
             return false;
         } else {
             block.getAllBoundingBoxes(tmpBoundingBoxes, nextBlockPos);
-            Array.ArrayIterator var3 = tmpBoundingBoxes.iterator();
+            Array.ArrayIterator<BoundingBox> var3 = tmpBoundingBoxes.iterator();
 
             BoundingBox bb;
             do {
@@ -88,7 +87,6 @@ public class ExtraPortalUtils {
         boolean raycastHit = false;
         BlockPosition hitBlockPos = null;
         BlockPosition lastBlockPosAtPoint = null;
-        BlockPosition lastBlockPosInQueue = null;
         toVisit.clear();
         blockQueue.clear();
 
@@ -171,10 +169,10 @@ public class ExtraPortalUtils {
                         break label186;
                     }
 
-                    curBlockPos = (BlockPosition)blockQueue.removeFirst();
+                    curBlockPos = blockQueue.removeFirst();
                     blockState = curBlockPos.getBlockState();
                 } while(!blockState.hasEmptyModel() && !intersectsWithBlock(blockState, curBlockPos));
-                if (hitBlockPos == null && blockState.canRaycastForBreak()) {
+                if (blockState.canRaycastForBreak()) {
                     hitBlockPos = curBlockPos;
                     raycastHit = true;
                 }
@@ -259,6 +257,9 @@ public class ExtraPortalUtils {
                         }
                     }
                     player.getZone().addEntity(newPortal);
+                    if (GameSingletons.isHost && ServerSingletons.SERVER != null){
+                        ServerSingletons.SERVER.broadcast(newPortal.zone, new PortalAnimationPacket(newPortal.getPortalID(), "start"));
+                    }
                 }
                 else{
                     prPortal.setPosition(getPositionForPortals(result.hitPos(), result.hitNormal()));
@@ -271,6 +272,7 @@ public class ExtraPortalUtils {
                         prPortal.playAnimation("start");
                     }
                     if (GameSingletons.isHost && ServerSingletons.SERVER != null) {
+                        ServerSingletons.SERVER.broadcast(prPortal.zone, new UpdatePortalPacket(prPortal));
                         if (secPortal != null){
                             ServerSingletons.SERVER.broadcast(secPortal.zone, new PortalAnimationPacket(secPortal.getPortalID(), "rebind"));
                         }
@@ -306,6 +308,9 @@ public class ExtraPortalUtils {
                         }
                     }
                     player.getZone().addEntity(newPortal);
+                    if (GameSingletons.isHost && ServerSingletons.SERVER != null){
+                        ServerSingletons.SERVER.broadcast(newPortal.zone, new PortalAnimationPacket(newPortal.getPortalID(), "start"));
+                    }
                 }
                 else{
                     secPortal.setPosition(getPositionForPortals(result.hitPos(), result.hitNormal()));
@@ -318,6 +323,7 @@ public class ExtraPortalUtils {
                         secPortal.playAnimation("start");
                     }
                     if (GameSingletons.isHost && ServerSingletons.SERVER != null) {
+                        ServerSingletons.SERVER.broadcast(secPortal.zone, new UpdatePortalPacket(secPortal));
                         if (prPortal != null){
                             ServerSingletons.SERVER.broadcast(prPortal.zone, new PortalAnimationPacket(prPortal.getPortalID(), "rebind"));
                         }

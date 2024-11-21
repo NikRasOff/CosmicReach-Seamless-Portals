@@ -8,6 +8,7 @@ import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
+import com.nikrasoff.seamlessportals.networking.packets.PortalDeletePacket;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.ZoneLoader;
 import finalforeach.cosmicreach.ZoneLoaders;
@@ -171,6 +172,15 @@ public class Portal extends Entity {
         }
     }
 
+    public void updateSize(Vector2 newSize){
+        this.portalSize.x = newSize.x;
+        this.portalSize.y = newSize.y;
+        this.localBoundingBox.min.set(-newSize.x/2, -newSize.y / 2, -1F);
+        this.localBoundingBox.max.set(newSize.x/2, newSize.y / 2, 1F);
+
+        this.localBoundingBox.update();
+    }
+
     public void playAnimation(String animName){
         if (this.isEndAnimationPlaying) return;
         this.modelInstance.setCurrentAnimation(animName);
@@ -312,6 +322,9 @@ public class Portal extends Entity {
 
     @Override
     protected void onDeath() {
+        if (GameSingletons.isHost && ServerSingletons.SERVER != null){
+            ServerSingletons.SERVER.broadcast(this.zone, new PortalDeletePacket(this.getPortalID()));
+        }
         SeamlessPortals.portalManager.removePortal(this);
         super.onDeath();
     }

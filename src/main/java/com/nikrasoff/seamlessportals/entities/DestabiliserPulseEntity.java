@@ -4,9 +4,12 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
+import com.nikrasoff.seamlessportals.networking.packets.CreateEffectPacket;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.savelib.crbin.CRBSerialized;
+import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
 import finalforeach.cosmicreach.util.Identifier;
 import finalforeach.cosmicreach.world.Zone;
 
@@ -32,6 +35,11 @@ public class DestabiliserPulseEntity extends Entity {
             Map<String, Object> argMap = new HashMap<>();
             argMap.put("radius", radius);
             SeamlessPortals.effectManager.createEffect(ENTITY_ID, 0, pos, zone, argMap);
+        }
+        if (GameSingletons.isHost && ServerSingletons.SERVER != null){
+            CRBinSerializer arguments = new CRBinSerializer();
+            arguments.writeFloat("radius", radius);
+            ServerSingletons.SERVER.broadcast(zone, new CreateEffectPacket(ENTITY_ID, 0, pos, zone, arguments));
         }
     }
 

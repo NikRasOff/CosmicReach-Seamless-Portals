@@ -9,6 +9,7 @@ import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.entities.DestabiliserPulseEntity;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.gamestates.GameState;
+import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
 import finalforeach.cosmicreach.util.Identifier;
 import finalforeach.cosmicreach.world.Zone;
 
@@ -22,10 +23,22 @@ public class EffectManager implements IEffectManager {
         if (GameSingletons.client().getLocalPlayer().getZone() != zone) return;
         if (!effectMap.containsKey(effectId)) return;
         IEffect newEffect = effectMap.get(effectId).get();
-        newEffect.setupEffect(startingTime, position, zone, argMap);
+        newEffect.applyArguments(argMap);
+        newEffect.setupEffect(startingTime, position, zone);
         effectArray.add(newEffect);
         SeamlessPortals.LOGGER.info("Effect created: " + effectId.toString());
     }
+
+    public void createEffect(Identifier effectId, float startingTime, Vector3 position, Zone zone, CRBinDeserializer deserial){
+        if (GameSingletons.client().getLocalPlayer().getZone() != zone) return;
+        if (!effectMap.containsKey(effectId)) return;
+        IEffect newEffect = effectMap.get(effectId).get();
+        newEffect.read(deserial);
+        newEffect.setupEffect(startingTime, position, zone);
+        effectArray.add(newEffect);
+        SeamlessPortals.LOGGER.info("Effect created: " + effectId.toString());
+    }
+
     public void render(Camera renderFromCamera){
         float delta = Gdx.graphics.getDeltaTime();
         Zone playerZone = GameSingletons.client().getLocalPlayer().getZone();

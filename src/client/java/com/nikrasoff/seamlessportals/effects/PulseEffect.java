@@ -12,6 +12,7 @@ import com.nikrasoff.seamlessportals.animations.SPAnimationSequence;
 import com.nikrasoff.seamlessportals.animations.Vector3Animation;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import com.nikrasoff.seamlessportals.rendering.shaders.TwoSidedShader;
+import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
 import finalforeach.cosmicreach.util.Identifier;
 import finalforeach.cosmicreach.world.Zone;
 
@@ -49,7 +50,7 @@ public abstract class PulseEffect implements IEffect {
     }
 
     @Override
-    public void setupEffect(float lifetime, Vector3 position, Zone zone, Map<String, Object> argMap) {
+    public void setupEffect(float lifetime, Vector3 position, Zone zone) {
         this.animationSequence.restart();
         this.animationSequence.update(lifetime);
         this.position = position;
@@ -86,5 +87,13 @@ public abstract class PulseEffect implements IEffect {
     @Override
     public boolean isInZone(Zone zone) {
         return zone == this.zone;
+    }
+
+    @Override
+    public void read(CRBinDeserializer deserial) {
+    }
+
+    @Override
+    public void applyArguments(Map<String, Object> argMap) {
     }
 }

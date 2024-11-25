@@ -43,23 +43,7 @@ public class HpgFiredPacket extends GamePacket {
                 ExtraPortalUtils.fireHpg(pl, this.isSecondPortal, hpgStack);
             }
             else {
-                networkIdentity.send(new MessagePacket("<Seamless portals>: Handheld portal generators gotten from the item catalog don't work"));
-                SeamlessPortals.LOGGER.warn("Not HPG!");
-                if (hpgStack == null){
-                    SeamlessPortals.LOGGER.warn("Reason: stack is null");
-                }
-                else if (hpgStack.getItem() == null){
-                    SeamlessPortals.LOGGER.warn("Reason: item is null");
-                }
-                else {
-                    SeamlessPortals.LOGGER.warn("Reason: item is not HPG but " + hpgStack.getItem().getID());
-                }
-                SeamlessPortals.LOGGER.warn("Slot provided: " + this.hpgSlotNum);
-                ItemSlot slot = pl.inventory.getFirstMatchingItemSlot(itemSlot -> {
-                    if (itemSlot.isEmpty()) return false;
-                    return itemSlot.itemStack.getItem().getID().equals("seamlessportals:handheld_portal_generator");
-                });
-                SeamlessPortals.LOGGER.warn("Actual slot: " + (slot == null ? "null" : slot.getSlotId()));
+                networkIdentity.send(new MessagePacket("[Seamless portals] Handheld portal generators gotten from the item catalog don't work"));
             }
         }
     }

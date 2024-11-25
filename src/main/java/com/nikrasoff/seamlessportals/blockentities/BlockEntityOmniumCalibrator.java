@@ -9,6 +9,9 @@ import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.items.ItemSlot;
+import finalforeach.cosmicreach.items.containers.FurnaceSlotContainer;
+import finalforeach.cosmicreach.networking.packets.blocks.BlockEntityDataPacket;
+import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
 import finalforeach.cosmicreach.world.BlockSetter;
@@ -44,8 +47,12 @@ public class BlockEntityOmniumCalibrator extends BlockEntity implements IBlockEn
 
     public void read(CRBinDeserializer deserial) {
         super.read(deserial);
-        this.slotContainer = deserial.readObj("slotContainer", OmniumCalibratorSlotContainer.class);
-        this.slotContainer.setOmniumCalibrator(this);
+        if (this.slotContainer != null) {
+            this.slotContainer.read(deserial.readRawObj("slotContainer"));
+        } else {
+            this.slotContainer = deserial.readObj("slotContainer", OmniumCalibratorSlotContainer.class);
+            this.slotContainer.setOmniumCalibrator(this);
+        }
         this.progressTicks = deserial.readInt("progressTicks", 0);
     }
 
@@ -73,6 +80,10 @@ public class BlockEntityOmniumCalibrator extends BlockEntity implements IBlockEn
 
     public void onTick() {
         super.onTick();
+        if (ServerSingletons.SERVER != null) {
+            ServerSingletons.SERVER.broadcast(this.zone, new BlockEntityDataPacket(this));
+        }
+
         boolean working = this.slotContainer.isProcessGoing();
         if (!working) {
             this.setTicking(false);

@@ -7,6 +7,7 @@ import com.github.puzzle.game.util.DataTagUtil;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsItems;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
+import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.items.ItemSlot;
 import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.items.containers.SlotContainer;
@@ -37,7 +38,10 @@ public class OmniumCalibratorSlotContainer extends SlotContainer {
     @Override
     public void onItemSlotUpdate(ItemSlot itemSlot) {
         super.onItemSlotUpdate(itemSlot);
-        this.blockEntityOmniumCalibrator.setTicking(true);
+        if (GameSingletons.isHost) {
+            this.blockEntityOmniumCalibrator.setTicking(true);
+            SeamlessPortals.LOGGER.info("Omnium calibrator updated");
+        }
     }
 
     public boolean isOutputEmpty(){

@@ -1,5 +1,6 @@
 package com.nikrasoff.seamlessportals.blockentities;
 
+import com.nikrasoff.seamlessportals.items.containers.OmniumCalibratorSlotContainer;
 import com.nikrasoff.seamlessportals.items.containers.SpacialAnchorSlotContainer;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blockentities.BlockEntity;
@@ -39,8 +40,12 @@ public class BlockEntitySpacialAnchor extends BlockEntity implements IBlockEntit
 
     public void read(CRBinDeserializer deserial) {
         super.read(deserial);
-        this.slotContainer = deserial.readObj("slotContainer", SpacialAnchorSlotContainer.class);
-        this.slotContainer.setSpacialAnchor(this);
+        if (this.slotContainer != null) {
+            this.slotContainer.read(deserial.readRawObj("slotContainer"));
+        } else {
+            this.slotContainer = deserial.readObj("slotContainer", SpacialAnchorSlotContainer.class);
+            this.slotContainer.setSpacialAnchor(this);
+        }
     }
 
     public void write(CRBinSerializer serial) {

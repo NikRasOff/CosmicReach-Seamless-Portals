@@ -2,6 +2,7 @@ package com.nikrasoff.seamlessportals.blockentities;
 
 import com.badlogic.gdx.math.Vector2;
 import com.nikrasoff.seamlessportals.items.containers.PortalGeneratorSlotContainer;
+import com.nikrasoff.seamlessportals.items.containers.SpacialAnchorSlotContainer;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blockentities.BlockEntity;
 import finalforeach.cosmicreach.blockentities.BlockEntityCreator;
@@ -43,8 +44,12 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
 
     public void read(CRBinDeserializer deserial) {
         super.read(deserial);
-        this.slotContainer = deserial.readObj("slotContainer", PortalGeneratorSlotContainer.class);
-        this.slotContainer.setPortalGenerator(this);
+        if (this.slotContainer != null) {
+            this.slotContainer.read(deserial.readRawObj("slotContainer"));
+        } else {
+            this.slotContainer = deserial.readObj("slotContainer", PortalGeneratorSlotContainer.class);
+            this.slotContainer.setPortalGenerator(this);
+        }
         this.portalSize.x = deserial.readFloat("portalSizeX", 3);
         this.portalSize.y = deserial.readFloat("portalSizeY", 3);
         this.entrancePortalOffset.x = deserial.readFloat("portal1OffsetX", 0);

@@ -16,11 +16,17 @@ import com.nikrasoff.seamlessportals.networking.packets.*;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.portals.PortalManager;
 import finalforeach.cosmicreach.GameAssetLoader;
+import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.blockentities.BlockEntity;
 import finalforeach.cosmicreach.blockevents.BlockEvents;
 import finalforeach.cosmicreach.blocks.BlockStateGenerator;
 import finalforeach.cosmicreach.entities.EntityCreator;
 import finalforeach.cosmicreach.items.recipes.CraftingRecipes;
 import finalforeach.cosmicreach.networking.GamePacket;
+import finalforeach.cosmicreach.networking.packets.blocks.BlockEntityDataPacket;
+import finalforeach.cosmicreach.networking.packets.blocks.BlockEntityScreenPacket;
+import finalforeach.cosmicreach.networking.server.ServerIdentity;
+import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.util.Identifier;
 import meteordevelopment.orbit.EventHandler;
 import org.apache.logging.log4j.LogManager;
@@ -69,6 +75,27 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
         SeamlessPortalsBlockEvents.registerSeamlessPortalsBlockEvents();
         EntityCreator.registerEntityCreator("seamlessportals:entity_portal", Portal::readPortal);
         EntityCreator.registerEntityCreator(DestabiliserPulseEntity.ENTITY_ID.toString(), DestabiliserPulseEntity::new);
+
+        if (!GameSingletons.isClient){
+            GameSingletons.registerBlockEntityScreenOpener("seamlessportals:omnium_calibrator", (info) -> {
+                ServerIdentity id = ServerSingletons.getConnection(info.player());
+                BlockEntity blockEntity = info.blockEntity();
+                id.send(new BlockEntityDataPacket(blockEntity));
+                id.send(new BlockEntityScreenPacket(blockEntity));
+            });
+            GameSingletons.registerBlockEntityScreenOpener("seamlessportals:spacial_anchor", (info) -> {
+                ServerIdentity id = ServerSingletons.getConnection(info.player());
+                BlockEntity blockEntity = info.blockEntity();
+                id.send(new BlockEntityDataPacket(blockEntity));
+                id.send(new BlockEntityScreenPacket(blockEntity));
+            });
+            GameSingletons.registerBlockEntityScreenOpener("seamlessportals:portal_generator", (info) -> {
+                ServerIdentity id = ServerSingletons.getConnection(info.player());
+                BlockEntity blockEntity = info.blockEntity();
+                id.send(new BlockEntityDataPacket(blockEntity));
+                id.send(new BlockEntityScreenPacket(blockEntity));
+            });
+        }
     }
 
     @EventHandler

@@ -35,7 +35,7 @@ public class PortalClearPacket extends GamePacket {
                 ExtraPortalUtils.clearPortals(networkIdentity.getPlayer(), hpgStack);
             }
             else {
-                networkIdentity.send(new MessagePacket("<Seamless portals>: Handheld portal generators gotten from the item catalog don't work"));
+                networkIdentity.send(new MessagePacket("[Seamless portals] Handheld portal generators gotten from the item catalog don't work"));
             }
         }
     }

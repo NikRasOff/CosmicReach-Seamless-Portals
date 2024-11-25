@@ -67,11 +67,13 @@ public abstract class BlockSelectionMixin {
                         else {
                             ExtraPortalUtils.fireHpg(InGame.getLocalPlayer(), false, heldItemStack);
                         }
-                        RaycastOutput result = ExtraPortalUtils.raycast(zone, worldCamera.position, worldCamera.direction, 1000F);
-                        if (result != null){
-                            cosmicReach_Seamless_Portals$portalRaycastOriginDebug.set(worldCamera.position);
-                            cosmicReach_Seamless_Portals$portalRaycastHitDebug.set(result.hitPos());
-                            cosmicReach_Seamless_Portals$portalRaycastNormalDebug.set(result.hitNormal().getVector());
+                        if (UI.renderDebugInfo){
+                            RaycastOutput result = ExtraPortalUtils.raycast(zone, worldCamera.position, worldCamera.direction, 1000F);
+                            if (result != null){
+                                cosmicReach_Seamless_Portals$portalRaycastOriginDebug.set(worldCamera.position);
+                                cosmicReach_Seamless_Portals$portalRaycastHitDebug.set(result.hitPos());
+                                cosmicReach_Seamless_Portals$portalRaycastNormalDebug.set(result.hitNormal().getVector());
+                            }
                         }
                         ItemRenderer.swingHeldItem();
                     }
@@ -82,11 +84,13 @@ public abstract class BlockSelectionMixin {
                         else{
                             ExtraPortalUtils.fireHpg(InGame.getLocalPlayer(), true, heldItemStack);
                         }
-                        RaycastOutput result = ExtraPortalUtils.raycast(zone, worldCamera.position, worldCamera.direction, 1000F);
-                        if (result != null){
-                            cosmicReach_Seamless_Portals$portalRaycastOriginDebug.set(worldCamera.position);
-                            cosmicReach_Seamless_Portals$portalRaycastHitDebug.set(result.hitPos());
-                            cosmicReach_Seamless_Portals$portalRaycastNormalDebug.set(result.hitNormal().getVector());
+                        if (UI.renderDebugInfo){
+                            RaycastOutput result = ExtraPortalUtils.raycast(zone, worldCamera.position, worldCamera.direction, 1000F);
+                            if (result != null){
+                                cosmicReach_Seamless_Portals$portalRaycastOriginDebug.set(worldCamera.position);
+                                cosmicReach_Seamless_Portals$portalRaycastHitDebug.set(result.hitPos());
+                                cosmicReach_Seamless_Portals$portalRaycastNormalDebug.set(result.hitNormal().getVector());
+                            }
                         }
                         ItemRenderer.swingHeldItem();
                     }

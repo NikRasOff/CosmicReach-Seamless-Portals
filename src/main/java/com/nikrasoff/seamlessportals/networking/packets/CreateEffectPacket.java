@@ -1,9 +1,6 @@
 package com.nikrasoff.seamlessportals.networking.packets;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonWriter;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.networking.GamePacket;
@@ -14,9 +11,6 @@ import finalforeach.cosmicreach.util.Identifier;
 import finalforeach.cosmicreach.world.Zone;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class CreateEffectPacket extends GamePacket {
     CRBinDeserializer deserializer = new CRBinDeserializer();

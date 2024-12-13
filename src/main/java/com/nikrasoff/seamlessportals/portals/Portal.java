@@ -112,62 +112,63 @@ public class Portal extends Entity {
     }
 
     public Portal(Vector2 size, String viewDir, Vector3 portalPos, Zone zone){
-        this(new Vector2(3, 3), new Vector3(0, 0, 1), new Vector3(0, 1, 0), portalPos, zone);
+        this(new Vector2(size), new Vector3(0, 0, 1), new Vector3(0, 1, 0), portalPos, zone);
         switch (viewDir){
             case "negZ":
                 this.viewDirection = new Vector3(0, 0, -1);
-                this.position.y += size.y / 2;
+                this.position.z -= 1;
                 break;
             case "posX":
                 this.viewDirection = new Vector3(1, 0, 0);
-                this.position.y += size.y / 2;
+                this.position.x += 1;
                 break;
             case "negX":
                 this.viewDirection = new Vector3(-1, 0, 0);
-                this.position.y += size.y / 2;
+                this.position.x -= 1;
                 break;
             case "posYposZ":
                 this.viewDirection = new Vector3(0, 1, 0);
                 this.upVector = new Vector3(0, 0, -1);
+                this.position.y += 1;
                 break;
             case "posYnegX":
                 this.viewDirection = new Vector3(0, 1, 0);
                 this.upVector = new Vector3(1, 0, 0);
-                this.position.y += 0.5F;
+                this.position.y += 1;
                 break;
             case "posYnegZ":
                 this.viewDirection = new Vector3(0, 1, 0);
                 this.upVector = new Vector3(0, 0, 1);
-                this.position.y += 0.5F;
+                this.position.y += 1;
                 break;
             case "posYposX":
                 this.viewDirection = new Vector3(0, 1, 0);
                 this.upVector = new Vector3(-1, 0, 0);
-                this.position.y += 0.5F;
+                this.position.y += 1;
                 break;
             case "negYposZ":
                 this.viewDirection = new Vector3(0, -1, 0);
                 this.upVector = new Vector3(0, 0, 1);
-                this.position.y += 0.5F;
+                this.position.y -= 1;
                 break;
             case "negYnegX":
                 this.viewDirection = new Vector3(0, -1, 0);
                 this.upVector = new Vector3(-1, 0, 0);
-                this.position.y += 0.5F;
+                this.position.y -= 1;
                 break;
             case "negYnegZ":
                 this.viewDirection = new Vector3(0, -1, 0);
                 this.upVector = new Vector3(0, 0, -1);
-                this.position.y += 0.5F;
+                this.position.y -= 1;
                 break;
             case "negYposX":
                 this.viewDirection = new Vector3(0, -1, 0);
                 this.upVector = new Vector3(1, 0, 0);
-                this.position.y += 0.5F;
+                this.position.y -= 1;
                 break;
             default:
                 this.viewDirection = new Vector3(0, 0, 1);
-                this.position.y += size.y / 2;
+                this.position.z += 1;
                 break;
         }
     }
@@ -205,7 +206,7 @@ public class Portal extends Entity {
             }
         }
 
-        return new Portal(size, dirString, info.position.toVector3().add(new Vector3(0.5f, 0, 0.5f)), GameSingletons.world.getZoneCreateIfNull(info.zoneId));
+        return new Portal(size, dirString, info.position.toVector3().add(new Vector3(0.5f, 0.5f, 0.5f)), GameSingletons.world.getZoneCreateIfNull(info.zoneId));
     }
 
     public void linkPortal(Portal to){
@@ -258,6 +259,14 @@ public class Portal extends Entity {
         newPos.mul(thisPort);
         newPos.mul(linkedPort);
         return newPos;
+    }
+
+    public Matrix4 getRotationMatrix(){
+        Matrix4 m = new Matrix4();
+        synchronized (lock){
+            m.setToLookAt(Vector3.Zero, this.position.cpy().add(this.viewDirection), this.upVector);
+        }
+        return m;
     }
 
     public Matrix4 getPortalMatrix(){

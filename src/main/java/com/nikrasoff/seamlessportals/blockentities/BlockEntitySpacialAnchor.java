@@ -30,6 +30,9 @@ public class BlockEntitySpacialAnchor extends BlockEntity implements IBlockEntit
 
     public void onRemove() {
         super.onRemove();
+        if (this.slotContainer.isPrimed()){
+            this.slotContainer.deregisterSpacialAnchor();
+        }
         this.slotContainer.dropAllItems(this.zone, (float)this.getGlobalX() + 0.5F, (float)this.getGlobalY() + 0.5F, (float)this.getGlobalZ() + 0.5F);
     }
 

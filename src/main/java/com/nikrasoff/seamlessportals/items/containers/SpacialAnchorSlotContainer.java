@@ -6,6 +6,7 @@ import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsItems;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
+import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
 import finalforeach.cosmicreach.items.ItemSlot;
 import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.items.containers.SlotContainer;
@@ -53,7 +54,7 @@ public class SpacialAnchorSlotContainer extends SlotContainer {
         int frequency = (int) data.getTag("frequency").getValue();
         if (frequency != this.frequency) {
             deregisterSpacialAnchor();
-            SeamlessPortals.portalManager.registerSpacialAnchor(new IntVector3(this.blockEntitySpacialAnchor.getGlobalX(), this.blockEntitySpacialAnchor.getGlobalY(), this.blockEntitySpacialAnchor.getGlobalZ()), frequency);
+            SeamlessPortals.portalManager.registerSpacialAnchor(frequency, new PortalSpawnBlockInfo(this.blockEntitySpacialAnchor.zone.zoneId, new IntVector3(this.blockEntitySpacialAnchor.getGlobalX(), this.blockEntitySpacialAnchor.getGlobalY(), this.blockEntitySpacialAnchor.getGlobalZ()), this.blockEntitySpacialAnchor.getBlockState().getStateParamsStr()));
             this.frequency = frequency;
             this.primed = true;
         }
@@ -61,7 +62,7 @@ public class SpacialAnchorSlotContainer extends SlotContainer {
 
     public void deregisterSpacialAnchor(){
         this.primed = false;
-        SeamlessPortals.portalManager.deregisterSpacialAnchor(new IntVector3(this.blockEntitySpacialAnchor.getGlobalX(), this.blockEntitySpacialAnchor.getGlobalY(), this.blockEntitySpacialAnchor.getGlobalZ()), this.frequency);
+        SeamlessPortals.portalManager.deregisterSpacialAnchor(this.frequency, new IntVector3(this.blockEntitySpacialAnchor.getGlobalX(), this.blockEntitySpacialAnchor.getGlobalY(), this.blockEntitySpacialAnchor.getGlobalZ()));
     }
 
     @Override
@@ -74,9 +75,13 @@ public class SpacialAnchorSlotContainer extends SlotContainer {
         ItemSlot input = this.getInputSlot();
         if (input.itemStack == null || input.itemStack.getItem() == null || input.itemStack.getItem() != SeamlessPortalsItems.CALIBRATED_OMNIUM_CRYSTAL) {
             deregisterSpacialAnchor();
-        } else if (primed) {
+        } else if (!primed) {
             registerSpacialAnchor(input.itemStack);
         }
+    }
+
+    public boolean isPrimed(){
+        return this.primed;
     }
 
     public ItemSlot getInputSlot(){

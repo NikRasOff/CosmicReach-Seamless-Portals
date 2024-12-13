@@ -39,6 +39,12 @@ public class PortalGeneratorSlotContainer extends SlotContainer {
         super.onItemSlotUpdate(itemSlot);
     }
 
+    public void checkItem(){
+        if (!isItemValid() && blockEntityPortalGenerator.isPortalActive()){
+            blockEntityPortalGenerator.closePortal();
+        }
+    }
+
     public boolean isItemValid(){
         ItemSlot input = this.getInputSlot();
         return !(input.isEmpty() || input.itemStack.getItem() != SeamlessPortalsItems.CALIBRATED_OMNIUM_CRYSTAL);

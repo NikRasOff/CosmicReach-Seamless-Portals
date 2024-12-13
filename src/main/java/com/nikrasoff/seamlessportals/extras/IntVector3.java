@@ -34,6 +34,18 @@ public class IntVector3 {
     public IntVector3(BlockPosition blockPos){
         this(blockPos.getGlobalX(), blockPos.getGlobalY(), blockPos.getGlobalZ());
     }
+    public IntVector3 set(Vector3 other){
+        return this.set((int)other.x, (int)other.y, (int)other.z);
+    }
+    public IntVector3 set(IntVector3 other){
+        return this.set(other.x, other.y, other.z);
+    }
+    public IntVector3 set(int x, int y, int z){
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        return this;
+    }
 
     public IntVector3 add(IntVector3 other){
         this.x += other.x;
@@ -74,6 +86,9 @@ public class IntVector3 {
 
     public Vector3 toVector3(){
         return new Vector3(this.x, this.y, this.z);
+    }
+    public Vector3 toVector3(Vector3 vector){
+        return vector.set(this.x, this.y, this.z);
     }
 
     public BlockPosition toBlockPosition(Zone zone){

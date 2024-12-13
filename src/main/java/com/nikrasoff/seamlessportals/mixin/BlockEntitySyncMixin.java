@@ -1,9 +1,9 @@
 package com.nikrasoff.seamlessportals.mixin;
 
-import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
+import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
+import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
 import finalforeach.cosmicreach.blockentities.BlockEntity;
-import finalforeach.cosmicreach.items.containers.SlotContainer;
 import finalforeach.cosmicreach.networking.NetworkIdentity;
 import finalforeach.cosmicreach.networking.packets.blocks.BlockEntityContainerSyncPacket;
 import io.netty.channel.ChannelHandlerContext;
@@ -22,18 +22,6 @@ public abstract class BlockEntitySyncMixin {
 
     @Shadow public int z;
 
-    @Inject(method = "<init>(Lfinalforeach/cosmicreach/blockentities/BlockEntity;Lfinalforeach/cosmicreach/items/containers/SlotContainer;)V", at = @At(value = "INVOKE", target = "Ljava/lang/RuntimeException;<init>(Ljava/lang/String;)V", unsafe = true))
-    void debugStuff(BlockEntity entity, SlotContainer container, CallbackInfo ci){
-        if (entity instanceof BlockEntityOmniumCalibrator omniumCalibrator){
-            if (omniumCalibrator.slotContainer != container){
-                SeamlessPortals.LOGGER.error("Well we're fucked");
-            }
-            else{
-                SeamlessPortals.LOGGER.info("All good!");
-            }
-        }
-    }
-
     @Inject(method = "handle", at = @At(value = "INVOKE", target = "Ljava/lang/reflect/Field;set(Ljava/lang/Object;Ljava/lang/Object;)V"))
     void BECheck1(NetworkIdentity identity, ChannelHandlerContext ctx, CallbackInfo ci){
         BlockEntity be = identity.getZone().getBlockEntity(x, y, z);
@@ -50,6 +38,11 @@ public abstract class BlockEntitySyncMixin {
     void cosmicReach_Seamless_Portals$BECheck(BlockEntity blockEntity){
         if (blockEntity instanceof BlockEntityOmniumCalibrator){
             blockEntity.setTicking(true);
+        } else if (blockEntity instanceof BlockEntityPortalGenerator pg) {
+            pg.slotContainer.checkItem();
+        }
+        else if (blockEntity instanceof BlockEntitySpacialAnchor anchor){
+            anchor.slotContainer.checkInput();
         }
     }
 }

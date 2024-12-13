@@ -3,6 +3,9 @@ package com.nikrasoff.seamlessportals.portals;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
 import finalforeach.cosmicreach.GameSingletons;
@@ -10,6 +13,7 @@ import finalforeach.cosmicreach.world.EntityRegion;
 import finalforeach.cosmicreach.world.Zone;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class PortalManager {
     public PortalSpawnBlockInfo portalGenInfo;
@@ -17,7 +21,7 @@ public class PortalManager {
     public int maxPortalID = 0;
 
     public transient HashMap<Integer, Portal> createdPortals = new HashMap<>();
-    public HashMap<Integer, Array<IntVector3>> spacialAnchors = new HashMap<>();
+    public ObjectMap<String, Array<PortalSpawnBlockInfo>> spacialAnchors = new ObjectMap<>();
 
     public PortalManager(){}
 
@@ -31,15 +35,17 @@ public class PortalManager {
         return this.maxOmniumFrequency - 1;
     }
 
-    public void registerSpacialAnchor(IntVector3 position, int frequency){
-        if (!this.spacialAnchors.containsKey(frequency)) this.spacialAnchors.put(frequency, new Array<>());
-        this.spacialAnchors.get(frequency).add(position);
+    public void registerSpacialAnchor(int frequency, PortalSpawnBlockInfo info){
+        if (!this.spacialAnchors.containsKey(String.valueOf(frequency))) this.spacialAnchors.put(String.valueOf(frequency), new Array<>());
+        this.spacialAnchors.get(String.valueOf(frequency)).add(info);
     }
 
-    public void deregisterSpacialAnchor(IntVector3 position, int frequency){
-        if (!this.spacialAnchors.containsKey(frequency)) return;
-        this.spacialAnchors.get(frequency).removeValue(position, false);
-        if (this.spacialAnchors.get(frequency).isEmpty()) this.spacialAnchors.remove(frequency);
+    public void deregisterSpacialAnchor(int frequency, IntVector3 position){
+        if (!this.spacialAnchors.containsKey(String.valueOf(frequency))) return;
+        for (PortalSpawnBlockInfo info : this.spacialAnchors.get(String.valueOf(frequency))){
+            if (info.position.equals(position)) this.spacialAnchors.get(String.valueOf(frequency)).removeValue(info, true);
+        }
+        if (this.spacialAnchors.get(String.valueOf(frequency)).isEmpty()) this.spacialAnchors.remove(String.valueOf(frequency));
     }
 
     public Portal getPortalWithGen(int portalID, Vector3 chunkCoords, String zoneID){
@@ -76,6 +82,27 @@ public class PortalManager {
         Zone zone2 = GameSingletons.world.getZoneCreateIfNull(gen2.zoneId);
         zone1.addEntity(portal1);
         zone2.addEntity(portal2);
+    }
+
+    public void createPortalPair(PortalSpawnBlockInfo gen1, PortalSpawnBlockInfo gen2, BlockEntityPortalGenerator portalGen){
+        Portal portal1 = Portal.fromBlockInfo(gen1, portalGen.portalSize);
+        Portal portal2 = Portal.fromBlockInfo(gen2, portalGen.portalSize);
+
+        Vector3 nudgeCoords1 = new Vector3(portalGen.entrancePortalOffset.x, portalGen.entrancePortalOffset.y, 0).mul(portal1.getRotationMatrix());
+        portal1.position.add(nudgeCoords1);
+        portalGen.portalId = portal1.getPortalID();
+
+        Vector3 nudgeCoords2 = new Vector3(portalGen.exitPortalOffset.x, portalGen.exitPortalOffset.y, 0).mul(portal2.getRotationMatrix());
+        portal2.position.add(nudgeCoords2);
+        portal2.viewDirection.scl(-1);
+
+        portal1.linkPortal(portal2);
+        portal2.linkPortal(portal1);
+        Zone zone1 = GameSingletons.world.getZoneCreateIfNull(gen1.zoneId);
+        Zone zone2 = GameSingletons.world.getZoneCreateIfNull(gen2.zoneId);
+        zone1.addEntity(portal1);
+        zone2.addEntity(portal2);
+        SeamlessPortals.LOGGER.info("Created portals " + portal1.getPortalID() + " and " + portal2.getPortalID() + " at " + portal1.getPosition() + " and " + portal2.getPosition());
     }
 
     public void printExistingIDs(){

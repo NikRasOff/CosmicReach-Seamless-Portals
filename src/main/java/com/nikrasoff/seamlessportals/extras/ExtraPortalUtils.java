@@ -238,6 +238,10 @@ public class ExtraPortalUtils {
                 if (prPortal == null){
                     Vector3 upDir = getUpVectorForPortals(result.hitNormal(), player);
                     Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), player.getZone());
+                    if (!newPortal.figureOutPlacement(player.getZone(), 0.5f, 0.5f, 1, 1)){
+                        SeamlessPortals.portalManager.removePortal(newPortal);
+                        return;
+                    }
                     primaryPortalId.attribute.setValue(newPortal.getPortalID());
                     primaryPortalChunkPos.attribute.getValue().set(Math.floorDiv((int) newPortal.position.x, 16), Math.floorDiv((int) newPortal.position.y, 16), Math.floorDiv((int) newPortal.position.z, 16));
                     primaryPortalZone.attribute.setValue(player.zoneId);
@@ -262,9 +266,21 @@ public class ExtraPortalUtils {
                     }
                 }
                 else{
+                    Vector3 originalPos = prPortal.position.cpy();
+                    Vector3 originalDir = prPortal.viewDirection.cpy();
+                    Vector3 originalUpVector = prPortal.upVector.cpy();
+
                     prPortal.setPosition(getPositionForPortals(result.hitPos(), result.hitNormal()));
                     prPortal.viewDirection = result.hitNormal().getVector().cpy().scl(-1);
                     prPortal.upVector = getUpVectorForPortals(result.hitNormal(), player);
+
+                    if (!prPortal.figureOutPlacement(player.getZone(), 0.5f, 0.5f, 1f, 1f)){
+                        prPortal.setPosition(originalPos);
+                        prPortal.viewDirection.set(originalDir);
+                        prPortal.upVector.set(originalUpVector);
+                        return;
+                    }
+
                     if (GameSingletons.isClient){
                         if (secPortal != null){
                             secPortal.playAnimation("rebind");
@@ -289,6 +305,10 @@ public class ExtraPortalUtils {
                 if (secPortal == null){
                     Vector3 upDir = getUpVectorForPortals(result.hitNormal(), player);
                     Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector(), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), player.getZone());
+                    if (!newPortal.figureOutPlacement(player.getZone(), 0.5f, 0.5f, 1, 1)){
+                        SeamlessPortals.portalManager.removePortal(newPortal);
+                        return;
+                    }
                     secondaryPortalId.attribute.setValue(newPortal.getPortalID());
                     secondaryPortalChunkPos.attribute.getValue().set(Math.floorDiv((int) newPortal.position.x, 16), Math.floorDiv((int) newPortal.position.y, 16), Math.floorDiv((int) newPortal.position.z, 16));
                     secondaryPortalZone.attribute.setValue(player.zoneId);
@@ -313,9 +333,21 @@ public class ExtraPortalUtils {
                     }
                 }
                 else{
+                    Vector3 originalPos = secPortal.position.cpy();
+                    Vector3 originalDir = secPortal.viewDirection.cpy();
+                    Vector3 originalUpVector = secPortal.upVector.cpy();
+
                     secPortal.setPosition(getPositionForPortals(result.hitPos(), result.hitNormal()));
                     secPortal.viewDirection = result.hitNormal().getVector();
                     secPortal.upVector = getUpVectorForPortals(result.hitNormal(), player);
+
+                    if (!secPortal.figureOutPlacement(player.getZone(), 0.5f, 0.5f, 1f, 1f)){
+                        secPortal.setPosition(originalPos);
+                        secPortal.viewDirection.set(originalDir);
+                        secPortal.upVector.set(originalUpVector);
+                        return;
+                    }
+
                     if (GameSingletons.isClient){
                         if (prPortal != null){
                             prPortal.playAnimation("rebind");

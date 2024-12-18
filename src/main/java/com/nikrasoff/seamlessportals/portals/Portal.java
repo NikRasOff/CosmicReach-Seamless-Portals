@@ -4,15 +4,15 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
+import com.badlogic.gdx.utils.Array;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.extras.IntVector3;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
 import com.nikrasoff.seamlessportals.networking.packets.PortalDeletePacket;
 import finalforeach.cosmicreach.GameSingletons;
-import finalforeach.cosmicreach.ZoneLoader;
-import finalforeach.cosmicreach.ZoneLoaders;
-import finalforeach.cosmicreach.blocks.BlockPosition;
+import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.savelib.crbin.CRBSerialized;
@@ -41,7 +41,11 @@ public class Portal extends Entity {
     private boolean isEndAnimationPlaying = false;
     @CRBSerialized
     private float endAnimationTimer = 0f;
+
+    private BoundingBox meshBB = new BoundingBox();
     public static final Object lock = new Object();
+    private static final Vector3 tmpVector3 = new Vector3();
+    private static final Array<BoundingBox> tempBounds = new Array<>();
 
     public static Portal readPortal(CRBinDeserializer deserializer){
         // It took so much time to make this work...
@@ -95,17 +99,15 @@ public class Portal extends Entity {
         this.portalID = SeamlessPortals.portalManager.getNextPortalID();
         SeamlessPortals.portalManager.addPortal(this);
 
-        this.localBoundingBox.min.set(-size.x/2, -size.y / 2, -1F);
-        this.localBoundingBox.max.set(size.x/2, size.y / 2, 1F);
-
         setPosition(portalPos.x, portalPos.y, portalPos.z);
 
         this.viewDirection = viewDir;
         this.upVector = upDir;
 
-        this.localBoundingBox.update();
         this.portalSize = new Vector3(size.x, size.y, 0);
         this.viewPositionOffset = new Vector3(0, 0, 0);
+        this.calculateLocalBB();
+        this.calculateMeshBB();
         if (GameSingletons.isClient){
             this.modelInstance.setCurrentAnimation("start");
         }
@@ -173,13 +175,24 @@ public class Portal extends Entity {
         }
     }
 
+    public void calculateLocalBB(){
+        float diag = (float) Math.sqrt((this.portalSize.x / 2) * (this.portalSize.x / 2) + (this.portalSize.y / 2) * (this.portalSize.y / 2));
+        this.localBoundingBox.max.set(diag, diag, diag);
+        this.localBoundingBox.min.set(-diag, -diag, -diag);
+        this.localBoundingBox.update();
+    }
+
+    public void calculateMeshBB(){
+        this.meshBB.min.set(-this.portalSize.x / 2 + 0.001f, -this.portalSize.y / 2 + 0.001f, -0.01f);
+        this.meshBB.max.set(this.portalSize.x / 2 - 0.001f, this.portalSize.y / 2 - 0.001f, 0.01f);
+        this.meshBB.update();
+    }
+
     public void updateSize(Vector2 newSize){
         this.portalSize.x = newSize.x;
         this.portalSize.y = newSize.y;
-        this.localBoundingBox.min.set(-newSize.x/2, -newSize.y / 2, -1F);
-        this.localBoundingBox.max.set(newSize.x/2, newSize.y / 2, 1F);
-
-        this.localBoundingBox.update();
+        this.calculateLocalBB();
+        this.calculateMeshBB();
     }
 
     public void playAnimation(String animName){
@@ -217,21 +230,17 @@ public class Portal extends Entity {
         this.linkedPortalChunkCoords.z = Math.floorDiv((int) linkedPortal.position.z, 16);
     }
 
-    public OrientedBoundingBox getGlobalBoundingBox(){
+    public OrientedBoundingBox getFatBoundingBox(){
         BoundingBox globalBB = new BoundingBox();
-        globalBB.set(this.localBoundingBox);
+        globalBB.set(this.meshBB);
+        globalBB.min.z = -1;
+        globalBB.max.z = 1;
         globalBB.update();
 
         return new OrientedBoundingBox(globalBB, this.getPortalMatrix().inv());
     }
 
     public OrientedBoundingBox getMeshBoundingBox(){
-        BoundingBox meshBB = new BoundingBox();
-        meshBB.set(this.localBoundingBox);
-        meshBB.min.z = -0.025F;
-        meshBB.max.z = 0.025F;
-        meshBB.update();
-
         return new OrientedBoundingBox(meshBB, this.getPortalMatrix().inv());
     }
 
@@ -264,7 +273,7 @@ public class Portal extends Entity {
     public Matrix4 getRotationMatrix(){
         Matrix4 m = new Matrix4();
         synchronized (lock){
-            m.setToLookAt(Vector3.Zero, this.position.cpy().add(this.viewDirection), this.upVector);
+            m.setToLookAt(Vector3.Zero, this.viewDirection, this.upVector);
         }
         return m;
     }
@@ -344,6 +353,65 @@ public class Portal extends Entity {
         }
         if (byProxy && this.linkedPortal != null){
             return this.linkedPortal.isPortalInRange(false, renderDistance);
+        }
+        return false;
+    }
+
+    public boolean figureOutPlacement(Zone z, float maxBumpPosX, float maxBumpNegX, float maxBumpPosY, float maxBumpNegY){
+        // Tries to place the portal so that it doesn't intersect any walls
+        // Shifts it around in its plane to do so
+        // returns true is successful, otherwise false
+        if (!isPortalInAWall(z)) return true;
+        Vector3 originalPos = this.position.cpy();
+
+        if (tryBumping(new Vector3(1, 0, 0), maxBumpPosX, z)) return true;
+        this.position.set(originalPos);
+        if (tryBumping(new Vector3(-1, 0, 0), maxBumpNegX, z)) return true;
+        this.position.set(originalPos);
+        if (tryBumping(new Vector3(0, 1, 0), maxBumpPosY, z)) return true;
+        this.position.set(originalPos);
+        if (tryBumping(new Vector3(0, -1, 0), maxBumpNegY, z)) return true;
+        this.position.set(originalPos);
+
+        return false;
+    }
+
+    private boolean tryBumping(Vector3 dir, float maxAmount, Zone z){
+        float bumpAmount = 0.01f;
+        float bumpCount = 0;
+        Matrix4 portalMatrix = this.getRotationMatrix();
+        Vector3 bumpDir = new Vector3();
+        bumpDir.set(dir).scl(bumpAmount).mul(portalMatrix);
+        while (bumpCount < maxAmount){
+            bumpCount += bumpAmount;
+            this.position.add(bumpDir);
+            if (!isPortalInAWall(z)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isPortalInAWall(Zone z){
+        // Does what it says on the tin - figures out if the portal is intersecting something
+        OrientedBoundingBox bb = this.getMeshBoundingBox();
+        Vector3[] vertices = bb.getVertices();
+
+        IntVector3 min = IntVector3.leastVector(vertices);
+        IntVector3 max = IntVector3.greatestVector(vertices);
+
+        for (int bx = min.x; bx <= max.x; ++bx){
+            for (int by = min.y; by <= max.y; ++by){
+                for (int bz = min.z; bz <= max.z; ++bz){
+                    BlockState checkBlock = z.getBlockState(bx, by, bz);
+                    if (checkBlock != null && !checkBlock.walkThrough){
+                        checkBlock.getAllBoundingBoxes(tempBounds, bx, by, bz);
+                        for (BoundingBox bb1 : tempBounds){
+                            if (bb.intersects(bb1)) return true;
+                        }
+                    }
+                }
+            }
         }
         return false;
     }

@@ -58,6 +58,7 @@ public class PortalGeneratorUpdatePacket extends SPGamePacket {
             portalGenerator.exitPortalOffset.x = MathUtils.clamp(this.secondaryPortalOffset.x, -portalGenerator.getMaxOffsetX(), portalGenerator.getMaxOffsetX());
             portalGenerator.exitPortalOffset.y = MathUtils.clamp(this.secondaryPortalOffset.y, -portalGenerator.getMaxOffsetY(), portalGenerator.getMaxOffsetY());
             portalGenerator.portalId = this.portalId;
+            if (GameSingletons.isClient) portalGenerator.justUpdated = true;
             if (!GameSingletons.isClient && ServerSingletons.SERVER != null){
                 ServerSingletons.SERVER.broadcastToZoneExcept(zone, this, networkIdentity);
             }

@@ -84,16 +84,26 @@ public class PortalManager {
         zone2.addEntity(portal2);
     }
 
-    public void createPortalPair(PortalSpawnBlockInfo gen1, PortalSpawnBlockInfo gen2, BlockEntityPortalGenerator portalGen){
+    public boolean createPortalPair(PortalSpawnBlockInfo gen1, PortalSpawnBlockInfo gen2, BlockEntityPortalGenerator portalGen){
         Portal portal1 = Portal.fromBlockInfo(gen1, portalGen.portalSize);
         Portal portal2 = Portal.fromBlockInfo(gen2, portalGen.portalSize);
 
         Vector3 nudgeCoords1 = new Vector3(portalGen.entrancePortalOffset.x, portalGen.entrancePortalOffset.y, 0).mul(portal1.getRotationMatrix());
         portal1.position.add(nudgeCoords1);
+        if (!portal1.figureOutPlacement(portalGen.zone, portal1.portalSize.x / 2 - portalGen.entrancePortalOffset.x, portal1.portalSize.x / 2 + portalGen.entrancePortalOffset.x, portal1.portalSize.y / 2 - portalGen.entrancePortalOffset.y, portal1.portalSize.y / 2 + portalGen.entrancePortalOffset.y)){
+            SeamlessPortals.portalManager.removePortal(portal1);
+            return false;
+        }
         portalGen.portalId = portal1.getPortalID();
 
         Vector3 nudgeCoords2 = new Vector3(portalGen.exitPortalOffset.x, portalGen.exitPortalOffset.y, 0).mul(portal2.getRotationMatrix());
         portal2.position.add(nudgeCoords2);
+        if (!portal2.figureOutPlacement(portalGen.zone, portal2.portalSize.x / 2 - portalGen.exitPortalOffset.x, portal2.portalSize.x / 2 + portalGen.exitPortalOffset.x, portal2.portalSize.y / 2 - portalGen.exitPortalOffset.y, portal2.portalSize.y / 2 + portalGen.exitPortalOffset.y)){
+            portalGen.portalId = -1;
+            SeamlessPortals.portalManager.removePortal(portal2);
+            SeamlessPortals.portalManager.removePortal(portal1);
+            return false;
+        }
         portal2.viewDirection.scl(-1);
 
         portal1.linkPortal(portal2);
@@ -102,7 +112,8 @@ public class PortalManager {
         Zone zone2 = GameSingletons.world.getZoneCreateIfNull(gen2.zoneId);
         zone1.addEntity(portal1);
         zone2.addEntity(portal2);
-        SeamlessPortals.LOGGER.info("Created portals " + portal1.getPortalID() + " and " + portal2.getPortalID() + " at " + portal1.getPosition() + " and " + portal2.getPosition());
+
+        return true;
     }
 
     public void printExistingIDs(){

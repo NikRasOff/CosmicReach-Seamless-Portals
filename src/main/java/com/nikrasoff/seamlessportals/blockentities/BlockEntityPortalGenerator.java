@@ -32,6 +32,7 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
     public Vector2 entrancePortalOffset = new Vector2();
     public Vector2 exitPortalOffset = new Vector2();
     public int portalId = -1;
+    public boolean justUpdated = false;
 
     public BlockEntityPortalGenerator(Zone zone, int globalX, int globalY, int globalZ){
         super(zone, globalX, globalY, globalZ);
@@ -90,7 +91,12 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
 
             PortalSpawnBlockInfo gen1 = new PortalSpawnBlockInfo(this.zone.zoneId, new IntVector3(this.getGlobalX(), this.getGlobalY(), this.getGlobalZ()), this.getBlockState().getStateParamsStr());
             PortalSpawnBlockInfo gen2 = SeamlessPortals.portalManager.spacialAnchors.get(String.valueOf(frequency)).random();
-            SeamlessPortals.portalManager.createPortalPair(gen1, gen2, this);
+            boolean res = SeamlessPortals.portalManager.createPortalPair(gen1, gen2, this);
+            if (!res){
+                this.updateBlockState(false);
+                this.portalId = -1;
+                this.justUpdated = true;
+            }
         }
     }
 

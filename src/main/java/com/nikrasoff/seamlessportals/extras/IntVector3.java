@@ -34,6 +34,10 @@ public class IntVector3 {
     public IntVector3(BlockPosition blockPos){
         this(blockPos.getGlobalX(), blockPos.getGlobalY(), blockPos.getGlobalZ());
     }
+
+    public static IntVector3 flooredVector(Vector3 v){
+        return new IntVector3((int) Math.floor(v.x), (int) Math.floor(v.y), (int) Math.floor(v.z));
+    }
     public IntVector3 set(Vector3 other){
         return this.set((int)other.x, (int)other.y, (int)other.z);
     }
@@ -107,12 +111,28 @@ public class IntVector3 {
         return result;
     }
 
+    public static IntVector3 leastVector(Vector3... v){
+        IntVector3 r = new IntVector3(v[0]);
+        for(int i = 1; i < v.length; ++i){
+            r.set(IntVector3.lesserVector(r, IntVector3.flooredVector(v[i])));
+        }
+        return r;
+    }
+
     public static IntVector3 greaterVector(IntVector3 first, IntVector3 second){
         IntVector3 result = new IntVector3();
         result.x = Math.max(first.x, second.x);
         result.y = Math.max(first.y, second.y);
         result.z = Math.max(first.z, second.z);
         return result;
+    }
+
+    public static IntVector3 greatestVector(Vector3... v){
+        IntVector3 r = new IntVector3(v[0]);
+        for(int i = 1; i < v.length; ++i){
+            r.set(IntVector3.greaterVector(r, IntVector3.flooredVector(v[i])));
+        }
+        return r;
     }
 
     @Override

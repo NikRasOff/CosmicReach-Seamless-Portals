@@ -5,6 +5,7 @@ import com.nikrasoff.seamlessportals.extras.IntVector3;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blockentities.BlockEntity;
 import finalforeach.cosmicreach.networking.NetworkIdentity;
+import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.world.Zone;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -37,6 +38,7 @@ public class ActivatePortalGenPacket extends SPGamePacket {
         if (be == null) return;
         if (be instanceof BlockEntityPortalGenerator pg){
             pg.openPortal();
+            ServerSingletons.SERVER.broadcast(pg.zone, new PortalGeneratorUpdatePacket(pg));
         }
     }
 }

@@ -20,7 +20,6 @@ import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.GameState;
-import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.entities.IEntityModel;
 import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
 import finalforeach.cosmicreach.settings.GraphicsSettings;
@@ -89,7 +88,7 @@ public class PortalModelInstance implements IEntityModelInstance {
 
         float camDistToPortalPlane = portal.getDistanceToPortalPlane(playerCamera.position);
 
-        if ((camDistToPortalPlane > portalThickness) || (!portal.getGlobalBoundingBox().contains(playerCamera.position))){
+        if ((camDistToPortalPlane > portalThickness) || (!portal.getFatBoundingBox().contains(playerCamera.position))){
             portalThickness = 0;
         }
 

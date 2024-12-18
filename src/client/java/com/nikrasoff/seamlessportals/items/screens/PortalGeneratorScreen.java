@@ -157,6 +157,10 @@ public class PortalGeneratorScreen extends BaseItemScreen {
         openPortalButton.addAction(new Action() {
             @Override
             public boolean act(float v) {
+                if (portalGenerator.justUpdated) {
+                    portalGenerator.justUpdated = false;
+                    openPortalButton.setText(portalGenerator.isPortalActive() ? "Close Portal" : "Open Portal");
+                }
                 if (openPortalButton.isChecked()){
                     openPortalButton.setChecked(false);
                     updatePortalGenerator();

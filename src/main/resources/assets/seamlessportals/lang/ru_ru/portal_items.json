@@ -7,5 +7,10 @@
   "seamlessportals:omnium_block": "Блок Омниума",
   "seamlessportals:calibrated_omnium_crystal": "Калиброванный Кристалл Омниума",
   "seamlessportals:omnium_calibrator": "Калибратор Омниума",
-  "seamlessportals:calibrated_omnium_crystal.frequency": "Частота:"
+  "seamlessportals:calibrated_omnium_crystal.frequency": "Частота:",
+  "seamlessportals:open_portal": "Открыть портал",
+  "seamlessportals:close_portal": "Закрыть портал",
+  "seamlessportals:portal_size": "Размер Портала",
+  "seamlessportals:portal_offset1": "Смещение Первичного Портала",
+  "seamlessportals:portal_offset2": "Смещение Вторичного Портала"
 }

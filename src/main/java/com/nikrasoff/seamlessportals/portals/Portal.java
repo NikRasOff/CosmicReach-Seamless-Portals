@@ -21,6 +21,8 @@ import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
 import finalforeach.cosmicreach.util.ArrayUtils;
 import finalforeach.cosmicreach.world.Zone;
 
+import java.util.Arrays;
+
 public class Portal extends Entity {
     public transient boolean isPortalDestroyed = false;
 
@@ -42,10 +44,11 @@ public class Portal extends Entity {
     @CRBSerialized
     private float endAnimationTimer = 0f;
 
-    private BoundingBox meshBB = new BoundingBox();
+    private final BoundingBox meshBB = new BoundingBox();
     public static final Object lock = new Object();
-    private static final Vector3 tmpVector3 = new Vector3();
+    private static final Vector3 tmpVec3 = new Vector3();
     private static final Array<BoundingBox> tempBounds = new Array<>();
+    private static final BoundingBox tmpBB = new BoundingBox();
 
     public static Portal readPortal(CRBinDeserializer deserializer){
         // It took so much time to make this work...
@@ -94,7 +97,7 @@ public class Portal extends Entity {
         }
     }
 
-    public Portal(Vector2 size, Vector3 viewDir, Vector3 upDir, Vector3 portalPos, Zone zone){
+    public Portal(Vector2 size, Vector3 viewDir, Vector3 upDir, Vector3 portalPos){
         this();
         this.portalID = SeamlessPortals.portalManager.getNextPortalID();
         SeamlessPortals.portalManager.addPortal(this);
@@ -113,8 +116,8 @@ public class Portal extends Entity {
         }
     }
 
-    public Portal(Vector2 size, String viewDir, Vector3 portalPos, Zone zone){
-        this(new Vector2(size), new Vector3(0, 0, 1), new Vector3(0, 1, 0), portalPos, zone);
+    public Portal(Vector2 size, String viewDir, Vector3 portalPos){
+        this(new Vector2(size), new Vector3(0, 0, 1), new Vector3(0, 1, 0), portalPos);
         switch (viewDir){
             case "negZ":
                 this.viewDirection = new Vector3(0, 0, -1);
@@ -219,7 +222,7 @@ public class Portal extends Entity {
             }
         }
 
-        return new Portal(size, dirString, info.position.toVector3().add(new Vector3(0.5f, 0.5f, 0.5f)), GameSingletons.world.getZoneCreateIfNull(info.zoneId));
+        return new Portal(size, dirString, info.position.toVector3().add(new Vector3(0.5f, 0.5f, 0.5f)));
     }
 
     public void linkPortal(Portal to){
@@ -376,7 +379,25 @@ public class Portal extends Entity {
         return false;
     }
 
+    public boolean figureOutPlacement(Zone z, float maxBumpPosX, float maxBumpNegX, float maxBumpPosY, float maxBumpNegY, String[] blacklist, boolean useFront){
+        // Same as the above function, but it also looks at the blocks the portal is placed on
+        if (!isPortalInAWall(z) && isPortalOnValidSurface(z, blacklist, useFront)) return true;
+        Vector3 originalPos = this.position.cpy();
+
+        if (tryBumping(new Vector3(1, 0, 0), maxBumpPosX, z, blacklist, useFront)) return true;
+        this.position.set(originalPos);
+        if (tryBumping(new Vector3(-1, 0, 0), maxBumpNegX, z, blacklist, useFront)) return true;
+        this.position.set(originalPos);
+        if (tryBumping(new Vector3(0, 1, 0), maxBumpPosY, z, blacklist, useFront)) return true;
+        this.position.set(originalPos);
+        if (tryBumping(new Vector3(0, -1, 0), maxBumpNegY, z, blacklist, useFront)) return true;
+        this.position.set(originalPos);
+
+        return false;
+    }
+
     private boolean tryBumping(Vector3 dir, float maxAmount, Zone z){
+        // Tries placing the portal along a direction
         float bumpAmount = 0.01f;
         float bumpCount = 0;
         Matrix4 portalMatrix = this.getRotationMatrix();
@@ -392,9 +413,53 @@ public class Portal extends Entity {
         return false;
     }
 
-    public boolean isPortalInAWall(Zone z){
+    private boolean tryBumping(Vector3 dir, float maxAmount, Zone z, String[] blacklist, boolean useFront){
+        // Tries placing the portal along a direction, but with a blacklist
+        float bumpAmount = 0.01f;
+        float bumpCount = 0;
+        Matrix4 portalMatrix = this.getRotationMatrix();
+        Vector3 bumpDir = new Vector3();
+        bumpDir.set(dir).scl(bumpAmount).mul(portalMatrix);
+        while (bumpCount < maxAmount){
+            bumpCount += bumpAmount;
+            this.position.add(bumpDir);
+            if (!isPortalInAWall(z) && isPortalOnValidSurface(z, blacklist, useFront)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isPortalInAWall(Zone z) {
         // Does what it says on the tin - figures out if the portal is intersecting something
         OrientedBoundingBox bb = this.getMeshBoundingBox();
+        Vector3[] vertices = bb.getVertices();
+
+        IntVector3 min = IntVector3.leastVector(vertices);
+        IntVector3 max = IntVector3.greatestVector(vertices);
+
+        for (int bx = min.x; bx <= max.x; ++bx) {
+            for (int by = min.y; by <= max.y; ++by) {
+                for (int bz = min.z; bz <= max.z; ++bz) {
+                    BlockState checkBlock = z.getBlockState(bx, by, bz);
+                    if (checkBlock != null && !checkBlock.walkThrough) {
+                        checkBlock.getAllBoundingBoxes(tempBounds, bx, by, bz);
+                        for (BoundingBox bb1 : tempBounds) {
+                            if (bb.intersects(bb1)) return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    public boolean isPortalOnValidSurface(Zone z, String[] blacklist, boolean useFront){
+        float blockCheckBump = 0.1f;
+        tmpVec3.set(this.viewDirection).scl(useFront ? blockCheckBump : -blockCheckBump);
+        this.position.add(tmpVec3);
+//        SeamlessPortals.LOGGER.info("\nTesting at pos " + this.position);
+        OrientedBoundingBox bb = this.getMeshBoundingBox();
+        this.position.sub(tmpVec3);
         Vector3[] vertices = bb.getVertices();
 
         IntVector3 min = IntVector3.leastVector(vertices);
@@ -404,15 +469,21 @@ public class Portal extends Entity {
             for (int by = min.y; by <= max.y; ++by){
                 for (int bz = min.z; bz <= max.z; ++bz){
                     BlockState checkBlock = z.getBlockState(bx, by, bz);
+//                    if (checkBlock != null){
+//                        SeamlessPortals.LOGGER.info("Testing against " + checkBlock.getBlock());
+//                    }
                     if (checkBlock != null && !checkBlock.walkThrough){
-                        checkBlock.getAllBoundingBoxes(tempBounds, bx, by, bz);
-                        for (BoundingBox bb1 : tempBounds){
-                            if (bb.intersects(bb1)) return true;
+                        checkBlock.getBoundingBox(tmpBB, bx, by, bz);
+                        if (bb.intersects(tmpBB)){
+                            if (Arrays.asList(blacklist).contains(checkBlock.getBlockId())){
+                                return false;
+                            }
                         }
                     }
+                    else return false;
                 }
             }
         }
-        return false;
+        return true;
     }
 }

@@ -7,5 +7,10 @@
   "seamlessportals:omnium_block": "Omnium Block",
   "seamlessportals:calibrated_omnium_crystal": "Calibrated Omnium Crystal",
   "seamlessportals:omnium_calibrator": "Omnium Calibrator",
-  "seamlessportals:calibrated_omnium_crystal.frequency": "Frequency:"
+  "seamlessportals:calibrated_omnium_crystal.frequency": "Frequency:",
+  "seamlessportals:open_portal": "Open Portal",
+  "seamlessportals:close_portal": "Close Portal",
+  "seamlessportals:portal_size": "Portal Size",
+  "seamlessportals:portal_offset1": "Primary Portal Offset",
+  "seamlessportals:portal_offset2": "Secondary Portal Offset"
 }

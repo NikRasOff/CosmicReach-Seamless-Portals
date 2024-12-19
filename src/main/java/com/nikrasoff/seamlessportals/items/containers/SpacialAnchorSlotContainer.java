@@ -74,6 +74,7 @@ public class SpacialAnchorSlotContainer extends SlotContainer {
     public void checkInput(){
         ItemSlot input = this.getInputSlot();
         if (input.itemStack == null || input.itemStack.getItem() == null || input.itemStack.getItem() != SeamlessPortalsItems.CALIBRATED_OMNIUM_CRYSTAL) {
+            this.blockEntitySpacialAnchor.destroyPortals();
             deregisterSpacialAnchor();
         } else if (!primed) {
             registerSpacialAnchor(input.itemStack);

@@ -23,6 +23,7 @@ import com.nikrasoff.seamlessportals.networking.packets.PortalGeneratorUpdatePac
 import finalforeach.cosmicreach.chat.Chat;
 import finalforeach.cosmicreach.items.ItemSlot;
 import finalforeach.cosmicreach.items.screens.BaseItemScreen;
+import finalforeach.cosmicreach.lang.Lang;
 import finalforeach.cosmicreach.networking.client.ClientNetworkManager;
 import finalforeach.cosmicreach.networking.packets.blocks.BlockEntityDataPacket;
 import finalforeach.cosmicreach.ui.UI;
@@ -54,9 +55,8 @@ public class PortalGeneratorScreen extends BaseItemScreen {
         Table backgroundTable = new Table();
         backgroundTable.add(background).minSize(450, 256);
         Table overallTable = new Table();
-//        overallTable.setDebug(true);
 
-        Label sizeLabel = new Label("Portal Size", labelStyle);
+        Label sizeLabel = new Label(Lang.get("seamlessportals:portal_size"), labelStyle);
         sizeLabel.setAlignment(Align.center);
         overallTable.add(sizeLabel).height(32).center();
         overallTable.row();
@@ -82,11 +82,11 @@ public class PortalGeneratorScreen extends BaseItemScreen {
         overallTable.row();
 
         Table lowerTable = new Table();
-        Label primaryOffsetLabel = new Label("Primary portal offset", labelStyle);
+        Label primaryOffsetLabel = new Label(Lang.get("seamlessportals:portal_offset1"), labelStyle);
         primaryOffsetLabel.setAlignment(Align.center);
         lowerTable.add(primaryOffsetLabel).width(100);
         lowerTable.add().height(32);
-        Label secondaryOffsetLabel = new Label("Secondary portal offset", labelStyle);
+        Label secondaryOffsetLabel = new Label(Lang.get("seamlessportals:portal_offset2"), labelStyle);
         secondaryOffsetLabel.setAlignment(Align.center);
         lowerTable.add(secondaryOffsetLabel).width(100);
         lowerTable.row();
@@ -153,19 +153,19 @@ public class PortalGeneratorScreen extends BaseItemScreen {
         lowerTable.row();
 
         lowerTable.add(new Image(SPClientConstants.UI_PORTAL_GEN_ICON));
-        TextButton openPortalButton = new TextButton( portalGenerator.isPortalActive() ? "Close Portal" : "Open Portal", buttonStyle);
+        TextButton openPortalButton = new TextButton( portalGenerator.isPortalActive() ? Lang.get("seamlessportals:close_portal") : Lang.get("seamlessportals:open_portal"), buttonStyle);
         openPortalButton.addAction(new Action() {
             @Override
             public boolean act(float v) {
                 if (portalGenerator.justUpdated) {
                     portalGenerator.justUpdated = false;
-                    openPortalButton.setText(portalGenerator.isPortalActive() ? "Close Portal" : "Open Portal");
+                    openPortalButton.setText(portalGenerator.isPortalActive() ? Lang.get("seamlessportals:close_portal") : Lang.get("seamlessportals:open_portal"));
                 }
                 if (openPortalButton.isChecked()){
                     openPortalButton.setChecked(false);
                     updatePortalGenerator();
                     if (!portalGenerator.isPortalActive() && portalGenerator.slotContainer.isItemValid()){
-                        openPortalButton.setText("Close Portal");
+                        openPortalButton.setText(Lang.get("seamlessportals:close_portal"));
                         if (ClientNetworkManager.isConnected()){
                             ClientNetworkManager.sendAsClient(new ActivatePortalGenPacket(portalGenerator));
                         }
@@ -174,7 +174,7 @@ public class PortalGeneratorScreen extends BaseItemScreen {
                         }
                     }
                     else{
-                        openPortalButton.setText("Open Portal");
+                        openPortalButton.setText(Lang.get("seamlessportals:open_portal"));
                         if (ClientNetworkManager.isConnected()){
                             ClientNetworkManager.sendAsClient(new DeactivatePortalGenPacket(portalGenerator));
                         }

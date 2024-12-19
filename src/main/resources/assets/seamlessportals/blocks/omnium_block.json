@@ -4,8 +4,10 @@
     {
         "default":
         {
+            "blockEventsId": "base:block_events_glass",
             "modelName": "seamlessportals:models/blocks/omnium_block.json",
             "dropId": "seamlessportals:omnium_block[default]",
+            "stateGenerators": ["base:slabs_all", "base:stairs_seamless_all"],
             "tags": [
                 "tool_pickaxe_effective"
             ]

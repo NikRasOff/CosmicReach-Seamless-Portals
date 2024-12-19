@@ -15,6 +15,7 @@ import com.github.puzzle.game.items.data.attributes.StringDataAttribute;
 import com.github.puzzle.game.items.data.attributes.Vector3DataAttribute;
 import com.github.puzzle.game.util.DataTagUtil;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
 import com.nikrasoff.seamlessportals.networking.packets.UpdatePortalPacket;
 import com.nikrasoff.seamlessportals.portals.Portal;
@@ -37,6 +38,7 @@ public class ExtraPortalUtils {
     private static final Queue<BlockPosition> blockQueue = new Queue<>();
     private static final Array<BlockPosition> positionsToFree = new Array<>();
     private static final BoundingBox tmpBoundingBox = new BoundingBox();
+    private static final BoundingBox hitBB = new BoundingBox();
     private static final Array<BoundingBox> tmpBoundingBoxes = new Array<>(BoundingBox.class);
     private static final Vector3 intersection = new Vector3();
     static Pool<BlockPosition> positionPool = new Pool<BlockPosition>() {
@@ -76,9 +78,10 @@ public class ExtraPortalUtils {
                     return false;
                 }
 
-                bb = (BoundingBox)var3.next();
+                bb = var3.next();
             } while(!Intersector.intersectRayBounds(ray, bb, intersection));
 
+            hitBB.set(bb);
             return true;
         }
     }
@@ -195,9 +198,16 @@ public class ExtraPortalUtils {
             return null;
         }
 
-        Vector3 blockPosVec = new Vector3(hitBlockPos.getGlobalX() + 0.5F, hitBlockPos.getGlobalY() + 0.5F, hitBlockPos.getGlobalZ() + 0.5F);
+        Vector3 hitBBCenter = new Vector3();
+        hitBB.getCenter(hitBBCenter);
+        Vector3 hitBBSize = new Vector3();
+        hitBB.getDimensions(hitBBSize);
+        Vector3 normal = intersection.cpy().sub(hitBBCenter);
+        normal.x /= hitBBSize.x;
+        normal.y /= hitBBSize.y;
+        normal.z /= hitBBSize.z;
 
-        return new RaycastOutput(intersection, DirectionVector.getClosestDirection(intersection.cpy().sub(blockPosVec)), hitBlockPos);
+        return new RaycastOutput(intersection, DirectionVector.getClosestDirection(normal), hitBlockPos);
     }
     public static void fireHpg(Player player, boolean isSecondPortal, ItemStack hpgItemStack){
         DataTagManifest hpgManifest = DataTagUtil.getManifestFromStack(hpgItemStack);
@@ -237,8 +247,8 @@ public class ExtraPortalUtils {
                 Portal secPortal = pm.getPortalWithGen(secondaryPortalId.getValue(), secondaryPortalChunkPos.getValue(), secondaryPortalZone.getValue());
                 if (prPortal == null){
                     Vector3 upDir = getUpVectorForPortals(result.hitNormal(), player);
-                    Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), player.getZone());
-                    if (!newPortal.figureOutPlacement(player.getZone(), 0.5f, 0.5f, 1, 1)){
+                    Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()));
+                    if (!newPortal.figureOutPlacement(player.getZone(), 0.5f, 0.5f, 1, 1, HandheldPortalGen.surfaceBlacklist, true)){
                         SeamlessPortals.portalManager.removePortal(newPortal);
                         return;
                     }
@@ -274,7 +284,7 @@ public class ExtraPortalUtils {
                     prPortal.viewDirection = result.hitNormal().getVector().cpy().scl(-1);
                     prPortal.upVector = getUpVectorForPortals(result.hitNormal(), player);
 
-                    if (!prPortal.figureOutPlacement(player.getZone(), 0.5f, 0.5f, 1f, 1f)){
+                    if (!prPortal.figureOutPlacement(player.getZone(), 0.5f, 0.5f, 1f, 1f, HandheldPortalGen.surfaceBlacklist, true)){
                         prPortal.setPosition(originalPos);
                         prPortal.viewDirection.set(originalDir);
                         prPortal.upVector.set(originalUpVector);
@@ -304,8 +314,8 @@ public class ExtraPortalUtils {
 
                 if (secPortal == null){
                     Vector3 upDir = getUpVectorForPortals(result.hitNormal(), player);
-                    Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector(), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), player.getZone());
-                    if (!newPortal.figureOutPlacement(player.getZone(), 0.5f, 0.5f, 1, 1)){
+                    Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector(), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()));
+                    if (!newPortal.figureOutPlacement(player.getZone(), 0.5f, 0.5f, 1, 1, HandheldPortalGen.surfaceBlacklist, false)){
                         SeamlessPortals.portalManager.removePortal(newPortal);
                         return;
                     }
@@ -341,7 +351,7 @@ public class ExtraPortalUtils {
                     secPortal.viewDirection = result.hitNormal().getVector();
                     secPortal.upVector = getUpVectorForPortals(result.hitNormal(), player);
 
-                    if (!secPortal.figureOutPlacement(player.getZone(), 0.5f, 0.5f, 1f, 1f)){
+                    if (!secPortal.figureOutPlacement(player.getZone(), 0.5f, 0.5f, 1f, 1f, HandheldPortalGen.surfaceBlacklist, false)){
                         secPortal.setPosition(originalPos);
                         secPortal.viewDirection.set(originalDir);
                         secPortal.upVector.set(originalUpVector);

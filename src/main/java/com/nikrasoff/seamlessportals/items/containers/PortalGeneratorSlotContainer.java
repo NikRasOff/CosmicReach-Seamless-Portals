@@ -37,11 +37,13 @@ public class PortalGeneratorSlotContainer extends SlotContainer {
     @Override
     public void onItemSlotUpdate(ItemSlot itemSlot) {
         super.onItemSlotUpdate(itemSlot);
+        checkItem();
     }
 
     public void checkItem(){
         if (!isItemValid() && blockEntityPortalGenerator.isPortalActive()){
             blockEntityPortalGenerator.closePortal();
+            blockEntityPortalGenerator.justUpdated = true;
         }
     }
 

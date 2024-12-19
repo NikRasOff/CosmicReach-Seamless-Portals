@@ -33,6 +33,7 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
     public Vector2 exitPortalOffset = new Vector2();
     public int portalId = -1;
     public boolean justUpdated = false;
+    private boolean isBeingDeleted = false;
 
     public BlockEntityPortalGenerator(Zone zone, int globalX, int globalY, int globalZ){
         super(zone, globalX, globalY, globalZ);
@@ -45,6 +46,7 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
 
     public void onRemove() {
         super.onRemove();
+        this.isBeingDeleted = true;
         if (GameSingletons.isHost){
             if (this.isPortalActive()){
                 this.closePortal();
@@ -63,6 +65,7 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
     }
 
     public void updateBlockState(boolean isWorking){
+        if (this.isBeingDeleted) return;
         BlockState currentBlockState = this.getBlockState();
         String facing = currentBlockState.getParam("facing");
         HashMap<String, String> newParams = new HashMap<>();

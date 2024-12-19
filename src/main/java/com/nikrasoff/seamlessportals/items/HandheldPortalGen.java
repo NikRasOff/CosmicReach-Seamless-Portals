@@ -6,6 +6,10 @@ import finalforeach.cosmicreach.lang.Lang;
 import finalforeach.cosmicreach.util.Identifier;
 
 public class HandheldPortalGen implements IModItem {
+    public static final String[] surfaceBlacklist = {
+            "base:air",
+            "base:water"
+    };
     public static final String hpgID = "seamlessportals:handheld_portal_generator";
 
     @Override

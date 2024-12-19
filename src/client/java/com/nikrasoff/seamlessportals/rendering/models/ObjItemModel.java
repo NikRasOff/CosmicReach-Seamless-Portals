@@ -67,11 +67,11 @@ public class ObjItemModel extends ItemModel {
     }
 
     @Override
-    public void render(Vector3 vector3, Camera camera, Matrix4 matrix4, boolean b) {
+    public void render(Vector3 vector3, Camera camera, Matrix4 matrix4, boolean useAmbientLighting, boolean applyFog) {
         if (this.modelInstance == null) return;
         tmpMat4.set(matrix4);
         modelInstance.transform.set(tmpMat4);
-        SeamlessPortalsRenderUtil.renderModel(modelInstance, camera, b, vector3);
+        SeamlessPortalsRenderUtil.renderModel(modelInstance, camera, vector3, useAmbientLighting, applyFog);
     }
 
     @Override
@@ -95,10 +95,10 @@ public class ObjItemModel extends ItemModel {
         if (viewModelInstance != null){
             tmpMat4.set(heldModelMatrix);
             viewModelInstance.transform.set(tmpMat4);
-            SeamlessPortalsRenderUtil.renderModel(viewModelInstance, heldItemCamera, true, worldPosition);
+            SeamlessPortalsRenderUtil.renderModel(viewModelInstance, heldItemCamera, worldPosition, true, true);
         }
         else{
-            this.render(worldPosition, heldItemCamera, heldModelMatrix, true);
+            this.render(worldPosition, heldItemCamera, heldModelMatrix, true, true);
         }
     }
 
@@ -106,7 +106,7 @@ public class ObjItemModel extends ItemModel {
     public void renderAsItemEntity(Vector3 worldPosition, Camera worldCamera, Matrix4 modelMat) {
         tmpMat4.set(modelMat);
         tmpMat4.mul(this.onGroundModelMatrix);
-        this.render(worldPosition, worldCamera, tmpMat4, true);
+        this.render(worldPosition, worldCamera, tmpMat4, true, true);
     }
 
     static {

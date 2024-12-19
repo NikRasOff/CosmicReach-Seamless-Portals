@@ -49,13 +49,16 @@ public class SeamlessPortalsRenderUtil {
         shader.init();
     }
 
-    public static void renderModel(ModelInstance instance, Camera camera, boolean useAmbientLight, Vector3 worldPos){
+    public static void renderModel(ModelInstance instance, Camera camera, Vector3 worldPos, boolean useAmbientLight, boolean applyFog){
         // I'm not using ModelBatch primarily because I need to render the same ModelInstance several times over in a single frame
         Zone z = InGame.getLocalPlayer().getZone();
         Sky s = Sky.getCurrentSky(z);
         shader.begin(camera, renderContext);
         ((TextureAttribute) instance.materials.get(0).get(TextureAttribute.Diffuse)).textureDescription.texture.bind(1);
         shader.program.setUniformi("u_diffuseTex", 1);
+        if (!applyFog) {
+            shader.program.setUniformf("u_fogDensity", 0f);
+        }
         if (useAmbientLight){
             Entity.setLightingColor(z, worldPos, s.currentAmbientColor, tintColor, tmpBlockPos1, tmpBlockPos2);
         }

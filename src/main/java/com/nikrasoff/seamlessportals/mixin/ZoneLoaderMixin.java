@@ -23,12 +23,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
+import java.util.Queue;
 
 @Mixin(ZoneLoader.class)
-public abstract class ZoneLoaderMixin implements IPortalWorldLoader {
-
-    @Shadow
-    Array<ChunkColumn> chunkColumnsToGenerate;
+public abstract class ZoneLoaderMixin{
     @Shadow @Final public Zone zone;
 
     @Shadow protected abstract int getPlayerRadius(Player player, int playerRadius);
@@ -146,13 +144,5 @@ public abstract class ZoneLoaderMixin implements IPortalWorldLoader {
             }
             this.cosmicReach_Seamless_Portals$loadChunksNearPortal(zone, portalEntry.getValue(), p, portalChunkLoadRadius, portalChunkLoadRadius);
         }
-    }
-
-    @Override
-    public void cosmicReach_Seamless_Portals$removeChunkColumnFromGen(ChunkColumn cc) {
-        System.out.println("Deleted one! X:" + cc.chunkX + " Y:" + cc.chunkY + " Z:" + cc.chunkZ);
-        boolean result = chunkColumnsToGenerate.removeValue(cc, true);
-        System.out.println(chunkColumnsToGenerate.contains(cc, true));
-        System.out.println(result);
     }
 }

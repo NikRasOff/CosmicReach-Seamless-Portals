@@ -8,7 +8,9 @@ import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
+import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
 import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.world.EntityRegion;
 import finalforeach.cosmicreach.world.Zone;
 
@@ -111,7 +113,13 @@ public class PortalManager {
         Zone zone1 = GameSingletons.world.getZoneCreateIfNull(gen1.zoneId);
         Zone zone2 = GameSingletons.world.getZoneCreateIfNull(gen2.zoneId);
         zone1.addEntity(portal1);
+        if (GameSingletons.isHost && ServerSingletons.SERVER != null){
+            ServerSingletons.SERVER.broadcast(zone1, new PortalAnimationPacket(portal1.getPortalID(), "start"));
+        }
         zone2.addEntity(portal2);
+        if (GameSingletons.isHost && ServerSingletons.SERVER != null){
+            ServerSingletons.SERVER.broadcast(zone2, new PortalAnimationPacket(portal2.getPortalID(), "start"));
+        }
 
         return true;
     }

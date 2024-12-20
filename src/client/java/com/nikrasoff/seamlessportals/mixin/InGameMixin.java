@@ -54,11 +54,6 @@ public abstract class InGameMixin implements IPortalIngame {
         ((IPortalablePlayerController) playerController).cosmicReach_Seamless_Portals$resetPlayerCameraUp();
     }
 
-    @Inject(method = "loadWorld(Lfinalforeach/cosmicreach/world/World;)V", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/io/PlayerSaver;loadLocalPlayer(Lfinalforeach/cosmicreach/world/World;)V"))
-    private void loadPortals(World world, CallbackInfo ci){
-        PortalSaveSystem.loadPortals(world);
-    }
-
     @Accessor(value = "playerController")
     public abstract PlayerController getPlayerController();
 

@@ -22,13 +22,7 @@ public abstract class BlockEntitySyncMixin {
 
     @Shadow public int z;
 
-    @Inject(method = "handle", at = @At(value = "INVOKE", target = "Ljava/lang/reflect/Field;set(Ljava/lang/Object;Ljava/lang/Object;)V"))
-    void BECheck1(NetworkIdentity identity, ChannelHandlerContext ctx, CallbackInfo ci){
-        BlockEntity be = identity.getZone().getBlockEntity(x, y, z);
-        cosmicReach_Seamless_Portals$BECheck(be);
-    }
-
-    @Inject(method = "handle", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/items/containers/SlotContainer;replaceSlotContents(Lfinalforeach/cosmicreach/items/containers/SlotContainer;)V"))
+    @Inject(method = "handle", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/networking/netty/NettyServer;broadcastAsServerExcept(Lfinalforeach/cosmicreach/networking/GamePacket;Lfinalforeach/cosmicreach/networking/NetworkIdentity;)V"))
     void BECheck2(NetworkIdentity identity, ChannelHandlerContext ctx, CallbackInfo ci){
         BlockEntity be = identity.getZone().getBlockEntity(x, y, z);
         cosmicReach_Seamless_Portals$BECheck(be);

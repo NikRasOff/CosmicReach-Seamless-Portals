@@ -40,7 +40,6 @@ public class OmniumCalibratorSlotContainer extends SlotContainer {
         super.onItemSlotUpdate(itemSlot);
         if (GameSingletons.isHost) {
             this.blockEntityOmniumCalibrator.setTicking(true);
-            SeamlessPortals.LOGGER.info("Omnium calibrator updated");
         }
     }
 

@@ -78,6 +78,7 @@ public class SeamlessPortalsClient implements ClientModInitializer {
         SeamlessPortalsRenderUtil.initialise();
         PulseEffect.create();
         PortalModel.create();
+        PortalGeneratorScreen.initialise();
 
         SeamlessPortalsRenderUtil.loadModel(Identifier.of(SeamlessPortalsConstants.MOD_ID, "models/view/hpg.g3db"));
         ItemRenderer.registerItemModelCreator(HandheldPortalGen.class, (handheldPortalGen) -> {

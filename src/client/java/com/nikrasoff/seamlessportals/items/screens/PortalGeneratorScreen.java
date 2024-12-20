@@ -11,10 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.github.puzzle.game.ui.font.CosmicReachFont;
 import com.nikrasoff.seamlessportals.SPClientConstants;
-import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
-import com.nikrasoff.seamlessportals.extras.IntVector3;
-import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
 import com.nikrasoff.seamlessportals.extras.SomeStringUtils;
 import com.nikrasoff.seamlessportals.items.containers.PortalGeneratorSlotContainer;
 import com.nikrasoff.seamlessportals.networking.packets.ActivatePortalGenPacket;
@@ -32,10 +29,10 @@ import finalforeach.cosmicreach.ui.widgets.ItemSlotWidget;
 public class PortalGeneratorScreen extends BaseItemScreen {
     BlockEntityPortalGenerator portalGenerator;
 
-    private static final BitmapFont font =CosmicReachFont.createCosmicReachFont();
-    private static final Label.LabelStyle labelStyle = new Label.LabelStyle(font, Color.WHITE);
-    private static final TextField.TextFieldStyle fieldStyle = new TextField.TextFieldStyle(font, Color.WHITE, new TextureRegionDrawable(SPClientConstants.UI_TEXT_CURSOR), null, new NinePatchDrawable(UI.containerBackground9Patch));
-    private static final TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle(new NinePatchDrawable(UI.container9Patch), new NinePatchDrawable(UI.container9PatchHovered), new NinePatchDrawable(UI.containerSelected9Patch), font);
+    private static BitmapFont font;
+    private static Label.LabelStyle labelStyle;
+    private static TextField.TextFieldStyle fieldStyle;
+    private static TextButton.TextButtonStyle buttonStyle;
 
     TextField sizeXField;
     TextField sizeYField;
@@ -46,6 +43,12 @@ public class PortalGeneratorScreen extends BaseItemScreen {
 
     public PortalGeneratorScreen(BlockEntityPortalGenerator portalGenerator) {
         super(portalGenerator);
+        if (fieldStyle == null) {
+            fieldStyle = new TextField.TextFieldStyle(font, Color.WHITE, new TextureRegionDrawable(SPClientConstants.UI_TEXT_CURSOR), null, new NinePatchDrawable(UI.containerBackground9Patch));
+        }
+        if (buttonStyle == null) {
+            buttonStyle = new TextButton.TextButtonStyle(new NinePatchDrawable(UI.container9Patch), new NinePatchDrawable(UI.container9PatchHovered), new NinePatchDrawable(UI.containerSelected9Patch), font);
+        }
         this.portalGenerator = portalGenerator;
         PortalGeneratorSlotContainer container = portalGenerator.slotContainer;
         Stack stack = new Stack();
@@ -202,6 +205,12 @@ public class PortalGeneratorScreen extends BaseItemScreen {
         this.init();
     }
 
+    public static void initialise(){
+        font = CosmicReachFont.createCosmicReachFont();
+        font.getData().capHeight = -16;
+        labelStyle = new Label.LabelStyle(font, Color.WHITE);
+    }
+
     private void yellInChat(String subject){
         Chat.MAIN_CLIENT_CHAT.addMessage(null, "\"" + subject + "\" is not a valid floating point value");
     }
@@ -248,9 +257,5 @@ public class PortalGeneratorScreen extends BaseItemScreen {
         super.onRemove();
 //        SeamlessPortals.LOGGER.info("Screen removed");
         this.updatePortalGenerator();
-    }
-
-    static {
-        font.getData().capHeight = -16;
     }
 }

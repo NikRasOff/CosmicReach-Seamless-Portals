@@ -51,8 +51,8 @@ public class PortalSaveSystem {
         }
     }
 
-    public static void loadPortals(World world) {
-        String worldFolder = SaveLocation.getWorldSaveFolderLocation(world);
+    public static void loadPortals(String worldFolderName) {
+        String worldFolder = SaveLocation.getWorldSaveFolderLocation(worldFolderName);
         File file = new File(worldFolder + "/" + localPortalFileName);
         if (file.exists()) {
             try {

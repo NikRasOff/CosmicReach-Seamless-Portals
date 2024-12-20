@@ -6,7 +6,10 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.chat.Chat;
+import finalforeach.cosmicreach.networking.packets.MessagePacket;
+import finalforeach.cosmicreach.networking.server.ServerSingletons;
 
 public class ClearAnchorsCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher){
@@ -19,7 +22,12 @@ public class ClearAnchorsCommand {
 
     public static int run(CommandContext<ServerCommandSource> context){
         SeamlessPortals.portalManager.spacialAnchors.clear();
-        Chat.MAIN_CLIENT_CHAT.addMessage(null, "Spacial anchor data cleared");
+        if (GameSingletons.isClient){
+            Chat.MAIN_CLIENT_CHAT.addMessage(null, "Spacial anchor data cleared");
+        }
+        if (GameSingletons.isHost && ServerSingletons.SERVER != null){
+            context.getSource().getIdentity().send(new MessagePacket("Spacial anchor data cleared"));
+        }
         return 0;
     }
 }

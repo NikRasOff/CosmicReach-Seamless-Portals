@@ -71,6 +71,8 @@ public class Portal extends Entity {
                 portal.linkPortal(lPortal);
                 lPortal.linkPortal(portal);
             }
+            portal.calculateLocalBB();
+            portal.calculateMeshBB();
         }
         return portal;
     }

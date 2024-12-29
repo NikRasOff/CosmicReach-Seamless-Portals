@@ -12,6 +12,7 @@
     "LangMixin",
     "PlayerMixin",
     "PortalableEntityMixin",
+    "PortalDespawnMixin",
     "ZoneLoaderMixin"
   ],
   "client": [

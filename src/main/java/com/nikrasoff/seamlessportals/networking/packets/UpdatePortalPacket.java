@@ -13,6 +13,7 @@ import io.netty.channel.ChannelHandlerContext;
 
 public class UpdatePortalPacket extends GamePacket {
     int portalId;
+    int linkedPortalId;
     Vector3 position = new Vector3();
     Vector3 lookDirection = new Vector3();
     Vector3 upVector = new Vector3();
@@ -21,6 +22,7 @@ public class UpdatePortalPacket extends GamePacket {
     public UpdatePortalPacket(){}
     public UpdatePortalPacket(Portal portal){
         this.portalId = portal.getPortalID();
+        this.linkedPortalId = (portal.linkedPortal == null) ? -1 : portal.linkedPortal.getPortalID();
         this.position = portal.getPosition();
         this.lookDirection = portal.viewDirection;
         this.upVector = portal.upVector;
@@ -31,6 +33,7 @@ public class UpdatePortalPacket extends GamePacket {
     @Override
     public void receive(ByteBuf byteBuf) {
         this.portalId = this.readInt(byteBuf);
+        this.linkedPortalId = this.readInt(byteBuf);
         this.readVector3(byteBuf, this.position);
         this.readVector3(byteBuf, this.lookDirection);
         this.readVector3(byteBuf, this.upVector);
@@ -42,6 +45,7 @@ public class UpdatePortalPacket extends GamePacket {
     @Override
     public void write() {
         this.writeInt(this.portalId);
+        this.writeInt(this.linkedPortalId);
         this.writeVector3(this.position);
         this.writeVector3(this.lookDirection);
         this.writeVector3(this.upVector);
@@ -55,6 +59,7 @@ public class UpdatePortalPacket extends GamePacket {
         if (GameSingletons.isClient){
             Portal portal = SeamlessPortals.portalManager.getPortal(this.portalId);
             if (portal == null) return;
+            portal.pendingLinkedPortal = SeamlessPortals.portalManager.getPortal(this.linkedPortalId);
             portal.setPosition(this.position);
             portal.viewDirection = this.lookDirection;
             portal.upVector = this.upVector;

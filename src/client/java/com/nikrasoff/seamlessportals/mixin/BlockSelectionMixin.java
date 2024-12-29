@@ -11,6 +11,7 @@ import com.nikrasoff.seamlessportals.networking.packets.HpgFiredPacket;
 import com.nikrasoff.seamlessportals.networking.packets.PortalClearPacket;
 import finalforeach.cosmicreach.BlockSelection;
 import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.audio.SoundManager;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.networking.client.ClientNetworkManager;
@@ -75,6 +76,7 @@ public abstract class BlockSelectionMixin {
                                 cosmicReach_Seamless_Portals$portalRaycastNormalDebug.set(result.hitNormal().getVector());
                             }
                         }
+                        SoundManager.INSTANCE.playSound("seamlessportals:sounds/portals/hpg_fire.ogg", 0.5f, 1.0f, 0.3f);
                         ItemRenderer.swingHeldItem();
                     }
                     if (Controls.usePlaceJustPressed()){
@@ -92,6 +94,7 @@ public abstract class BlockSelectionMixin {
                                 cosmicReach_Seamless_Portals$portalRaycastNormalDebug.set(result.hitNormal().getVector());
                             }
                         }
+                        SoundManager.INSTANCE.playSound("seamlessportals:sounds/portals/hpg_fire.ogg", 0.5f, 1.0f, 0.3f);
                         ItemRenderer.swingHeldItem();
                     }
                     if (Controls.pickBlockPressed()){

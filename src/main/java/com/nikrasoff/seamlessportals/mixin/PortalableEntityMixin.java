@@ -47,7 +47,8 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
     @Shadow private Vector3 acceleration;
     @Shadow public BoundingBox localBoundingBox;
     @Shadow protected transient Vector3 lastRenderPosition;
-    @Shadow protected transient BoundingBox globalBoundingBox;
+    @Shadow
+    public transient BoundingBox globalBoundingBox;
     @Shadow private transient Color modelLightColor;
     @Shadow protected transient int invulnerabiltyFrames;
 
@@ -57,6 +58,8 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
 
     @Shadow private transient float pendingDamage;
     @Shadow public transient Zone zone;
+    @Shadow public boolean noClip;
+    @Shadow private transient float floorFriction;
     @Unique
     private transient boolean cosmicReach_Seamless_Portals$justTeleported = false;
     @Unique
@@ -97,6 +100,27 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
     }
 
     @Unique
+    private void cosmicReach_Seamless_Portals$applyFriction(Vector3 vel, float coefficient){
+        coefficient *= 0.999997F;
+        float f;
+        if (coefficient >= 1.0F) {
+            f = (float)Math.pow(Math.exp((double)(-coefficient * 0.05F)), 20.0);
+        } else {
+            f = (float)Math.pow((double)(1.0F - coefficient), 0.05000000074505806);
+        }
+
+        vel.x *= f;
+        vel.z *= f;
+        if (Math.abs(vel.x) < 1.0E-4F) {
+            vel.x = 0.0F;
+        }
+
+        if (Math.abs(vel.z) < 1.0E-4F) {
+            vel.z = 0.0F;
+        }
+    }
+
+    @Unique
     private void cosmicReach_Seamless_Portals$updateTrackedPortals(double deltaTime, Zone zone){
         if (SeamlessPortals.portalManager.createdPortals.isEmpty()) return;
 
@@ -107,6 +131,13 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
         Vector3 testVelocity = this.velocity.cpy();
         testVelocity.add(ax, ay, az);
         testVelocity.add(this.onceVelocity);
+
+        if (this.noClip) {
+            this.cosmicReach_Seamless_Portals$applyFriction(testVelocity, 1.0F);
+        } else {
+            this.cosmicReach_Seamless_Portals$applyFriction(testVelocity, this.floorFriction);
+        }
+
         float vx = testVelocity.x * (float)deltaTime;
         float vy = testVelocity.y * (float)deltaTime;
         float vz = testVelocity.z * (float)deltaTime;
@@ -138,7 +169,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
     }
 
     public BlockState cosmicReach_Seamless_Portals$checkIfShouldCollidePortal(Zone instance, int x, int y, int z, Operation<BlockState> original){
-        // Refer to the comment in method teleportThroughPortal for an explanation
+        // Refer to the comment in teleportThroughPortal for an explanation
         BlockState orBlockState = original.call(instance, x, y, z);
         if (this.cosmicReach_Seamless_Portals$ignorePortals){
             return orBlockState;
@@ -198,7 +229,6 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
         this.velocity.sub(portal.velocity);
         this.velocity.sub(portal.onceVelocity);
         this.setPosition(portal.getPortaledPos(this.position));
-//        this.position = portal.getPortaledPos(this.position);
         this.velocity = portal.getPortaledVector(this.velocity);
         this.onceVelocity = portal.getPortaledVector(this.onceVelocity);
         this.acceleration.set(portal.getPortaledVector(this.acceleration));

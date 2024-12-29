@@ -23,7 +23,9 @@ import com.nikrasoff.seamlessportals.effects.IEffectManager;
 import com.nikrasoff.seamlessportals.entities.DestabiliserPulseEntity;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
 import com.nikrasoff.seamlessportals.networking.packets.*;
+import com.nikrasoff.seamlessportals.portals.HPGPortal;
 import com.nikrasoff.seamlessportals.portals.Portal;
+import com.nikrasoff.seamlessportals.portals.PortalGenPortal;
 import com.nikrasoff.seamlessportals.portals.PortalManager;
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.GameSingletons;
@@ -91,6 +93,8 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
 
         SeamlessPortalsBlockEvents.registerSeamlessPortalsBlockEvents();
         EntityCreator.registerEntityCreator("seamlessportals:entity_portal", Portal::readPortal);
+        EntityCreator.registerEntityCreator("seamlessportals:entity_portal_gen_portal", PortalGenPortal::readPortal);
+        EntityCreator.registerEntityCreator("seamlessportals:entity_hpg_portal", HPGPortal::readPortal);
         EntityCreator.registerEntityCreator(DestabiliserPulseEntity.ENTITY_ID.toString(), DestabiliserPulseEntity::new);
 
         if (!GameSingletons.isClient){

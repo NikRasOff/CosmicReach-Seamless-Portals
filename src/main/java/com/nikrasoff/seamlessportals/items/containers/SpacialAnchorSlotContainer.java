@@ -63,6 +63,7 @@ public class SpacialAnchorSlotContainer extends SlotContainer {
     public void deregisterSpacialAnchor(){
         this.primed = false;
         SeamlessPortals.portalManager.deregisterSpacialAnchor(this.frequency, new IntVector3(this.blockEntitySpacialAnchor.getGlobalX(), this.blockEntitySpacialAnchor.getGlobalY(), this.blockEntitySpacialAnchor.getGlobalZ()));
+        this.frequency = -1;
     }
 
     @Override
@@ -72,10 +73,8 @@ public class SpacialAnchorSlotContainer extends SlotContainer {
     }
 
     public void checkInput(){
-        SeamlessPortals.LOGGER.info("Is checked");
         ItemSlot input = this.getInputSlot();
         if (input.itemStack == null || input.itemStack.getItem() == null || input.itemStack.getItem() != SeamlessPortalsItems.CALIBRATED_OMNIUM_CRYSTAL) {
-            this.blockEntitySpacialAnchor.destroyPortals();
             deregisterSpacialAnchor();
         } else if (!primed) {
             registerSpacialAnchor(input.itemStack);

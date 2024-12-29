@@ -3,6 +3,7 @@ package com.nikrasoff.seamlessportals.items;
 import com.github.puzzle.game.items.IModItem;
 import finalforeach.cosmicreach.items.Item;
 import finalforeach.cosmicreach.lang.Lang;
+import finalforeach.cosmicreach.sounds.GameSound;
 import finalforeach.cosmicreach.util.Identifier;
 
 public class HandheldPortalGen implements IModItem {
@@ -11,6 +12,7 @@ public class HandheldPortalGen implements IModItem {
             "base:water"
     };
     public static final String hpgID = "seamlessportals:handheld_portal_generator";
+    public static final GameSound hpgFireSound = GameSound.of("seamlessportals:sounds/portals/hpg_fire.ogg");
 
     @Override
     public Identifier getIdentifier() {

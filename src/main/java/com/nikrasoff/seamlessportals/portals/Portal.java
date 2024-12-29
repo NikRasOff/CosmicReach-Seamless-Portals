@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Array;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
+import com.nikrasoff.seamlessportals.extras.PortalType;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
 import com.nikrasoff.seamlessportals.networking.packets.PortalDeletePacket;
@@ -18,22 +19,26 @@ import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.savelib.crbin.CRBSerialized;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
+import finalforeach.cosmicreach.sounds.GameSound;
 import finalforeach.cosmicreach.util.ArrayUtils;
 import finalforeach.cosmicreach.world.Zone;
 
 import java.util.Arrays;
 
 public class Portal extends Entity {
+    public static GameSound portalOpenSound = GameSound.of("seamlessportals:sounds/portals/portal_open.ogg");
+    public static GameSound portalCloseSound = GameSound.of("seamlessportals:sounds/portals/portal_close.ogg");
+
     public transient boolean isPortalDestroyed = false;
 
+    public transient Portal pendingLinkedPortal;
     public transient Portal linkedPortal;
-
     @CRBSerialized
-    private final Vector3 linkedPortalChunkCoords = new Vector3();
+    final Vector3 linkedPortalChunkCoords = new Vector3();
     @CRBSerialized
-    private int linkedPortalID = -1;
+    int linkedPortalID = -1;
     @CRBSerialized
-    private int portalID = -1;
+    int portalID = -1;
     @CRBSerialized
     public Vector3 portalSize = new Vector3();
     @CRBSerialized
@@ -46,12 +51,12 @@ public class Portal extends Entity {
 
     private final BoundingBox meshBB = new BoundingBox();
     public static final Object lock = new Object();
-    private static final Vector3 tmpVec3 = new Vector3();
-    private static final Array<BoundingBox> tempBounds = new Array<>();
-    private static final BoundingBox tmpBB = new BoundingBox();
+    protected static final Vector3 tmpVec3 = new Vector3();
+    protected static final Array<BoundingBox> tempBounds = new Array<>();
+    protected static final BoundingBox tmpBB = new BoundingBox();
 
     public static Portal readPortal(CRBinDeserializer deserializer){
-        // It took so much time to make this work...
+        // It took so much time to make this work... and yet it's still somehow broken
         Portal portal = new Portal();
         if (deserializer != null) {
             portal.read(deserializer);
@@ -61,7 +66,7 @@ public class Portal extends Entity {
             }
             SeamlessPortals.portalManager.addPortal(portal);
             Portal lPortal;
-            if (!GameSingletons.isClient){
+            if (GameSingletons.isHost){
                 lPortal = SeamlessPortals.portalManager.getPortalWithGen(portal.linkedPortalID, portal.linkedPortalChunkCoords, zoneId);
             }
             else {
@@ -86,6 +91,10 @@ public class Portal extends Entity {
         else{
             serial.writeString("zoneId", this.zone.zoneId);
         }
+    }
+
+    protected Portal(String id){
+        super(id);
     }
 
     public Portal(){
@@ -229,6 +238,7 @@ public class Portal extends Entity {
 
     public void linkPortal(Portal to){
         linkedPortal = to;
+        pendingLinkedPortal = to;
         this.linkedPortalID = to.getPortalID();
         this.linkedPortalChunkCoords.x = Math.floorDiv((int) linkedPortal.position.x, 16);
         this.linkedPortalChunkCoords.y = Math.floorDiv((int) linkedPortal.position.y, 16);
@@ -250,6 +260,7 @@ public class Portal extends Entity {
     }
 
     public Matrix4 getPortaledTransform(Matrix4 transform){
+        if (linkedPortal == null) return transform.cpy();
         Matrix4 newTransform = transform.cpy();
         Matrix4 thisPort = this.getPortalMatrix();
         Matrix4 linkedPort = this.linkedPortal.getPortalMatrix();
@@ -267,6 +278,7 @@ public class Portal extends Entity {
     }
 
     public Vector3 getPortaledPos(Vector3 pos){
+        if (linkedPortal == null) return pos.cpy();
         Vector3 newPos = pos.cpy();
         Matrix4 thisPort = this.getPortalMatrix();
         Matrix4 linkedPort = this.linkedPortal.getPortalMatrix().inv();
@@ -325,6 +337,7 @@ public class Portal extends Entity {
     }
 
     public void render(Camera worldCamera) {
+        if (this.linkedPortal != this.pendingLinkedPortal) this.linkedPortal = this.pendingLinkedPortal;
         if (this.modelInstance != null) {
             tmpModelMatrix.setToLookAt(this.position, this.position.cpy().add(this.viewDirection), this.upVector);
             this.renderModelAfterMatrixSet(worldCamera);
@@ -333,6 +346,7 @@ public class Portal extends Entity {
 
     public void startDestruction(){
         if (isEndAnimationPlaying) return;
+        portalCloseSound.playGlobalSound3D(this.zone, this.position);
         this.endAnimationTimer = 0;
         if (GameSingletons.isClient){
             playAnimation("end");
@@ -341,6 +355,11 @@ public class Portal extends Entity {
             ServerSingletons.SERVER.broadcast(this.zone, new PortalAnimationPacket(this.getPortalID(), "end"));
         }
         this.isEndAnimationPlaying = true;
+    }
+
+    void destroySelfAndLinkedPortal(){
+        this.startDestruction();
+        if (this.linkedPortal != null) this.linkedPortal.startDestruction();
     }
 
     @Override
@@ -358,76 +377,6 @@ public class Portal extends Entity {
         }
         if (byProxy && this.linkedPortal != null){
             return this.linkedPortal.isPortalInRange(false, renderDistance);
-        }
-        return false;
-    }
-
-    public boolean figureOutPlacement(Zone z, float maxBumpPosX, float maxBumpNegX, float maxBumpPosY, float maxBumpNegY){
-        // Tries to place the portal so that it doesn't intersect any walls
-        // Shifts it around in its plane to do so
-        // returns true is successful, otherwise false
-        if (!isPortalInAWall(z)) return true;
-        Vector3 originalPos = this.position.cpy();
-
-        if (tryBumping(new Vector3(1, 0, 0), maxBumpPosX, z)) return true;
-        this.position.set(originalPos);
-        if (tryBumping(new Vector3(-1, 0, 0), maxBumpNegX, z)) return true;
-        this.position.set(originalPos);
-        if (tryBumping(new Vector3(0, 1, 0), maxBumpPosY, z)) return true;
-        this.position.set(originalPos);
-        if (tryBumping(new Vector3(0, -1, 0), maxBumpNegY, z)) return true;
-        this.position.set(originalPos);
-
-        return false;
-    }
-
-    public boolean figureOutPlacement(Zone z, float maxBumpPosX, float maxBumpNegX, float maxBumpPosY, float maxBumpNegY, String[] blacklist, boolean useFront){
-        // Same as the above function, but it also looks at the blocks the portal is placed on
-        if (!isPortalInAWall(z) && isPortalOnValidSurface(z, blacklist, useFront)) return true;
-        Vector3 originalPos = this.position.cpy();
-
-        if (tryBumping(new Vector3(1, 0, 0), maxBumpPosX, z, blacklist, useFront)) return true;
-        this.position.set(originalPos);
-        if (tryBumping(new Vector3(-1, 0, 0), maxBumpNegX, z, blacklist, useFront)) return true;
-        this.position.set(originalPos);
-        if (tryBumping(new Vector3(0, 1, 0), maxBumpPosY, z, blacklist, useFront)) return true;
-        this.position.set(originalPos);
-        if (tryBumping(new Vector3(0, -1, 0), maxBumpNegY, z, blacklist, useFront)) return true;
-        this.position.set(originalPos);
-
-        return false;
-    }
-
-    private boolean tryBumping(Vector3 dir, float maxAmount, Zone z){
-        // Tries placing the portal along a direction
-        float bumpAmount = 0.01f;
-        float bumpCount = 0;
-        Matrix4 portalMatrix = this.getRotationMatrix();
-        Vector3 bumpDir = new Vector3();
-        bumpDir.set(dir).scl(bumpAmount).mul(portalMatrix);
-        while (bumpCount < maxAmount){
-            bumpCount += bumpAmount;
-            this.position.add(bumpDir);
-            if (!isPortalInAWall(z)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean tryBumping(Vector3 dir, float maxAmount, Zone z, String[] blacklist, boolean useFront){
-        // Tries placing the portal along a direction, but with a blacklist
-        float bumpAmount = 0.01f;
-        float bumpCount = 0;
-        Matrix4 portalMatrix = this.getRotationMatrix();
-        Vector3 bumpDir = new Vector3();
-        bumpDir.set(dir).scl(bumpAmount).mul(portalMatrix);
-        while (bumpCount < maxAmount){
-            bumpCount += bumpAmount;
-            this.position.add(bumpDir);
-            if (!isPortalInAWall(z) && isPortalOnValidSurface(z, blacklist, useFront)) {
-                return true;
-            }
         }
         return false;
     }
@@ -454,38 +403,5 @@ public class Portal extends Entity {
             }
         }
         return false;
-    }
-    public boolean isPortalOnValidSurface(Zone z, String[] blacklist, boolean useFront){
-        float blockCheckBump = 0.1f;
-        tmpVec3.set(this.viewDirection).scl(useFront ? blockCheckBump : -blockCheckBump);
-        this.position.add(tmpVec3);
-//        SeamlessPortals.LOGGER.info("\nTesting at pos " + this.position);
-        OrientedBoundingBox bb = this.getMeshBoundingBox();
-        this.position.sub(tmpVec3);
-        Vector3[] vertices = bb.getVertices();
-
-        IntVector3 min = IntVector3.leastVector(vertices);
-        IntVector3 max = IntVector3.greatestVector(vertices);
-
-        for (int bx = min.x; bx <= max.x; ++bx){
-            for (int by = min.y; by <= max.y; ++by){
-                for (int bz = min.z; bz <= max.z; ++bz){
-                    BlockState checkBlock = z.getBlockState(bx, by, bz);
-//                    if (checkBlock != null){
-//                        SeamlessPortals.LOGGER.info("Testing against " + checkBlock.getBlock());
-//                    }
-                    if (checkBlock != null && !checkBlock.walkThrough){
-                        checkBlock.getBoundingBox(tmpBB, bx, by, bz);
-                        if (bb.intersects(tmpBB)){
-                            if (Arrays.asList(blacklist).contains(checkBlock.getBlockId())){
-                                return false;
-                            }
-                        }
-                    }
-                    else return false;
-                }
-            }
-        }
-        return true;
     }
 }

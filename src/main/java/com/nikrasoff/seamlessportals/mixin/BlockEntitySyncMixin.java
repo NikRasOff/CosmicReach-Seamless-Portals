@@ -32,8 +32,6 @@ public abstract class BlockEntitySyncMixin {
     void cosmicReach_Seamless_Portals$BECheck(BlockEntity blockEntity){
         if (blockEntity instanceof BlockEntityOmniumCalibrator){
             blockEntity.setTicking(true);
-        } else if (blockEntity instanceof BlockEntityPortalGenerator pg) {
-            pg.slotContainer.checkItem();
         }
         else if (blockEntity instanceof BlockEntitySpacialAnchor anchor){
             anchor.slotContainer.checkInput();

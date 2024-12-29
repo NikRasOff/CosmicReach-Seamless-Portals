@@ -1,12 +1,11 @@
 package com.nikrasoff.seamlessportals.blockentities;
 
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
 import com.nikrasoff.seamlessportals.items.containers.PortalGeneratorSlotContainer;
-import com.nikrasoff.seamlessportals.items.containers.SpacialAnchorSlotContainer;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blockentities.BlockEntity;
@@ -14,11 +13,11 @@ import finalforeach.cosmicreach.blockentities.BlockEntityCreator;
 import finalforeach.cosmicreach.blockentities.IBlockEntityWithContainer;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.blocks.BlockState;
-import finalforeach.cosmicreach.chat.Chat;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.items.ItemSlot;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
+import finalforeach.cosmicreach.sounds.GameSound;
 import finalforeach.cosmicreach.world.BlockSetter;
 import finalforeach.cosmicreach.world.Zone;
 
@@ -26,6 +25,8 @@ import java.util.HashMap;
 import java.util.function.Predicate;
 
 public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEntityWithContainer {
+    private final static GameSound portalGenActivateSound = GameSound.of("seamlessportals:sounds/blocks/portal_generator_power_up.ogg");
+    private final static GameSound portalGenDeactivateSound = GameSound.of("seamlessportals:sounds/blocks/portal_generator_power_down.ogg");
     private final static String BLOCK_ENTITY_ID = "seamlessportals:portal_generator";
     public PortalGeneratorSlotContainer slotContainer;
     public Vector2 portalSize = new Vector2(3, 3);
@@ -47,11 +48,6 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
     public void onRemove() {
         super.onRemove();
         this.isBeingDeleted = true;
-        if (GameSingletons.isHost){
-            if (this.isPortalActive()){
-                this.closePortal();
-            }
-        }
         this.slotContainer.dropAllItems(this.zone, (float)this.getGlobalX() + 0.5F, (float)this.getGlobalY() + 0.5F, (float)this.getGlobalZ() + 0.5F);
     }
 
@@ -66,6 +62,8 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
 
     public void updateBlockState(boolean isWorking){
         if (this.isBeingDeleted) return;
+        if (isWorking) portalGenActivateSound.playGlobalSound3D(this.zone, new Vector3(this.getGlobalX(), this.getGlobalY(), this.getGlobalZ()));
+        else portalGenDeactivateSound.playGlobalSound3D(this.zone, new Vector3(this.getGlobalX(), this.getGlobalY(), this.getGlobalZ()));
         BlockState currentBlockState = this.getBlockState();
         String facing = currentBlockState.getParam("facing");
         HashMap<String, String> newParams = new HashMap<>();
@@ -89,16 +87,23 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
         if (GameSingletons.isHost){
             if (this.isPortalActive()) return;
             int frequency = this.slotContainer.getFrequency();
-            if (frequency == -1) return;
-            this.updateBlockState(true);
-
+            if (frequency == -1) {
+                this.justUpdated = true;
+                return;
+            }
+            if (!SeamlessPortals.portalManager.spacialAnchors.containsKey(String.valueOf(frequency))){
+                this.justUpdated = true;
+                return;
+            }
             PortalSpawnBlockInfo gen1 = new PortalSpawnBlockInfo(this.zone.zoneId, new IntVector3(this.getGlobalX(), this.getGlobalY(), this.getGlobalZ()), this.getBlockState().getStateParamsStr());
             PortalSpawnBlockInfo gen2 = SeamlessPortals.portalManager.spacialAnchors.get(String.valueOf(frequency)).random();
-            boolean res = SeamlessPortals.portalManager.createPortalPair(gen1, gen2, this);
+            boolean res = SeamlessPortals.portalManager.createPortalPairFromGenAndAnchor(gen1, gen2);
             if (!res){
-                this.updateBlockState(false);
                 this.portalId = -1;
                 this.justUpdated = true;
+            }
+            else {
+                this.updateBlockState(true);
             }
         }
     }

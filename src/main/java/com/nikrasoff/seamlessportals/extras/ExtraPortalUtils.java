@@ -18,6 +18,7 @@ import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
 import com.nikrasoff.seamlessportals.networking.packets.UpdatePortalPacket;
+import com.nikrasoff.seamlessportals.portals.HPGPortal;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.portals.PortalManager;
 import finalforeach.cosmicreach.GameSingletons;
@@ -243,15 +244,12 @@ public class ExtraPortalUtils {
         RaycastOutput result = raycast(player.getZone(), workingPos, player.getEntity().viewDirection, 1000F);
         if (!isSecondPortal){
             if (result != null){
-                Portal prPortal = pm.getPortalWithGen(primaryPortalId.getValue(), primaryPortalChunkPos.getValue(), primaryPortalZone.getValue());
-                Portal secPortal = pm.getPortalWithGen(secondaryPortalId.getValue(), secondaryPortalChunkPos.getValue(), secondaryPortalZone.getValue());
+                HPGPortal prPortal = (HPGPortal) pm.getPortalWithGen(primaryPortalId.getValue(), primaryPortalChunkPos.getValue(), primaryPortalZone.getValue());
+                HPGPortal secPortal = (HPGPortal) pm.getPortalWithGen(secondaryPortalId.getValue(), secondaryPortalChunkPos.getValue(), secondaryPortalZone.getValue());
                 if (prPortal == null){
                     Vector3 upDir = getUpVectorForPortals(result.hitNormal(), player);
-                    Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()));
-                    if (!newPortal.figureOutPlacement(player.getZone(), 0.5f, 0.5f, 1, 1, HandheldPortalGen.surfaceBlacklist, true)){
-                        SeamlessPortals.portalManager.removePortal(newPortal);
-                        return;
-                    }
+                    HPGPortal newPortal = HPGPortal.createNewPortal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), false, player.getZone());
+                    if (newPortal == null) return;
                     primaryPortalId.attribute.setValue(newPortal.getPortalID());
                     primaryPortalChunkPos.attribute.getValue().set(Math.floorDiv((int) newPortal.position.x, 16), Math.floorDiv((int) newPortal.position.y, 16), Math.floorDiv((int) newPortal.position.z, 16));
                     primaryPortalZone.attribute.setValue(player.zoneId);
@@ -271,6 +269,7 @@ public class ExtraPortalUtils {
                         }
                     }
                     player.getZone().addEntity(newPortal);
+                    Portal.portalOpenSound.playGlobalSound3D(newPortal.zone, newPortal.position);
                     if (GameSingletons.isHost && ServerSingletons.SERVER != null){
                         ServerSingletons.SERVER.broadcast(newPortal.zone, new PortalAnimationPacket(newPortal.getPortalID(), "start"));
                     }
@@ -284,12 +283,14 @@ public class ExtraPortalUtils {
                     prPortal.viewDirection = result.hitNormal().getVector().cpy().scl(-1);
                     prPortal.upVector = getUpVectorForPortals(result.hitNormal(), player);
 
-                    if (!prPortal.figureOutPlacement(player.getZone(), 0.5f, 0.5f, 1f, 1f, HandheldPortalGen.surfaceBlacklist, true)){
+                    if (!prPortal.figureOutPlacement(player.getZone(), 0.5f, 0.5f, 1f, 1f)){
                         prPortal.setPosition(originalPos);
                         prPortal.viewDirection.set(originalDir);
                         prPortal.upVector.set(originalUpVector);
                         return;
                     }
+                    Portal.portalCloseSound.playGlobalSound3D(prPortal.zone, originalPos);
+                    Portal.portalOpenSound.playGlobalSound3D(prPortal.zone, prPortal.position);
 
                     if (GameSingletons.isClient){
                         if (secPortal != null){
@@ -309,14 +310,14 @@ public class ExtraPortalUtils {
         }
         else {
             if (result != null){
-                Portal secPortal = pm.getPortalWithGen(secondaryPortalId.getValue(), secondaryPortalChunkPos.getValue(), primaryPortalZone.getValue());
-                Portal prPortal = pm.getPortalWithGen(primaryPortalId.getValue(), primaryPortalChunkPos.getValue(), secondaryPortalZone.getValue());
+                HPGPortal secPortal = (HPGPortal) pm.getPortalWithGen(secondaryPortalId.getValue(), secondaryPortalChunkPos.getValue(), primaryPortalZone.getValue());
+                HPGPortal prPortal = (HPGPortal) pm.getPortalWithGen(primaryPortalId.getValue(), primaryPortalChunkPos.getValue(), secondaryPortalZone.getValue());
 
                 if (secPortal == null){
                     Vector3 upDir = getUpVectorForPortals(result.hitNormal(), player);
-                    Portal newPortal = new Portal(new Vector2(1, 2), result.hitNormal().getVector(), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()));
-                    if (!newPortal.figureOutPlacement(player.getZone(), 0.5f, 0.5f, 1, 1, HandheldPortalGen.surfaceBlacklist, false)){
-                        SeamlessPortals.portalManager.removePortal(newPortal);
+                    HPGPortal newPortal = HPGPortal.createNewPortal(new Vector2(1, 2), result.hitNormal().getVector(), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), true, player.getZone());
+                    if (newPortal == null) {
+//                        SeamlessPortals.LOGGER.info("Couldn't place it, sowwy");
                         return;
                     }
                     secondaryPortalId.attribute.setValue(newPortal.getPortalID());
@@ -338,6 +339,7 @@ public class ExtraPortalUtils {
                         }
                     }
                     player.getZone().addEntity(newPortal);
+                    Portal.portalOpenSound.playGlobalSound3D(newPortal.zone, newPortal.position);
                     if (GameSingletons.isHost && ServerSingletons.SERVER != null){
                         ServerSingletons.SERVER.broadcast(newPortal.zone, new PortalAnimationPacket(newPortal.getPortalID(), "start"));
                     }
@@ -351,12 +353,14 @@ public class ExtraPortalUtils {
                     secPortal.viewDirection = result.hitNormal().getVector();
                     secPortal.upVector = getUpVectorForPortals(result.hitNormal(), player);
 
-                    if (!secPortal.figureOutPlacement(player.getZone(), 0.5f, 0.5f, 1f, 1f, HandheldPortalGen.surfaceBlacklist, false)){
+                    if (!secPortal.figureOutPlacement(player.getZone(), 0.5f, 0.5f, 1f, 1f)){
                         secPortal.setPosition(originalPos);
                         secPortal.viewDirection.set(originalDir);
                         secPortal.upVector.set(originalUpVector);
                         return;
                     }
+                    Portal.portalCloseSound.playGlobalSound3D(secPortal.zone, originalPos);
+                    Portal.portalOpenSound.playGlobalSound3D(secPortal.zone, secPortal.position);
 
                     if (GameSingletons.isClient){
                         if (prPortal != null){

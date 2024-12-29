@@ -20,7 +20,6 @@ import java.util.function.Predicate;
 public class BlockEntitySpacialAnchor extends BlockEntity implements IBlockEntityWithContainer {
     private final static String BLOCK_ENTITY_ID = "seamlessportals:spacial_anchor";
     public SpacialAnchorSlotContainer slotContainer;
-    public int portalId = -1;
 
     public BlockEntitySpacialAnchor(Zone zone, int globalX, int globalY, int globalZ){
         super(zone, globalX, globalY, globalZ);
@@ -36,19 +35,7 @@ public class BlockEntitySpacialAnchor extends BlockEntity implements IBlockEntit
         if (this.slotContainer.isPrimed()){
             this.slotContainer.deregisterSpacialAnchor();
         }
-        this.destroyPortals();
         this.slotContainer.dropAllItems(this.zone, (float)this.getGlobalX() + 0.5F, (float)this.getGlobalY() + 0.5F, (float)this.getGlobalZ() + 0.5F);
-    }
-
-    public void destroyPortals(){
-        if (this.portalId != -1){
-            Portal p = SeamlessPortals.portalManager.getPortal(this.portalId);
-            if (p != null){
-                p.startDestruction();
-                p.linkedPortal.startDestruction();
-            }
-            this.portalId = -1;
-        }
     }
 
     public void onInteract(Player player, Zone zone) {
@@ -64,13 +51,11 @@ public class BlockEntitySpacialAnchor extends BlockEntity implements IBlockEntit
             this.slotContainer = deserial.readObj("slotContainer", SpacialAnchorSlotContainer.class);
             this.slotContainer.setSpacialAnchor(this);
         }
-        this.portalId = deserial.readInt("portalId", -1);
     }
 
     public void write(CRBinSerializer serial) {
         super.write(serial);
         serial.writeObj("slotContainer", this.slotContainer);
-        serial.writeInt("portalId", this.portalId);
     }
 
     public static void registerBlockEntityCreator() {

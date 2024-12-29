@@ -176,14 +176,16 @@ public class PortalModelInstance implements IEntityModelInstance {
         Sky.currentSky.drawSky(this.portalCamera);
         GameSingletons.zoneRenderer.render(portal.zone, this.portalCamera);
         Gdx.gl.glDepthMask(true);
-        portal.linkedPortal.zone.forEachEntity((e) -> {
-            if (e instanceof Portal){
-                return;
-            }
-            ((IModEntity) e).cosmicReach_Seamless_Portals$renderNoAnim(portalCamera);
-        });
+        if (portal.linkedPortal != null){
+            portal.linkedPortal.zone.forEachEntity((e) -> {
+                if (e instanceof Portal){
+                    return;
+                }
+                ((IModEntity) e).cosmicReach_Seamless_Portals$renderNoAnim(portalCamera);
+            });
 
-        portalModel.portalFrameBuffer.end();
+            portalModel.portalFrameBuffer.end();
+        }
 
         return portalModel.portalFrameBuffer.getColorBufferTexture();
     }

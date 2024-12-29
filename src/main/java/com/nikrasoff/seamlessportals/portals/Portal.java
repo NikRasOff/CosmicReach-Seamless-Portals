@@ -8,13 +8,13 @@ import com.badlogic.gdx.utils.Array;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
-import com.nikrasoff.seamlessportals.extras.PortalType;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
 import com.nikrasoff.seamlessportals.networking.packets.PortalDeletePacket;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.savelib.crbin.CRBSerialized;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
@@ -36,9 +36,7 @@ public class Portal extends Entity {
     @CRBSerialized
     final Vector3 linkedPortalChunkCoords = new Vector3();
     @CRBSerialized
-    int linkedPortalID = -1;
-    @CRBSerialized
-    int portalID = -1;
+    EntityUniqueId linkedPortalID = new EntityUniqueId();
     @CRBSerialized
     public Vector3 portalSize = new Vector3();
     @CRBSerialized
@@ -110,16 +108,15 @@ public class Portal extends Entity {
 
     public Portal(Vector2 size, Vector3 viewDir, Vector3 upDir, Vector3 portalPos){
         this();
-        this.portalID = SeamlessPortals.portalManager.getNextPortalID();
         SeamlessPortals.portalManager.addPortal(this);
 
         setPosition(portalPos.x, portalPos.y, portalPos.z);
 
-        this.viewDirection = viewDir;
-        this.upVector = upDir;
+        this.viewDirection.set(viewDir);
+        this.upVector.set(upDir);
 
-        this.portalSize = new Vector3(size.x, size.y, 0);
-        this.viewPositionOffset = new Vector3(0, 0, 0);
+        this.portalSize.set(size.x, size.y, 0);
+        this.viewPositionOffset.set(0, 0, 0);
         this.calculateLocalBB();
         this.calculateMeshBB();
         if (GameSingletons.isClient){
@@ -131,59 +128,59 @@ public class Portal extends Entity {
         this(new Vector2(size), new Vector3(0, 0, 1), new Vector3(0, 1, 0), portalPos);
         switch (viewDir){
             case "negZ":
-                this.viewDirection = new Vector3(0, 0, -1);
+                this.viewDirection.set(0, 0, -1);
                 this.position.z -= 1;
                 break;
             case "posX":
-                this.viewDirection = new Vector3(1, 0, 0);
+                this.viewDirection.set(1, 0, 0);
                 this.position.x += 1;
                 break;
             case "negX":
-                this.viewDirection = new Vector3(-1, 0, 0);
+                this.viewDirection.set(-1, 0, 0);
                 this.position.x -= 1;
                 break;
             case "posYposZ":
-                this.viewDirection = new Vector3(0, 1, 0);
-                this.upVector = new Vector3(0, 0, -1);
+                this.viewDirection.set(0, 1, 0);
+                this.upVector.set(0, 0, -1);
                 this.position.y += 1;
                 break;
             case "posYnegX":
-                this.viewDirection = new Vector3(0, 1, 0);
-                this.upVector = new Vector3(1, 0, 0);
+                this.viewDirection.set(0, 1, 0);
+                this.upVector.set(1, 0, 0);
                 this.position.y += 1;
                 break;
             case "posYnegZ":
-                this.viewDirection = new Vector3(0, 1, 0);
-                this.upVector = new Vector3(0, 0, 1);
+                this.viewDirection.set(0, 1, 0);
+                this.upVector.set(0, 0, 1);
                 this.position.y += 1;
                 break;
             case "posYposX":
-                this.viewDirection = new Vector3(0, 1, 0);
-                this.upVector = new Vector3(-1, 0, 0);
+                this.viewDirection.set(0, 1, 0);
+                this.upVector.set(-1, 0, 0);
                 this.position.y += 1;
                 break;
             case "negYposZ":
-                this.viewDirection = new Vector3(0, -1, 0);
-                this.upVector = new Vector3(0, 0, 1);
+                this.viewDirection.set(0, -1, 0);
+                this.upVector.set(0, 0, 1);
                 this.position.y -= 1;
                 break;
             case "negYnegX":
-                this.viewDirection = new Vector3(0, -1, 0);
-                this.upVector = new Vector3(-1, 0, 0);
+                this.viewDirection.set(0, -1, 0);
+                this.upVector.set(-1, 0, 0);
                 this.position.y -= 1;
                 break;
             case "negYnegZ":
-                this.viewDirection = new Vector3(0, -1, 0);
-                this.upVector = new Vector3(0, 0, -1);
+                this.viewDirection.set(0, -1, 0);
+                this.upVector.set(0, 0, -1);
                 this.position.y -= 1;
                 break;
             case "negYposX":
-                this.viewDirection = new Vector3(0, -1, 0);
-                this.upVector = new Vector3(1, 0, 0);
+                this.viewDirection.set(0, -1, 0);
+                this.upVector.set(1, 0, 0);
                 this.position.y -= 1;
                 break;
             default:
-                this.viewDirection = new Vector3(0, 0, 1);
+                this.viewDirection.set(0, 0, 1);
                 this.position.z += 1;
                 break;
         }
@@ -214,10 +211,6 @@ public class Portal extends Entity {
         this.modelInstance.setCurrentAnimation(animName);
     }
 
-    public int getPortalID(){
-        return this.portalID;
-    }
-
     @Override
     public void hit(float amount) {}
 
@@ -239,7 +232,7 @@ public class Portal extends Entity {
     public void linkPortal(Portal to){
         linkedPortal = to;
         pendingLinkedPortal = to;
-        this.linkedPortalID = to.getPortalID();
+        this.linkedPortalID = to.uniqueId;
         this.linkedPortalChunkCoords.x = Math.floorDiv((int) linkedPortal.position.x, 16);
         this.linkedPortalChunkCoords.y = Math.floorDiv((int) linkedPortal.position.y, 16);
         this.linkedPortalChunkCoords.z = Math.floorDiv((int) linkedPortal.position.z, 16);
@@ -256,7 +249,8 @@ public class Portal extends Entity {
     }
 
     public OrientedBoundingBox getMeshBoundingBox(){
-        return new OrientedBoundingBox(meshBB, this.getPortalMatrix().inv());
+        Matrix4 pm = this.getPortalMatrix();
+        return new OrientedBoundingBox(meshBB, pm.cpy().inv());
     }
 
     public Matrix4 getPortaledTransform(Matrix4 transform){
@@ -352,7 +346,7 @@ public class Portal extends Entity {
             playAnimation("end");
         }
         if (GameSingletons.isHost && ServerSingletons.SERVER != null) {
-            ServerSingletons.SERVER.broadcast(this.zone, new PortalAnimationPacket(this.getPortalID(), "end"));
+            ServerSingletons.SERVER.broadcast(this.zone, new PortalAnimationPacket(this.uniqueId, "end"));
         }
         this.isEndAnimationPlaying = true;
     }
@@ -365,14 +359,15 @@ public class Portal extends Entity {
     @Override
     protected void onDeath() {
         if (GameSingletons.isHost && ServerSingletons.SERVER != null){
-            ServerSingletons.SERVER.broadcast(this.zone, new PortalDeletePacket(this.getPortalID()));
+            ServerSingletons.SERVER.broadcast(this.zone, new PortalDeletePacket(this.uniqueId));
         }
         SeamlessPortals.portalManager.removePortal(this);
         super.onDeath();
     }
 
     public boolean isPortalInRange(boolean byProxy, int renderDistance){
-        if (ArrayUtils.any(GameSingletons.world.players, (p) -> this.position.dst2(p.getPosition()) <= renderDistance * renderDistance * 256)){
+        if (this.isEndAnimationPlaying) return true;
+        if (!ArrayUtils.any(GameSingletons.world.players, (p) -> this.position.dst2(p.getPosition()) >= renderDistance * renderDistance * 256)){
             return false;
         }
         if (byProxy && this.linkedPortal != null){

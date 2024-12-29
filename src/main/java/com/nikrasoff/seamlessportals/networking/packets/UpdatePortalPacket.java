@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.networking.GamePacket;
 import finalforeach.cosmicreach.networking.NetworkIdentity;
 import finalforeach.cosmicreach.world.Zone;
@@ -12,8 +13,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
 public class UpdatePortalPacket extends GamePacket {
-    int portalId;
-    int linkedPortalId;
+    EntityUniqueId portalId = new EntityUniqueId();
+    EntityUniqueId linkedPortalId = new EntityUniqueId();
     Vector3 position = new Vector3();
     Vector3 lookDirection = new Vector3();
     Vector3 upVector = new Vector3();
@@ -21,8 +22,8 @@ public class UpdatePortalPacket extends GamePacket {
     Zone zone;
     public UpdatePortalPacket(){}
     public UpdatePortalPacket(Portal portal){
-        this.portalId = portal.getPortalID();
-        this.linkedPortalId = (portal.linkedPortal == null) ? -1 : portal.linkedPortal.getPortalID();
+        this.portalId = portal.uniqueId;
+        this.linkedPortalId = (portal.linkedPortal == null) ? new EntityUniqueId() : portal.linkedPortal.uniqueId;
         this.position = portal.getPosition();
         this.lookDirection = portal.viewDirection;
         this.upVector = portal.upVector;
@@ -32,8 +33,8 @@ public class UpdatePortalPacket extends GamePacket {
     }
     @Override
     public void receive(ByteBuf byteBuf) {
-        this.portalId = this.readInt(byteBuf);
-        this.linkedPortalId = this.readInt(byteBuf);
+        this.readEntityUniqueId(byteBuf, this.portalId);
+        this.readEntityUniqueId(byteBuf, this.linkedPortalId);
         this.readVector3(byteBuf, this.position);
         this.readVector3(byteBuf, this.lookDirection);
         this.readVector3(byteBuf, this.upVector);
@@ -44,8 +45,8 @@ public class UpdatePortalPacket extends GamePacket {
 
     @Override
     public void write() {
-        this.writeInt(this.portalId);
-        this.writeInt(this.linkedPortalId);
+        this.writeEntityUniqueId(this.portalId);
+        this.writeEntityUniqueId(this.linkedPortalId);
         this.writeVector3(this.position);
         this.writeVector3(this.lookDirection);
         this.writeVector3(this.upVector);

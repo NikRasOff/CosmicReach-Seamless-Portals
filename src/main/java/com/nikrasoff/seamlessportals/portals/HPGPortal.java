@@ -63,16 +63,15 @@ public class HPGPortal extends Portal {
 
     private HPGPortal(Vector2 size, Vector3 viewDir, Vector3 upDir, Vector3 portalPos){
         this();
-        this.portalID = SeamlessPortals.portalManager.getNextPortalID();
         SeamlessPortals.portalManager.addPortal(this);
 
         setPosition(portalPos.x, portalPos.y, portalPos.z);
 
-        this.viewDirection = viewDir;
-        this.upVector = upDir;
+        this.viewDirection.set(viewDir);
+        this.upVector.set(upDir);
 
-        this.portalSize = new Vector3(size.x, size.y, 0);
-        this.viewPositionOffset = new Vector3(0, 0, 0);
+        this.portalSize.set(size.x, size.y, 0);
+        this.viewPositionOffset.set(0, 0, 0);
         this.calculateLocalBB();
         this.calculateMeshBB();
         if (GameSingletons.isClient){

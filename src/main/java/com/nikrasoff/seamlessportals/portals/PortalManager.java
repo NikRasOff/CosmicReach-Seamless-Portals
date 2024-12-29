@@ -11,6 +11,7 @@ import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blockentities.BlockEntity;
+import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.util.ArrayUtils;
 import finalforeach.cosmicreach.world.EntityRegion;
@@ -21,17 +22,11 @@ import java.util.HashMap;
 public class PortalManager {
     public PortalSpawnBlockInfo portalGenInfo;
     public int maxOmniumFrequency = 0;
-    public int maxPortalID = 0;
 
-    public transient HashMap<Integer, Portal> createdPortals = new HashMap<>();
+    public transient HashMap<EntityUniqueId, Portal> createdPortals = new HashMap<>();
     public ObjectMap<String, Array<PortalSpawnBlockInfo>> spacialAnchors = new ObjectMap<>();
 
     public PortalManager(){}
-
-    public int getNextPortalID(){
-        this.maxPortalID += 1;
-        return this.maxPortalID - 1;
-    }
 
     public int getNextOmniumFrequency(){
         this.maxOmniumFrequency += 1;
@@ -51,26 +46,7 @@ public class PortalManager {
         if (this.spacialAnchors.get(String.valueOf(frequency)).isEmpty()) this.spacialAnchors.remove(String.valueOf(frequency));
     }
 
-    public Portal getPortalWithGenForPortals(int portalID, Vector3 chunkCoords, String zoneID, Portal from){
-        Portal result = getPortal(portalID);
-        if (result != null){
-            return result;
-        }
-        if (GameSingletons.isClient && !GameSingletons.isHost) {
-            throw new RuntimeException("Use simple getPortal() on client instead of getPortalWithGen()");
-        }
-        if (new IntVector3(Math.floorDiv((int) chunkCoords.x, 16), Math.floorDiv((int) chunkCoords.y, 16), Math.floorDiv((int) chunkCoords.z, 16)).equals(new IntVector3(Math.floorDiv((int) from.position.x, 256), Math.floorDiv((int) from.position.y, 256), Math.floorDiv((int) from.position.z, 256)))){
-            SeamlessPortals.LOGGER.info("Well it... worked?");
-            return null;
-        }
-
-        EntityRegion.readChunkColumn(GameSingletons.world.getZoneCreateIfNull(zoneID), (int) chunkCoords.x, (int) chunkCoords.z, Math.floorDiv((int) chunkCoords.x, 16), Math.floorDiv((int) chunkCoords.y, 16), Math.floorDiv((int) chunkCoords.z, 16));
-        result = getPortal(portalID);
-        SeamlessPortals.LOGGER.info("Is entity region empty? " + GameSingletons.world.getZoneIfExists(zoneID).getEntityRegionAtRegionCoords(Math.floorDiv((int) chunkCoords.x, 16), Math.floorDiv((int) chunkCoords.y, 16), Math.floorDiv((int) chunkCoords.z, 16)).isEmpty());
-        return result;
-    }
-
-    public Portal getPortalWithGen(int portalID, Vector3 chunkCoords, String zoneID){
+    public Portal getPortalWithGen(EntityUniqueId portalID, Vector3 chunkCoords, String zoneID){
         Portal result = getPortal(portalID);
         if (result != null){
             return result;
@@ -81,21 +57,20 @@ public class PortalManager {
 
         EntityRegion.readChunkColumn(GameSingletons.world.getZoneCreateIfNull(zoneID), (int) chunkCoords.x, (int) chunkCoords.z, Math.floorDiv((int) chunkCoords.x, 16), Math.floorDiv((int) chunkCoords.y, 16), Math.floorDiv((int) chunkCoords.z, 16));
         result = getPortal(portalID);
-        SeamlessPortals.LOGGER.info("Is entity region empty? " + GameSingletons.world.getZoneIfExists(zoneID).getEntityRegionAtRegionCoords(Math.floorDiv((int) chunkCoords.x, 16), Math.floorDiv((int) chunkCoords.y, 16), Math.floorDiv((int) chunkCoords.z, 16)).isEmpty());
         return result;
     }
 
-    public Portal getPortal(int portalID){
+    public Portal getPortal(EntityUniqueId portalID){
         return this.createdPortals.get(portalID);
     }
 
     public void addPortal(Portal portal){
-        this.createdPortals.put(portal.getPortalID(), portal);
+        this.createdPortals.put(portal.uniqueId, portal);
     }
 
     public void removePortal(Portal portal){
         if (portal == null) return;
-        this.createdPortals.remove(portal.getPortalID());
+        this.createdPortals.remove(portal.uniqueId);
     }
 
     public void createPortalPair(PortalSpawnBlockInfo gen1, PortalSpawnBlockInfo gen2){
@@ -119,7 +94,7 @@ public class PortalManager {
                 this.removePortal(portal2);
                 return false;
             }
-            portalGen.portalId = portal1.getPortalID();
+            portalGen.portalId.set(portal1.uniqueId);
 
             portal1.linkPortal(portal2);
             portal2.linkPortal(portal1);
@@ -129,22 +104,15 @@ public class PortalManager {
             Portal.portalOpenSound.playGlobalSound3D(zone2, portal2.position);
             zone1.addEntity(portal1);
             if (GameSingletons.isHost && ServerSingletons.SERVER != null){
-                ServerSingletons.SERVER.broadcast(zone1, new PortalAnimationPacket(portal1.getPortalID(), "start"));
+                ServerSingletons.SERVER.broadcast(zone1, new PortalAnimationPacket(portal1.uniqueId, "start"));
             }
             zone2.addEntity(portal2);
             if (GameSingletons.isHost && ServerSingletons.SERVER != null){
-                ServerSingletons.SERVER.broadcast(zone2, new PortalAnimationPacket(portal2.getPortalID(), "start"));
+                ServerSingletons.SERVER.broadcast(zone2, new PortalAnimationPacket(portal2.uniqueId, "start"));
             }
             return true;
         }
 
         return false;
-    }
-
-    public void printExistingIDs(){
-        System.out.println("Existing portal IDs: ");
-        for (int i : this.createdPortals.keySet()){
-            System.out.println(i);
-        }
     }
 }

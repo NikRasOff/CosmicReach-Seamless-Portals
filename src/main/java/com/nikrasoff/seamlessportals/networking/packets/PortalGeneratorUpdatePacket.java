@@ -7,6 +7,7 @@ import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blockentities.BlockEntity;
+import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.networking.GamePacket;
 import finalforeach.cosmicreach.networking.NetworkIdentity;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
@@ -19,7 +20,7 @@ public class PortalGeneratorUpdatePacket extends SPGamePacket {
     Vector2 primaryPortalOffset = new Vector2();
     Vector2 secondaryPortalOffset = new Vector2();
     IntVector3 position = new IntVector3();
-    int portalId = -1;
+    EntityUniqueId portalId = new EntityUniqueId();
     public PortalGeneratorUpdatePacket(){}
     public PortalGeneratorUpdatePacket(BlockEntityPortalGenerator portalGenerator){
         this.portalSize = portalGenerator.portalSize;
@@ -34,7 +35,7 @@ public class PortalGeneratorUpdatePacket extends SPGamePacket {
         this.readVector2(byteBuf, primaryPortalOffset);
         this.readVector2(byteBuf, secondaryPortalOffset);
         this.readIntVector3(byteBuf, position);
-        this.portalId = this.readInt(byteBuf);
+        this.readEntityUniqueId(byteBuf, this.portalId);
     }
 
     @Override
@@ -43,7 +44,7 @@ public class PortalGeneratorUpdatePacket extends SPGamePacket {
         this.writeVector2(primaryPortalOffset);
         this.writeVector2(secondaryPortalOffset);
         this.writeIntVector3(this.position);
-        this.writeInt(this.portalId);
+        this.writeEntityUniqueId(this.portalId);
     }
 
     @Override

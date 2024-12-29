@@ -159,7 +159,7 @@ public class PortalGenPortal extends Portal {
             BlockEntity be = this.zone.getBlockEntity(this.sourceBlock.position.x, this.sourceBlock.position.y, this.sourceBlock.position.z);
             if (be instanceof BlockEntityPortalGenerator portalGenerator){
                 if (portalGenerator.isPortalActive()){
-                    portalGenerator.portalId = -1;
+                    portalGenerator.portalId.set(-1, -1, -1);
                     portalGenerator.justUpdated = true;
                     portalGenerator.updateBlockState(false);
                 }

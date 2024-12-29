@@ -13,6 +13,7 @@ import finalforeach.cosmicreach.blockentities.BlockEntityCreator;
 import finalforeach.cosmicreach.blockentities.IBlockEntityWithContainer;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.blocks.BlockState;
+import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.items.ItemSlot;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
@@ -32,7 +33,7 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
     public Vector2 portalSize = new Vector2(3, 3);
     public Vector2 entrancePortalOffset = new Vector2();
     public Vector2 exitPortalOffset = new Vector2();
-    public int portalId = -1;
+    public EntityUniqueId portalId = new EntityUniqueId();
     public boolean justUpdated = false;
     private boolean isBeingDeleted = false;
 
@@ -57,7 +58,7 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
     }
 
     public boolean isPortalActive(){
-        return this.portalId != -1;
+        return SeamlessPortals.portalManager.getPortal(this.portalId) != null;
     }
 
     public void updateBlockState(boolean isWorking){
@@ -99,7 +100,7 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
             PortalSpawnBlockInfo gen2 = SeamlessPortals.portalManager.spacialAnchors.get(String.valueOf(frequency)).random();
             boolean res = SeamlessPortals.portalManager.createPortalPairFromGenAndAnchor(gen1, gen2);
             if (!res){
-                this.portalId = -1;
+                this.portalId.set(-1, -1, -1);
                 this.justUpdated = true;
             }
             else {
@@ -113,12 +114,12 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
         this.updateBlockState(false);
         Portal p = SeamlessPortals.portalManager.getPortal(this.portalId);
         if (p == null) {
-            this.portalId = -1;
+            this.portalId.set(-1, -1, -1);
             return;
         }
         p.startDestruction();
         p.linkedPortal.startDestruction();
-        this.portalId = -1;
+        this.portalId.set(-1, -1, -1);
     }
 
     public void read(CRBinDeserializer deserial) {
@@ -135,7 +136,7 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
         this.entrancePortalOffset.y = deserial.readFloat("portal1OffsetY", 0);
         this.exitPortalOffset.x = deserial.readFloat("portal2OffsetX", 0);
         this.exitPortalOffset.y = deserial.readFloat("portal2OffsetY", 0);
-        this.portalId = deserial.readInt("portalId", -1);
+        this.portalId.set(deserial.readLong("portalIdTime", -1), deserial.readInt("portalIdRand", -1), deserial.readInt("portalIdNum", -1));
     }
 
     public void write(CRBinSerializer serial) {
@@ -147,7 +148,9 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
         serial.writeFloat("portal1OffsetY", this.entrancePortalOffset.y);
         serial.writeFloat("portal2OffsetX", this.exitPortalOffset.x);
         serial.writeFloat("portal2OffsetY", this.exitPortalOffset.y);
-        serial.writeInt("portalId", this.portalId);
+        serial.writeLong("portalIdTime", this.portalId.getTime());
+        serial.writeInt("portalIdRand", this.portalId.getRand());
+        serial.writeInt("portalIdNum", this.portalId.getNumber());
     }
 
     public static void registerBlockEntityCreator() {

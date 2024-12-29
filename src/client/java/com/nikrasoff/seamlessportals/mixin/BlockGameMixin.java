@@ -1,6 +1,5 @@
 package com.nikrasoff.seamlessportals.mixin;
 
-import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsClient;
 import finalforeach.cosmicreach.BlockGame;
 import org.spongepowered.asm.mixin.Mixin;

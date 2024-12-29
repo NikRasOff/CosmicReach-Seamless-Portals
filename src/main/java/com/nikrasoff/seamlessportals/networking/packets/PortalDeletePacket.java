@@ -2,25 +2,26 @@ package com.nikrasoff.seamlessportals.networking.packets;
 
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.portals.Portal;
+import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.networking.GamePacket;
 import finalforeach.cosmicreach.networking.NetworkIdentity;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
 public class PortalDeletePacket extends GamePacket {
-    int portalId;
+    EntityUniqueId portalId = new EntityUniqueId();
     public PortalDeletePacket(){}
-    public PortalDeletePacket(int portalId){
+    public PortalDeletePacket(EntityUniqueId portalId){
         this.portalId = portalId;
     }
     @Override
     public void receive(ByteBuf byteBuf) {
-        this.portalId = this.readInt(byteBuf);
+        this.readEntityUniqueId(byteBuf, portalId);
     }
 
     @Override
     public void write() {
-        this.writeInt(portalId);
+        this.writeEntityUniqueId(portalId);
     }
 
     @Override

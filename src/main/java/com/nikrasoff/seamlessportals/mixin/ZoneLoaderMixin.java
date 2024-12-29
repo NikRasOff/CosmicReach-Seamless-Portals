@@ -7,6 +7,7 @@ import com.nikrasoff.seamlessportals.extras.interfaces.IPortalWorldLoader;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.ZoneLoader;
+import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.networking.server.ServerIdentity;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
@@ -54,7 +55,7 @@ public abstract class ZoneLoaderMixin{
         int portalChunkLoadRadius = 2;
         float minPortalResult = 1000000;
         boolean tooFarVertically = true;
-        for (Map.Entry<Integer, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()) {
+        for (Map.Entry<EntityUniqueId, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()) {
             if (!portalEntry.getValue().isPortalInRange(true, chunkRadius)){
                 continue;
             }
@@ -75,7 +76,7 @@ public abstract class ZoneLoaderMixin{
         int portalChunkLoadRadius = 2;
         float minPortalResult = 1000000;
         boolean tooFarVertically = true;
-        for (Map.Entry<Integer, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()) {
+        for (Map.Entry<EntityUniqueId, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()) {
             if (!portalEntry.getValue().isPortalInRange(true, chunkRadius)){
                 continue;
             }
@@ -138,7 +139,7 @@ public abstract class ZoneLoaderMixin{
     @Inject(method = "lambda$loadSurroundingChunks$3", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/ZoneLoader;loadSurroundingChunks(Lfinalforeach/cosmicreach/world/Zone;Lfinalforeach/cosmicreach/entities/player/Player;II)V"))
     void loadChunksWithPortals(int localGenRadiusInChunks, int lesserRadius, Player p, CallbackInfo ci){
         int portalChunkLoadRadius = 2;
-        for (Map.Entry<Integer, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()) {
+        for (Map.Entry<EntityUniqueId, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()) {
             if (!portalEntry.getValue().isPortalInRange(true, localGenRadiusInChunks)){
                 continue;
             }

@@ -21,6 +21,7 @@ import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
 import finalforeach.cosmicreach.sounds.GameSound;
 import finalforeach.cosmicreach.util.ArrayUtils;
+import finalforeach.cosmicreach.world.EntityRegion;
 import finalforeach.cosmicreach.world.Zone;
 
 import java.util.Arrays;
@@ -322,7 +323,7 @@ public class Portal extends Entity {
     public void update(Zone zone, double deltaTime) {
         super.update(zone, deltaTime);
         if (this.linkedPortal.zone == null){
-            SeamlessPortals.portalManager.getPortalWithGen(this.linkedPortalID, this.linkedPortalChunkCoords, this.zone.zoneId);
+            EntityRegion.readChunkColumn(GameSingletons.world.getZoneCreateIfNull(this.zone.zoneId), (int) this.linkedPortalChunkCoords.x, (int) this.linkedPortalChunkCoords.z, Math.floorDiv((int) this.linkedPortalChunkCoords.x, 16), Math.floorDiv((int) this.linkedPortalChunkCoords.y, 16), Math.floorDiv((int) this.linkedPortalChunkCoords.z, 16));
         }
         if (isEndAnimationPlaying){
             this.endAnimationTimer += (float) deltaTime;

@@ -34,5 +34,9 @@ public class HPGNullPortalShader extends PortalShader {
         tmpVec4[3] = c.a;
         program.setUniform4fv("u_outlineColor", tmpVec4, 0, 4);
         program.setUniformi("u_time", ((int) TimeUtils.millis()) / 500);
+
+        PortalModel.convEventTextures.get(((HPGPortal) portal).convEventTexture).bind(3);
+        program.setUniformi("u_convEventTexture", 3);
+        program.setUniformf("u_convEventAlpha", ((HPGPortal) portal).convEventHappening ? 1.0f : 0.0f);
     }
 }

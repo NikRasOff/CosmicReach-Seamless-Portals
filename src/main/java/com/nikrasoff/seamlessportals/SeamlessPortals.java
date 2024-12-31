@@ -161,6 +161,6 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
         BlockEntityOmniumCalibrator.registerBlockEntityCreator();
         BlockEntitySpacialAnchor.registerBlockEntityCreator();
         BlockEntityPortalGenerator.registerBlockEntityCreator();
-        oreOmnium = (new Ore(Block.getById(Identifier.of(SeamlessPortalsConstants.MOD_ID, "ore_omnium")).getDefaultBlockState(), "ore_replaceable")).setMaxElevation(-32).setMaxOresPerCluster(3).setAttemptsPerColumn(2);
+        oreOmnium = (new Ore(Block.getById(Identifier.of(SeamlessPortalsConstants.MOD_ID, "ore_omnium")).getDefaultBlockState(), "ore_replaceable")).setMaxElevation(-32).setMaxOresPerCluster(5).setAttemptsPerColumn(2);
     }
 }

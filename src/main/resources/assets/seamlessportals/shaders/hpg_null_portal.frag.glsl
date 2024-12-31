@@ -10,6 +10,8 @@ uniform vec2 u_portalSize;
 uniform sampler2D u_noiseTex;
 uniform vec4 u_outlineColor;
 uniform int u_time;
+uniform sampler2D u_convEventTexture;
+uniform float u_convEventAlpha;
 
 in vec2 v_texCoord0;
 
@@ -25,9 +27,15 @@ void main() {
     outline_coord.y += u_time * 0.03125 + int(initial_color.g * 32);
     vec4 final_color = u_outlineColor;
     final_color.a = min(texture(u_noiseTex, outline_coord).b + 0.5, 1);
+
+    vec4 convColor = texture(u_convEventTexture, v_texCoord0.yx);
+    convColor.a = (final_color.a - 0.5) * u_convEventAlpha;
+
     float dist_to_edge = min(u_portalSize.y / 2 - abs(v_texCoord0.x - 0.5) * u_portalSize.y, u_portalSize.x / 2 - abs(v_texCoord0.y - 0.5) * u_portalSize.x);
     float a = 1 - max(0, 0.125 - dist_to_edge);
     final_color.a *= max(0, 1 - a * a * a);
+
+    resultingColor.rgb = mix(resultingColor.rgb, convColor.rgb, convColor.a);
 
     resultingColor.rgb = mix(resultingColor.rgb, final_color.rgb, final_color.a);
 

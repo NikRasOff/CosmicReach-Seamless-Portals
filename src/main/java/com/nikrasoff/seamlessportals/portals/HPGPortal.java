@@ -1,24 +1,29 @@
 package com.nikrasoff.seamlessportals.portals;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
-import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
 import com.nikrasoff.seamlessportals.networking.packets.UpdatePortalPacket;
+import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blocks.BlockState;
-import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.savelib.crbin.CRBSerialized;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
+import finalforeach.cosmicreach.sounds.GameSound;
+import finalforeach.cosmicreach.util.Identifier;
 import finalforeach.cosmicreach.world.Zone;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 public class HPGPortal extends Portal {
@@ -28,10 +33,25 @@ public class HPGPortal extends Portal {
     };
     public static final Color primaryPortalColor = Color.CYAN;
     public static final Color secondaryPortalColor = Color.ORANGE;
+    private static final int convergenceEventCooldown = 1200;
+    private static final GameSound[] convEventSounds = new GameSound[]{
+            GameSound.of("seamlessportals:sounds/portals/conv_event1.ogg"),
+            GameSound.of("seamlessportals:sounds/portals/conv_event2.ogg"),
+            GameSound.of("seamlessportals:sounds/portals/conv_event3.ogg"),
+            GameSound.of("seamlessportals:sounds/portals/conv_event4.ogg")
+    };
     @CRBSerialized
     private boolean isSecond = false;
     @CRBSerialized
     private boolean isUnstable = false;
+    @CRBSerialized
+    private int convergenceEventTimer = 0;
+
+    public boolean convEventHappening = false;
+    private int convEventLifetime = 0;
+
+    private int convEventSmallTimer = 0;
+    public int convEventTexture = 0;
 
     public static HPGPortal readPortal(CRBinDeserializer deserializer){
         HPGPortal portal = new HPGPortal();
@@ -119,6 +139,35 @@ public class HPGPortal extends Portal {
                 }
             }
             this.startDestruction();
+        }
+        if (this.linkedPortal == null){
+            if (this.convEventHappening){
+                this.convEventLifetime += 1;
+                if (this.convEventLifetime >= 100){
+                    this.convEventHappening = false;
+                    this.convEventLifetime = 0;
+                }
+                return;
+            }
+            this.convergenceEventTimer += 1;
+            if (this.convergenceEventTimer >= convergenceEventCooldown){
+                this.convEventSmallTimer += 1;
+                if (this.convEventSmallTimer >= 20){
+                    this.convEventSmallTimer = 0;
+                    if (MathUtils.random(1000) == 0){
+                        this.convergenceEventTimer = 0;
+                        this.convEventHappening = true;
+                        this.convEventLifetime = 0;
+                        this.convEventTexture = MathUtils.random(2);
+                        convEventSounds[MathUtils.random(3)].playGlobalSound3D(this.zone, this.position);
+                    }
+                }
+            }
+        }
+        else {
+            this.convEventHappening = false;
+            this.convergenceEventTimer = 0;
+            this.convEventSmallTimer = 0;
         }
     }
 

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
@@ -29,6 +30,7 @@ public class PortalModel implements IEntityModel, Disposable {
     public static HPGPortalShader hpgPortalShader;
     public static HPGNullPortalShader hpgNullPortalShader;
     public static Texture noiseTexture;
+    public static Array<Texture> convEventTextures = new Array<>();
     public static PortalModel model;
 
     public static void create(){
@@ -46,6 +48,9 @@ public class PortalModel implements IEntityModel, Disposable {
         noiseTexture = GameAssetLoader.getTexture(Identifier.of(SeamlessPortalsConstants.MOD_ID, "textures/special/funky_noise.png"));
         noiseTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         noiseTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        convEventTextures.add(GameAssetLoader.getTexture(Identifier.of(SeamlessPortalsConstants.MOD_ID, "textures/special/convergence_event1.png")));
+        convEventTextures.add(GameAssetLoader.getTexture(Identifier.of(SeamlessPortalsConstants.MOD_ID, "textures/special/convergence_event2.png")));
+        convEventTextures.add(GameAssetLoader.getTexture(Identifier.of(SeamlessPortalsConstants.MOD_ID, "textures/special/convergence_event3.png")));
     }
 
     public PortalModel(){

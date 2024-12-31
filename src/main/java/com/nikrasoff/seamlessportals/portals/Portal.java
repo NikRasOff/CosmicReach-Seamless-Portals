@@ -321,6 +321,9 @@ public class Portal extends Entity {
     @Override
     public void update(Zone zone, double deltaTime) {
         super.update(zone, deltaTime);
+        if (this.linkedPortal.zone == null){
+            SeamlessPortals.portalManager.getPortalWithGen(this.linkedPortalID, this.linkedPortalChunkCoords, this.zone.zoneId);
+        }
         if (isEndAnimationPlaying){
             this.endAnimationTimer += (float) deltaTime;
             if (this.endAnimationTimer >= 0.75f){

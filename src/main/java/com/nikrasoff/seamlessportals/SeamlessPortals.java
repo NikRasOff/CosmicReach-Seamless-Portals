@@ -60,7 +60,9 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
             "portal_destabiliser",
             "omnium_block",
             "omnium_calibrator",
-            "spacial_anchor"
+            "spacial_anchor",
+            "portal_disruption_block",
+            "portal_conductor_block"
     };
 
     static String[] recipeIds = {

@@ -1,5 +1,6 @@
 package com.nikrasoff.seamlessportals.portals;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -21,8 +22,16 @@ import finalforeach.cosmicreach.world.Zone;
 import java.util.Arrays;
 
 public class HPGPortal extends Portal {
+    public static final String[] defaultBlacklist = {
+            "base:air",
+            "base:water"
+    };
+    public static final Color primaryPortalColor = Color.CYAN;
+    public static final Color secondaryPortalColor = Color.ORANGE;
     @CRBSerialized
     private boolean isSecond = false;
+    @CRBSerialized
+    private boolean isUnstable = false;
 
     public static HPGPortal readPortal(CRBinDeserializer deserializer){
         HPGPortal portal = new HPGPortal();
@@ -79,9 +88,14 @@ public class HPGPortal extends Portal {
         }
     }
 
-    public static HPGPortal createNewPortal(Vector2 size, Vector3 viewDir, Vector3 upDir, Vector3 portalPos, boolean isSecond, Zone z){
+    public Color getOutlineColor(){
+        return this.isSecond ? secondaryPortalColor : primaryPortalColor;
+    }
+
+    public static HPGPortal createNewPortal(Vector2 size, Vector3 viewDir, Vector3 upDir, Vector3 portalPos, boolean isSecond, boolean isUnstable, Zone z){
         HPGPortal newPortal = new HPGPortal(size, viewDir, upDir, portalPos);
         newPortal.isSecond = isSecond;
+        newPortal.isUnstable = isUnstable;
         if (!newPortal.figureOutPlacement(z, 0.5f, 0.5f, 1, 1)){
             SeamlessPortals.portalManager.removePortal(newPortal);
             return null;
@@ -95,6 +109,7 @@ public class HPGPortal extends Portal {
         if (this.isPortalInAWall(zone) || !this.isPortalOnValidSurface(zone)){
             if (this.linkedPortal != null){
                 this.linkedPortal.linkedPortal = null;
+                this.linkedPortal.pendingLinkedPortal = null;
                 if (GameSingletons.isClient) {
                     this.linkedPortal.playAnimation("rebind");
                 }
@@ -156,14 +171,17 @@ public class HPGPortal extends Portal {
             for (int by = min.y; by <= max.y; ++by){
                 for (int bz = min.z; bz <= max.z; ++bz){
                     BlockState checkBlock = z.getBlockState(bx, by, bz);
-//                    if (checkBlock != null){
-//                        SeamlessPortals.LOGGER.info("Testing against " + checkBlock.getBlock());
-//                    }
                     if (checkBlock != null && !checkBlock.walkThrough){
                         checkBlock.getBoundingBox(tmpBB, bx, by, bz);
                         if (bb.intersects(tmpBB)){
-                            if (Arrays.asList(HandheldPortalGen.surfaceBlacklist).contains(checkBlock.getBlockId())){
-                                return false;
+                            if (this.isUnstable){
+                                return checkBlock.hasTag("portal_whitelisted");
+                            }
+                            else{
+                                if (Arrays.asList(defaultBlacklist).contains(checkBlock.getBlockId())){
+                                    return false;
+                                }
+                                if (checkBlock.hasTag("portal_blacklisted")) return false;
                             }
                         }
                     }

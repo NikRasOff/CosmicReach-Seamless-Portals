@@ -42,7 +42,7 @@ public class SeamlessPortalsRenderUtil {
         modelMap = new HashMap<>();
         renderContext = new RenderContext(new DefaultTextureBinder(DefaultTextureBinder.LRU));
         ModelBuilder modelBuilder = new ModelBuilder();
-        cubeModel = modelBuilder.createBox(1, 1, 1, new Material(), VertexAttributes.Usage.Position);
+        cubeModel = modelBuilder.createBox(1, 1, 1, new Material(), VertexAttributes.Usage.Position | VertexAttributes.Usage.TextureCoordinates);
         cubeModelInstance = new ModelInstance(cubeModel);
         assets = new AssetManager();
         shader = new ModelShader();

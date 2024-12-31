@@ -6,9 +6,8 @@ import finalforeach.cosmicreach.lang.Lang;
 import finalforeach.cosmicreach.sounds.GameSound;
 import finalforeach.cosmicreach.util.Identifier;
 
-public class HandheldPortalGen implements IModItem {
-    public static final String hpgID = "seamlessportals:handheld_portal_generator";
-    public static final GameSound hpgFireSound = GameSound.of("seamlessportals:sounds/portals/hpg_fire.ogg");
+public class UnstableHandheldPortalGen implements IModItem {
+    public static final String hpgID = "seamlessportals:unstable_handheld_portal_generator";
 
     @Override
     public Identifier getIdentifier() {
@@ -22,7 +21,7 @@ public class HandheldPortalGen implements IModItem {
 
     @Override
     public boolean canMergeWith(Item item) {
-        return item instanceof HandheldPortalGen;
+        return item instanceof UnstableHandheldPortalGen;
     }
 
     @Override

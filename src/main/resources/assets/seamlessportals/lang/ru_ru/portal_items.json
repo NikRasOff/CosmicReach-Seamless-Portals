@@ -12,5 +12,6 @@
   "seamlessportals:close_portal": "Закрыть портал",
   "seamlessportals:portal_size": "Размер Портала",
   "seamlessportals:portal_offset1": "Смещение Первичного Портала",
-  "seamlessportals:portal_offset2": "Смещение Вторичного Портала"
+  "seamlessportals:portal_offset2": "Смещение Вторичного Портала",
+  "seamlessportals:unstable_handheld_portal_generator": "Нестабильный Переносной Генератор Порталов"
 }

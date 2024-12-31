@@ -10,13 +10,16 @@ import com.badlogic.gdx.math.Vector4;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.animations.*;
 import com.nikrasoff.seamlessportals.extras.FloatContainer;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntity;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
+import com.nikrasoff.seamlessportals.portals.HPGPortal;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
+import com.nikrasoff.seamlessportals.rendering.shaders.PortalShader;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.GameState;
@@ -34,11 +37,12 @@ public class PortalModelInstance implements IEntityModelInstance {
     ISPAnimation currentAnimation;
 
     public boolean isPortalMeshGenerated = false;
-    private Vector3 portalMeshScale = new Vector3();
+    public Vector3 portalMeshScale = new Vector3();
     private Vector3 portalMeshLocalOffset = new Vector3(0, 0, 0);
     private final FloatContainer animModelScale = new FloatContainer(1);
-    private final Color colorOverlay = Color.CLEAR.cpy();
+    public final Color colorOverlay = Color.CLEAR.cpy();
     private final PerspectiveCamera portalCamera;
+    public Texture portalTexture;
 
     private static final float[] tmpVec2 = new float[2];
     private static final float[] tmpVec4 = new float[4];
@@ -89,7 +93,7 @@ public class PortalModelInstance implements IEntityModelInstance {
         float camDistToPortalPlane = portal.getDistanceToPortalPlane(playerCamera.position);
 
         if ((camDistToPortalPlane > portalThickness) || (!portal.getFatBoundingBox().contains(playerCamera.position))){
-            portalThickness = 0;
+            portalThickness = 0.01f;
         }
 
         this.portalMeshScale = new Vector3(portal.portalSize.x, portal.portalSize.y, portalThickness);
@@ -160,7 +164,7 @@ public class PortalModelInstance implements IEntityModelInstance {
         if (portal.getDistanceToPortalPlane(playerCamera.position) > 0.02F) setCameraNearClipPlane(playerCamera, portal);
     }
 
-    private Texture createPortalTexture(Camera playerCamera, Portal portal){
+    public Texture createPortalTexture(Camera playerCamera, Portal portal){
         updatePortalCamera(playerCamera, portal);
         if (portalModel.portalFrameBuffer == null){
             portalModel.portalFrameBuffer = new FrameBuffer(Pixmap.Format.RGB888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
@@ -225,42 +229,26 @@ public class PortalModelInstance implements IEntityModelInstance {
             return;
         }
 
+        PortalShader currentShader;
         if (((Portal) entity).linkedPortal == null){
-            this.updatePortalMeshScale((PerspectiveCamera) camera, (Portal) entity);
-
-            PortalModel.nullPortalShader.begin(camera, SeamlessPortalsRenderUtil.renderContext);
-
-            tmpVec4[0] = this.colorOverlay.r;
-            tmpVec4[1] = this.colorOverlay.g;
-            tmpVec4[2] = this.colorOverlay.b;
-            tmpVec4[3] = this.colorOverlay.a;
-            PortalModel.nullPortalShader.program.setUniform4fv("overlayColor", tmpVec4, 0, 4);
-
-            PortalModel.renderable.worldTransform.set(matrix4).inv().translate(this.portalMeshLocalOffset).scale(this.portalMeshScale.x, this.portalMeshScale.y, this.portalMeshScale.z);
-            PortalModel.nullPortalShader.render(PortalModel.renderable);
-            PortalModel.nullPortalShader.end();
-            return;
+            if (entity instanceof HPGPortal) currentShader = PortalModel.hpgNullPortalShader;
+            else currentShader = PortalModel.nullPortalShader;
         }
+        else {
+            if (entity instanceof HPGPortal) currentShader = PortalModel.hpgPortalShader;
+            else currentShader = PortalModel.portalShader;
 
-        Texture portalTexture = this.createPortalTexture(camera, (Portal) entity);
+            portalTexture = this.createPortalTexture(camera, (Portal) entity);
+        }
         this.updatePortalMeshScale((PerspectiveCamera) camera, (Portal) entity);
 
-        PortalModel.portalShader.begin(camera, SeamlessPortalsRenderUtil.renderContext);
+        currentShader.begin(camera, SeamlessPortalsRenderUtil.renderContext);
 
-        Vector2 screenSize = new Vector2(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        tmpVec2[0] = screenSize.x;
-        tmpVec2[1] = screenSize.y;
-        PortalModel.portalShader.program.setUniform2fv("screenSize", tmpVec2, 0, 2);
-        tmpVec4[0] = this.colorOverlay.r;
-        tmpVec4[1] = this.colorOverlay.g;
-        tmpVec4[2] = this.colorOverlay.b;
-        tmpVec4[3] = this.colorOverlay.a;
-        PortalModel.portalShader.program.setUniform4fv("overlayColor", tmpVec4, 0, 4);
-        portalTexture.bind(1);
-        PortalModel.portalShader.program.setUniformi("screenTex", 1);
+        currentShader.setUniforms(this, (Portal) entity);
+
         PortalModel.renderable.worldTransform.set(matrix4).inv().translate(this.portalMeshLocalOffset).scale(this.portalMeshScale.x, this.portalMeshScale.y, this.portalMeshScale.z);
-        PortalModel.portalShader.render(PortalModel.renderable);
-        PortalModel.portalShader.end();
+        currentShader.render(PortalModel.renderable);
+        currentShader.end();
     }
 
     @Override

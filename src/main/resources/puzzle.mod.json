@@ -1,5 +1,5 @@
 {
-  "formatVersion": 1,
+  "formatVersion": 2,
   "id": "${mod_id}",
   "version": "${mod_version}",
   "name": "Seamless Portals",
@@ -28,5 +28,9 @@
     "cosmic-reach": ">=${cr_version}",
     "puzzle-loader": ">=${puzzle_version}"
   },
-  "accessTransformers": ["seamlessportals.manipulator"]
+  "accessTransformers": ["seamlessportals.manipulator"],
+  "allowedSides": {
+    "client": true,
+    "server": true
+  }
 }

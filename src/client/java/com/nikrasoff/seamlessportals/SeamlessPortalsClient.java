@@ -9,6 +9,7 @@ import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
 import com.nikrasoff.seamlessportals.effects.EffectManager;
 import com.nikrasoff.seamlessportals.effects.PulseEffect;
 import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
+import com.nikrasoff.seamlessportals.items.UnstableHandheldPortalGen;
 import com.nikrasoff.seamlessportals.items.screens.OmniumCalibratorScreen;
 import com.nikrasoff.seamlessportals.items.screens.PortalGeneratorScreen;
 import com.nikrasoff.seamlessportals.items.screens.SpacialAnchorScreen;
@@ -83,6 +84,21 @@ public class SeamlessPortalsClient implements ClientModInitializer {
         SeamlessPortalsRenderUtil.loadModel(Identifier.of(SeamlessPortalsConstants.MOD_ID, "models/view/hpg.g3db"));
         ItemRenderer.registerItemModelCreator(HandheldPortalGen.class, (handheldPortalGen) -> {
             ObjItemModel newModel = new ObjItemModel(Identifier.of(SeamlessPortalsConstants.MOD_ID, "models/view/hpg.g3db"));
+            newModel.setAnimation("armature|anim_idle", -1);
+            newModel.setViewAnimation("armature|anim_idle", -1);
+            newModel.heldModelMatrix.scale(0.5F, 0.5F, 0.5F);
+            newModel.heldModelMatrix.translate(0.4F, -0.55F, -1.75F);
+            newModel.heldModelMatrix.rotate(Vector3.Y, 175F);
+            newModel.heldModelMatrix.translate(-0.25F, -0.25F, -0.25F);
+
+            newModel.onGroundModelMatrix.scale(2, 2, 2);
+            newModel.onGroundModelMatrix.translate(0.25f, 0.1f, 0.25f);
+            return newModel;
+        });
+
+        SeamlessPortalsRenderUtil.loadModel(Identifier.of(SeamlessPortalsConstants.MOD_ID, "models/view/unstable_hpg.g3db"));
+        ItemRenderer.registerItemModelCreator(UnstableHandheldPortalGen.class, (handheldPortalGen) -> {
+            ObjItemModel newModel = new ObjItemModel(Identifier.of(SeamlessPortalsConstants.MOD_ID, "models/view/unstable_hpg.g3db"));
             newModel.setAnimation("armature|anim_idle", -1);
             newModel.setViewAnimation("armature|anim_idle", -1);
             newModel.heldModelMatrix.scale(0.5F, 0.5F, 0.5F);

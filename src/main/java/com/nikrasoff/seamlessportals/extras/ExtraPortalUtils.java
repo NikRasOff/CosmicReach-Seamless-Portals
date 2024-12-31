@@ -17,6 +17,7 @@ import com.github.puzzle.game.items.data.attributes.Vector3DataAttribute;
 import com.github.puzzle.game.util.DataTagUtil;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
+import com.nikrasoff.seamlessportals.items.UnstableHandheldPortalGen;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
 import com.nikrasoff.seamlessportals.networking.packets.UpdatePortalPacket;
 import com.nikrasoff.seamlessportals.portals.HPGPortal;
@@ -213,6 +214,7 @@ public class ExtraPortalUtils {
         return new RaycastOutput(intersection, DirectionVector.getClosestDirection(normal), hitBlockPos);
     }
     public static void fireHpg(Player player, boolean isSecondPortal, ItemStack hpgItemStack){
+        boolean unstable = hpgItemStack.getItem() instanceof UnstableHandheldPortalGen;
         DataTagManifest hpgManifest = DataTagUtil.getManifestFromStack(hpgItemStack);
 
         if (!hpgManifest.hasTag("portal1Chunk")){
@@ -270,7 +272,7 @@ public class ExtraPortalUtils {
                 HPGPortal secPortal = (HPGPortal) pm.getPortalWithGen(id2, secondaryPortalChunkPos.getValue(), secondaryPortalZone.getValue());
                 if (prPortal == null){
                     Vector3 upDir = getUpVectorForPortals(result.hitNormal(), player);
-                    HPGPortal newPortal = HPGPortal.createNewPortal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), false, player.getZone());
+                    HPGPortal newPortal = HPGPortal.createNewPortal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), false, unstable, player.getZone());
                     if (newPortal == null) return;
                     primaryPortalIdTime.attribute.setValue(newPortal.uniqueId.getTime());
                     primaryPortalIdRand.attribute.setValue(newPortal.uniqueId.getRand());
@@ -343,7 +345,7 @@ public class ExtraPortalUtils {
 
                 if (secPortal == null){
                     Vector3 upDir = getUpVectorForPortals(result.hitNormal(), player);
-                    HPGPortal newPortal = HPGPortal.createNewPortal(new Vector2(1, 2), result.hitNormal().getVector().cpy(), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), true, player.getZone());
+                    HPGPortal newPortal = HPGPortal.createNewPortal(new Vector2(1, 2), result.hitNormal().getVector().cpy(), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), true, unstable, player.getZone());
                     if (newPortal == null) {
                         return;
                     }

@@ -11,7 +11,8 @@ import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
-import com.nikrasoff.seamlessportals.rendering.shaders.TwoSidedShader;
+import com.nikrasoff.seamlessportals.rendering.shaders.*;
+import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.entities.IEntityModel;
 import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
@@ -23,18 +24,28 @@ public class PortalModel implements IEntityModel, Disposable {
     private static ShapeRenderer shapeRenderer;
     FrameBuffer portalFrameBuffer;
     public static Renderable renderable;
-    public static TwoSidedShader portalShader;
-    public static TwoSidedShader nullPortalShader;
+    public static DefaultPortalShader portalShader;
+    public static NullPortalShader nullPortalShader;
+    public static HPGPortalShader hpgPortalShader;
+    public static HPGNullPortalShader hpgNullPortalShader;
+    public static Texture noiseTexture;
     public static PortalModel model;
 
     public static void create(){
         renderable = new Renderable();
         SeamlessPortalsRenderUtil.cubeModelInstance.getRenderable(renderable);
-        portalShader = new TwoSidedShader(Identifier.of(SeamlessPortalsConstants.MOD_ID, "shaders/default.vert.glsl"), Identifier.of(SeamlessPortalsConstants.MOD_ID, "shaders/portal.frag.glsl"));
+        portalShader = new DefaultPortalShader();
         portalShader.init();
-        nullPortalShader = new TwoSidedShader(Identifier.of(SeamlessPortalsConstants.MOD_ID, "shaders/default.vert.glsl"), Identifier.of(SeamlessPortalsConstants.MOD_ID, "shaders/null_portal.frag.glsl"));
+        nullPortalShader = new NullPortalShader();
         nullPortalShader.init();
+        hpgPortalShader = new HPGPortalShader();
+        hpgPortalShader.init();
+        hpgNullPortalShader = new HPGNullPortalShader();
+        hpgNullPortalShader.init();
         model = new PortalModel();
+        noiseTexture = GameAssetLoader.getTexture(Identifier.of(SeamlessPortalsConstants.MOD_ID, "textures/special/funky_noise.png"));
+        noiseTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+        noiseTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
     }
 
     public PortalModel(){

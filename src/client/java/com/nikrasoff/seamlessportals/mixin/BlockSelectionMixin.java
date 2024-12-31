@@ -7,6 +7,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.ExtraPortalUtils;
 import com.nikrasoff.seamlessportals.extras.RaycastOutput;
+import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
+import com.nikrasoff.seamlessportals.items.UnstableHandheldPortalGen;
 import com.nikrasoff.seamlessportals.networking.packets.HpgFiredPacket;
 import com.nikrasoff.seamlessportals.networking.packets.PortalClearPacket;
 import finalforeach.cosmicreach.BlockSelection;
@@ -58,7 +60,7 @@ public abstract class BlockSelectionMixin {
     private void customRaycast(Zone zone, Camera worldCamera, CallbackInfo ci){
         if (InGame.getLocalPlayer() != null){
             ItemStack heldItemStack = UI.hotbar.getSelectedItemStack();
-            if (heldItemStack != null && heldItemStack.getItem() != null && heldItemStack.getItem().getID().equals("seamlessportals:handheld_portal_generator")){
+            if (heldItemStack != null && heldItemStack.getItem() != null && (heldItemStack.getItem().getID().equals(HandheldPortalGen.hpgID) || heldItemStack.getItem().getID().equals(UnstableHandheldPortalGen.hpgID))){
                 enabled = false;
                 if (!UI.isInventoryOpen()){
                     if (Controls.attackBreakJustPressed()){

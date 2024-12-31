@@ -12,5 +12,6 @@
   "seamlessportals:close_portal": "Close Portal",
   "seamlessportals:portal_size": "Portal Size",
   "seamlessportals:portal_offset1": "Primary Portal Offset",
-  "seamlessportals:portal_offset2": "Secondary Portal Offset"
+  "seamlessportals:portal_offset2": "Secondary Portal Offset",
+  "seamlessportals:unstable_handheld_portal_generator": "Unstable Handheld Portal Generator"
 }

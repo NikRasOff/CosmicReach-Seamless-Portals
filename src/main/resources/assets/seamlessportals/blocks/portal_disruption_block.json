@@ -1,0 +1,15 @@
+{
+    "stringId": "seamlessportals:portal_disruption_block",
+    "blockStates":
+    {
+        "default":
+        {
+            "modelName": "seamlessportals:models/blocks/portal_disruption.json",
+            "stateGenerators": ["base:slabs_all", "base:stairs_seamless_all"],
+            "tags": [
+                "tool_pickaxe_effective",
+                "portal_blacklisted"
+            ]
+        }
+    }
+}

@@ -31,9 +31,11 @@ import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blockentities.BlockEntity;
 import finalforeach.cosmicreach.blockevents.BlockEvents;
+import finalforeach.cosmicreach.blocks.Block;
 import finalforeach.cosmicreach.blocks.BlockStateGenerator;
 import finalforeach.cosmicreach.chat.Chat;
 import finalforeach.cosmicreach.entities.EntityCreator;
+import finalforeach.cosmicreach.items.loot.Loot;
 import finalforeach.cosmicreach.items.recipes.CraftingRecipes;
 import finalforeach.cosmicreach.networking.GamePacket;
 import finalforeach.cosmicreach.networking.packets.blocks.BlockEntityDataPacket;
@@ -41,6 +43,7 @@ import finalforeach.cosmicreach.networking.packets.blocks.BlockEntityScreenPacke
 import finalforeach.cosmicreach.networking.server.ServerIdentity;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.util.Identifier;
+import finalforeach.cosmicreach.worldgen.Ore;
 import meteordevelopment.orbit.EventHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -53,6 +56,7 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
     public static PortalManager portalManager = new PortalManager();
     public static IEffectManager effectManager;
     public static ISPClientConstants clientConstants;
+    public static Ore oreOmnium;
     public static final Logger LOGGER = LogManager.getLogger(SeamlessPortalsConstants.MOD_ID);
 
     static String[] blockIds = {
@@ -62,11 +66,20 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
             "omnium_calibrator",
             "spacial_anchor",
             "portal_disruption_block",
-            "portal_conductor_block"
+            "portal_conductor_block",
+            "ore_omnium"
     };
 
     static String[] recipeIds = {
-            "crafting/omnium_block"
+            "crafting/omnium_block",
+            "crafting/portal_conductor",
+            "crafting/portal_repulsor",
+            "crafting/portal_gen",
+            "crafting/warp_core",
+            "crafting/hpg",
+            "crafting/laser_emitter",
+            "crafting/spacial_anchor",
+            "crafting/omnium_calibrator"
     };
 
     static String[] blockEventIds = {
@@ -76,7 +89,8 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
             "block_events_portal_generator_on",
             "omnium_calibrator_on",
             "omnium_calibrator_off",
-            "spacial_anchor"
+            "spacial_anchor",
+            "block_events_ore_omnium"
     };
 
     @Override
@@ -134,17 +148,19 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
         for (String id: blockEventIds){
             BlockEvents.loadBlockEventsFromAsset(GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "block_events/" + id + ".json")));
         }
+        SeamlessPortalsItems.registerItems();
+        Loot.loadLoot(GameAssetLoader.loadJson("seamlessportals:loot/ore_omnium.json"));
     }
 
     @Override
     public void onPostInit() {
         // Yet again more post-post-inits because it do be like this
-        SeamlessPortalsItems.registerItems();
         for (String id : recipeIds){
             CraftingRecipes.loadRecipe(GameAssetLoader.loadJson(GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "recipes/" + id + ".json"))));
         }
         BlockEntityOmniumCalibrator.registerBlockEntityCreator();
         BlockEntitySpacialAnchor.registerBlockEntityCreator();
         BlockEntityPortalGenerator.registerBlockEntityCreator();
+        oreOmnium = (new Ore(Block.getById(Identifier.of(SeamlessPortalsConstants.MOD_ID, "ore_omnium")).getDefaultBlockState(), "ore_replaceable")).setMaxElevation(-32).setMaxOresPerCluster(3).setAttemptsPerColumn(2);
     }
 }

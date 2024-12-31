@@ -1,0 +1,37 @@
+{
+    "recipes":
+    [
+        {
+            "pattern": [
+                "aoa"
+            ],
+            "inputs":
+            {
+                "o": "seamlessportals:portal_generator[active=false]",
+                "a": "base:ingot_aluminium"
+            },
+            "output": 
+            {
+                "item": "seamlessportals:handheld_portal_generator",
+                "amount": 1
+            }
+        },
+        {
+            "pattern": [
+                " d ",
+                "aoa"
+            ],
+            "inputs":
+            {
+                "o": "seamlessportals:portal_generator[active=false]",
+                "a": "base:ingot_aluminium",
+                "d": "seamlessportals:portal_disruption_block[default]"
+            },
+            "output":
+            {
+                "item": "seamlessportals:unstable_handheld_portal_generator",
+                "amount": 1
+            }
+        }
+    ]
+}

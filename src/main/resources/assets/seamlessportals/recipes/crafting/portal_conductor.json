@@ -1,0 +1,22 @@
+{
+    "recipes":
+    [
+        {
+            "pattern": [
+                " * ",
+                "*a*",
+                " * "
+            ],
+            "inputs":
+            {
+                "*": "seamlessportals:omnium_crystal",
+                "a": "base:aluminium_panel[default]"
+            },
+            "output": 
+            {
+                "item": "seamlessportals:portal_conductor_block[default]",
+                "amount": 16
+            }
+        }
+    ]
+}

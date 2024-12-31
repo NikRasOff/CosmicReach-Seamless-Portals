@@ -4,6 +4,7 @@ import com.github.puzzle.game.items.IModItem;
 import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
 import com.nikrasoff.seamlessportals.items.SyncedOmniumCrystal;
 import com.nikrasoff.seamlessportals.items.UnstableHandheldPortalGen;
+import com.nikrasoff.seamlessportals.items.WarpCore;
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.items.Item;
 import finalforeach.cosmicreach.items.ItemThing;
@@ -16,7 +17,8 @@ public class SeamlessPortalsItems {
     public static void registerItems(){
         SeamlessPortals.LOGGER.info("Registering items from Seamless Portals!");
         String[] itemIds = {
-                "omnium_crystal"
+                "omnium_crystal",
+                "laser_emitter"
         };
 
         for (String id : itemIds){
@@ -27,6 +29,7 @@ public class SeamlessPortalsItems {
         CALIBRATED_OMNIUM_CRYSTAL = new SyncedOmniumCrystal();
         IModItem.registerItem(CALIBRATED_OMNIUM_CRYSTAL);
         Item.registerItem(new HandheldPortalGen());
+        IModItem.registerItem(new WarpCore());
         Item.registerItem(new UnstableHandheldPortalGen());
     }
 }

@@ -1,0 +1,9 @@
+{
+    "id": "seamlessportals:laser_emitter",
+
+    "itemProperties": 
+    {
+        "texture": "seamlessportals:textures/items/laser_emitter.png",
+        "modelType": "base:item3D"
+    }
+}

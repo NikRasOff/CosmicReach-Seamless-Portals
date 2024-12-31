@@ -1,0 +1,22 @@
+{
+    "recipes":
+    [
+        {
+            "pattern": [
+                " o ",
+                "o*o",
+                " o "
+            ],
+            "inputs":
+            {
+                "o": "base:ingot_aluminium",
+                "*": "base:glass[default]"
+            },
+            "output": 
+            {
+                "item": "seamlessportals:laser_emitter",
+                "amount": 1
+            }
+        }
+    ]
+}

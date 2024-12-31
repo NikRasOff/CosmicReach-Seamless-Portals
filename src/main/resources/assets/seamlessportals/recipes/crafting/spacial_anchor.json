@@ -1,0 +1,22 @@
+{
+    "recipes":
+    [
+        {
+            "pattern": [
+                "***",
+                "*|*",
+                "***"
+            ],
+            "inputs":
+            {
+                "*": "base:ingot_aluminium",
+                "|": "seamlessportals:omnium_crystal"
+            },
+            "output": 
+            {
+                "item": "seamlessportals:spacial_anchor[default]",
+                "amount": 1
+            }
+        }
+    ]
+}

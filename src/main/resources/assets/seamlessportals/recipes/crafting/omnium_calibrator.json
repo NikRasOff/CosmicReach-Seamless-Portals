@@ -1,0 +1,23 @@
+{
+    "recipes":
+    [
+        {
+            "pattern": [
+                "***",
+                "o|o",
+                "***"
+            ],
+            "inputs":
+            {
+                "*": "base:ingot_aluminium",
+                "o": "seamlessportals:laser_emitter",
+                "|": "seamlessportals:omnium_crystal"
+            },
+            "output": 
+            {
+                "item": "seamlessportals:omnium_calibrator[active=false]",
+                "amount": 1
+            }
+        }
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "id": "seamlessportals:loot_ore_omnium",
+    "options": [
+        {
+            "weight": 1,
+            "stacks":[{ "id": "seamlessportals:omnium_crystal", "max": 5, "min": 1 }]
+        }
+    ]
+}

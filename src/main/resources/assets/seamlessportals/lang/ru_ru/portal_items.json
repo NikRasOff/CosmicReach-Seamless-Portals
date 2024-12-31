@@ -16,5 +16,7 @@
   "seamlessportals:unstable_handheld_portal_generator": "Нестабильный Переносной Генератор Порталов",
   "seamlessportals:spacial_anchor": "Пространственный Якорь",
   "seamlessportals:portal_disruption_block": "Отталкиватель Порталов",
-  "seamlessportals:portal_conductor_block": "Проводник Порталов"
+  "seamlessportals:portal_conductor_block": "Проводник Порталов",
+  "seamlessportals:laser_emitter": "Лазерный Излучатель",
+  "seamlessportals:warp_core": "Ядро Просранственной Деформации"
 }

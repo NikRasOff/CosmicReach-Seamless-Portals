@@ -1,0 +1,22 @@
+{
+    "recipes":
+    [
+        {
+            "pattern": [
+                " * ",
+                "*a*",
+                " * "
+            ],
+            "inputs":
+            {
+                "*": "base:ingot_iron",
+                "a": "base:metal_panel[default]"
+            },
+            "output": 
+            {
+                "item": "seamlessportals:portal_disruption_block[default]",
+                "amount": 16
+            }
+        }
+    ]
+}

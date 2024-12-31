@@ -1,0 +1,22 @@
+{
+    "recipes":
+    [
+        {
+            "pattern": [
+                "***",
+                "*o*",
+                "***"
+            ],
+            "inputs":
+            {
+                "o": "seamlessportals:warp_core",
+                "*": "base:ingot_aluminium"
+            },
+            "output": 
+            {
+                "item": "seamlessportals:portal_generator[active=false]",
+                "amount": 1
+            }
+        }
+    ]
+}

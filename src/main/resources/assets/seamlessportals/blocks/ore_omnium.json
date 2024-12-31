@@ -1,0 +1,14 @@
+{
+    "stringId": "seamlessportals:ore_omnium",
+    "blockStates":
+    {
+        "default": 
+        {
+            "modelName": "seamlessportals:models/blocks/ore_omnium.json",
+            "blockEventsId": "seamlessportals:block_events_ore_omnium",
+            "tags": [
+                "tool_pickaxe_effective"
+            ]
+        }
+    }
+}

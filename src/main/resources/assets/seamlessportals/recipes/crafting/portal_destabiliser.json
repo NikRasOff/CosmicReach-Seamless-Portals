@@ -1,0 +1,22 @@
+{
+    "recipes":
+    [
+        {
+            "pattern": [
+                "***",
+                "*|*",
+                "***"
+            ],
+            "inputs":
+            {
+                "*": "seamlessportals:portal_disruption_block[default]",
+                "|": "seamlessportals:omnium_crystal"
+            },
+            "output": 
+            {
+                "item": "seamlessportals:portal_destabiliser[active=false]",
+                "amount": 1
+            }
+        }
+    ]
+}

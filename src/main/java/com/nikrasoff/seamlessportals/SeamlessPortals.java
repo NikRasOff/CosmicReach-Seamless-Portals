@@ -79,7 +79,8 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
             "crafting/hpg",
             "crafting/laser_emitter",
             "crafting/spacial_anchor",
-            "crafting/omnium_calibrator"
+            "crafting/omnium_calibrator",
+            "crafting/portal_destabiliser"
     };
 
     static String[] blockEventIds = {

@@ -11,7 +11,10 @@
   "seamlessportals:open_portal": "Открыть портал",
   "seamlessportals:close_portal": "Закрыть портал",
   "seamlessportals:portal_size": "Размер Портала",
-  "seamlessportals:portal_offset1": "Смещение Первичного Портала",
-  "seamlessportals:portal_offset2": "Смещение Вторичного Портала",
-  "seamlessportals:unstable_handheld_portal_generator": "Нестабильный Переносной Генератор Порталов"
+  "seamlessportals:portal_offset1": "Смещение Первого Портала",
+  "seamlessportals:portal_offset2": "Смещение Второго Портала",
+  "seamlessportals:unstable_handheld_portal_generator": "Нестабильный Переносной Генератор Порталов",
+  "seamlessportals:spacial_anchor": "Пространственный Якорь",
+  "seamlessportals:portal_disruption_block": "Отталкиватель Порталов",
+  "seamlessportals:portal_conductor_block": "Проводник Порталов"
 }

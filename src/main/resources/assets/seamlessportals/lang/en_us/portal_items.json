@@ -13,5 +13,8 @@
   "seamlessportals:portal_size": "Portal Size",
   "seamlessportals:portal_offset1": "Primary Portal Offset",
   "seamlessportals:portal_offset2": "Secondary Portal Offset",
-  "seamlessportals:unstable_handheld_portal_generator": "Unstable Handheld Portal Generator"
+  "seamlessportals:unstable_handheld_portal_generator": "Unstable Handheld Portal Generator",
+  "seamlessportals:spacial_anchor": "Spacial Anchor",
+  "seamlessportals:portal_disruption_block": "Portal Repulsor",
+  "seamlessportals:portal_conductor_block": "Portal Conductor"
 }

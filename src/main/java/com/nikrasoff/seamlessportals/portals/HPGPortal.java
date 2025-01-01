@@ -34,7 +34,7 @@ public class HPGPortal extends Portal {
     };
     public static final Color primaryPortalColor = Color.CYAN;
     public static final Color secondaryPortalColor = Color.ORANGE;
-    private static final int convergenceEventCooldown = 100;
+    private static final int convergenceEventCooldown = 1200;
     private static final GameSound[] convEventSounds = new GameSound[]{
             GameSound.of("seamlessportals:sounds/portals/conv_event1.ogg"),
             GameSound.of("seamlessportals:sounds/portals/conv_event2.ogg"),
@@ -158,7 +158,7 @@ public class HPGPortal extends Portal {
                 this.convEventSmallTimer += 1;
                 if (this.convEventSmallTimer >= 20){
                     this.convEventSmallTimer = 0;
-                    if (MathUtils.random(1) == 0){
+                    if (MathUtils.random(1000) == 0){
                         this.convergenceEventTimer = 0;
                         this.convEventHappening = true;
                         this.convEventLifetime = 0;

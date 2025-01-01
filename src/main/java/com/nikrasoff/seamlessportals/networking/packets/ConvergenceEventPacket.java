@@ -38,7 +38,7 @@ public class ConvergenceEventPacket extends GamePacket {
     public void handle(NetworkIdentity networkIdentity, ChannelHandlerContext channelHandlerContext) {
         if (networkIdentity.isClient()){
             Portal p = SeamlessPortals.portalManager.getPortal(this.portalID);
-            if (p instanceof HPGPortal hpgPortal){
+            if (p instanceof HPGPortal hpgPortal && p.linkedPortal == null){
                 if (this.textureNum == -1){
                     hpgPortal.convEventHappening = false;
                 }

@@ -107,6 +107,7 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
         GamePacket.registerPacket(PortalGeneratorUpdatePacket.class);
         GamePacket.registerPacket(ActivatePortalGenPacket.class);
         GamePacket.registerPacket(DeactivatePortalGenPacket.class);
+        GamePacket.registerPacket(ConvergenceEventPacket.class);
 
         SeamlessPortalsBlockEvents.registerSeamlessPortalsBlockEvents();
         EntityCreator.registerEntityCreator("seamlessportals:entity_portal", Portal::readPortal);

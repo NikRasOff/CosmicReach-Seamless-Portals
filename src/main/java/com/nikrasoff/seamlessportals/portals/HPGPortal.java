@@ -11,6 +11,7 @@ import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
+import com.nikrasoff.seamlessportals.networking.packets.ConvergenceEventPacket;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
 import com.nikrasoff.seamlessportals.networking.packets.UpdatePortalPacket;
 import finalforeach.cosmicreach.GameAssetLoader;
@@ -33,7 +34,7 @@ public class HPGPortal extends Portal {
     };
     public static final Color primaryPortalColor = Color.CYAN;
     public static final Color secondaryPortalColor = Color.ORANGE;
-    private static final int convergenceEventCooldown = 1200;
+    private static final int convergenceEventCooldown = 100;
     private static final GameSound[] convEventSounds = new GameSound[]{
             GameSound.of("seamlessportals:sounds/portals/conv_event1.ogg"),
             GameSound.of("seamlessportals:sounds/portals/conv_event2.ogg"),
@@ -146,6 +147,9 @@ public class HPGPortal extends Portal {
                 if (this.convEventLifetime >= 100){
                     this.convEventHappening = false;
                     this.convEventLifetime = 0;
+                    if (GameSingletons.isHost && ServerSingletons.SERVER != null){
+                        ServerSingletons.SERVER.broadcast(this.zone, new ConvergenceEventPacket(this, -1));
+                    }
                 }
                 return;
             }
@@ -154,12 +158,15 @@ public class HPGPortal extends Portal {
                 this.convEventSmallTimer += 1;
                 if (this.convEventSmallTimer >= 20){
                     this.convEventSmallTimer = 0;
-                    if (MathUtils.random(1000) == 0){
+                    if (MathUtils.random(1) == 0){
                         this.convergenceEventTimer = 0;
                         this.convEventHappening = true;
                         this.convEventLifetime = 0;
                         this.convEventTexture = MathUtils.random(2);
                         convEventSounds[MathUtils.random(3)].playGlobalSound3D(this.zone, this.position);
+                        if (GameSingletons.isHost && ServerSingletons.SERVER != null){
+                            ServerSingletons.SERVER.broadcast(this.zone, new ConvergenceEventPacket(this));
+                        }
                     }
                 }
             }

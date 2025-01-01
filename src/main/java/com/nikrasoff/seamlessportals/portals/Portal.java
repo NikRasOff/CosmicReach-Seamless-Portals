@@ -322,7 +322,7 @@ public class Portal extends Entity {
     @Override
     public void update(Zone zone, double deltaTime) {
         super.update(zone, deltaTime);
-        if (this.linkedPortal.zone == null){
+        if (this.linkedPortal != null && this.linkedPortal.zone == null){
             EntityRegion.readChunkColumn(GameSingletons.world.getZoneCreateIfNull(this.zone.zoneId), (int) this.linkedPortalChunkCoords.x, (int) this.linkedPortalChunkCoords.z, Math.floorDiv((int) this.linkedPortalChunkCoords.x, 16), Math.floorDiv((int) this.linkedPortalChunkCoords.y, 16), Math.floorDiv((int) this.linkedPortalChunkCoords.z, 16));
         }
         if (isEndAnimationPlaying){

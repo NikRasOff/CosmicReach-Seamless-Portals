@@ -3,6 +3,7 @@ package com.nikrasoff.seamlessportals;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.github.puzzle.core.loader.launch.provider.mod.entrypoint.impls.ClientModInitializer;
+import com.github.puzzle.core.loader.util.PuzzleEntrypointUtil;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
@@ -16,7 +17,9 @@ import com.nikrasoff.seamlessportals.items.screens.SpacialAnchorScreen;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import com.nikrasoff.seamlessportals.rendering.models.ObjItemModel;
 import com.nikrasoff.seamlessportals.rendering.models.PortalModel;
+import com.nikrasoff.seamlessportals.rendering.portal_entity_renderers.IPortalEntityRendererInitialiser;
 import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.Threads;
 import finalforeach.cosmicreach.rendering.items.ItemRenderer;
 import finalforeach.cosmicreach.ui.UI;
 import finalforeach.cosmicreach.util.Identifier;
@@ -72,10 +75,12 @@ public class SeamlessPortalsClient implements ClientModInitializer {
                 }
             });
         });
+        Threads.runOnMainThread(SeamlessPortalsClient::renderInit);
     }
 
     public static void renderInit(){
         SPClientConstants.init();
+        PuzzleEntrypointUtil.invoke("portalEntityRender", IPortalEntityRendererInitialiser.class, IPortalEntityRendererInitialiser::initPortalEntityRenderers);
         SeamlessPortalsRenderUtil.initialise();
         PulseEffect.create();
         PortalModel.create();

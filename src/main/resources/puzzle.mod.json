@@ -19,6 +19,9 @@
     ],
     "postInit": [
       "com.nikrasoff.seamlessportals.SeamlessPortals"
+    ],
+    "tooltip": [
+      "com.nikrasoff.seamlessportals.SeamlessPortalsTooltips"
     ]
   },
   "mixins": [

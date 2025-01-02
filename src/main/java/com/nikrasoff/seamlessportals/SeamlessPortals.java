@@ -139,6 +139,7 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
 
         ListAnchorsCommand.register(CommandManager.DISPATCHER);
         ClearAnchorsCommand.register(CommandManager.DISPATCHER);
+        SeamlessPortalsItems.registerItems();
     }
 
     @EventHandler
@@ -150,7 +151,6 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
         for (String id: blockEventIds){
             BlockEvents.loadBlockEventsFromAsset(GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "block_events/" + id + ".json")));
         }
-        SeamlessPortalsItems.registerItems();
         Loot.loadLoot(GameAssetLoader.loadJson("seamlessportals:loot/ore_omnium.json"));
     }
 

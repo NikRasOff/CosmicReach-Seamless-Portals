@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Matrix4;
 import finalforeach.cosmicreach.entities.Entity;
 
 public interface IModEntityModelInstance {
-    void renderNoAnim(Entity entity, Camera worldCamera, Matrix4 modelMat);
-    void updateAnimation(Entity entity);
+    void cosmicReach_Seamless_Portals$renderNoAnim(Entity entity, Camera worldCamera, Matrix4 modelMat);
+    void cosmicReach_Seamless_Portals$nullifyAnimation();
+    void cosmicReach_Seamless_Portals$updateAnimation();
 }

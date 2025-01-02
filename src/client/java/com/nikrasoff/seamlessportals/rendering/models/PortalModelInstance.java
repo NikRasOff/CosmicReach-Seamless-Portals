@@ -11,14 +11,18 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.nikrasoff.seamlessportals.SPClientConstants;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.animations.*;
+import com.nikrasoff.seamlessportals.extras.ClientPortalEntityTools;
 import com.nikrasoff.seamlessportals.extras.FloatContainer;
+import com.nikrasoff.seamlessportals.extras.PortalEntityTools;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntity;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
 import com.nikrasoff.seamlessportals.portals.HPGPortal;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
+import com.nikrasoff.seamlessportals.rendering.portal_entity_renderers.IPortalEntityRenderer;
 import com.nikrasoff.seamlessportals.rendering.shaders.PortalShader;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.entities.Entity;
@@ -43,6 +47,7 @@ public class PortalModelInstance implements IEntityModelInstance {
     public final Color colorOverlay = Color.CLEAR.cpy();
     private final PerspectiveCamera portalCamera;
     public Texture portalTexture;
+    private boolean portalCloseToCamera = false;
 
     private static final float[] tmpVec2 = new float[2];
     private static final float[] tmpVec4 = new float[4];
@@ -94,6 +99,10 @@ public class PortalModelInstance implements IEntityModelInstance {
 
         if ((camDistToPortalPlane > portalThickness) || (!portal.getFatBoundingBox().contains(playerCamera.position))){
             portalThickness = 0.01f;
+            portalCloseToCamera = false;
+        }
+        else{
+            portalCloseToCamera = true;
         }
 
         this.portalMeshScale = new Vector3(portal.portalSize.x, portal.portalSize.y, portalThickness);
@@ -182,10 +191,10 @@ public class PortalModelInstance implements IEntityModelInstance {
         Gdx.gl.glDepthMask(true);
         if (portal.linkedPortal != null){
             portal.linkedPortal.zone.forEachEntity((e) -> {
-                if (e instanceof Portal){
-                    return;
+                IPortalEntityRenderer r = SPClientConstants.getPortalEntityRenderer(e.getClass());
+                if (r != null){
+                    r.render(e, portalCamera);
                 }
-                ((IModEntity) e).cosmicReach_Seamless_Portals$renderNoAnim(portalCamera);
             });
 
             portalModel.portalFrameBuffer.end();
@@ -247,7 +256,13 @@ public class PortalModelInstance implements IEntityModelInstance {
         currentShader.setUniforms(this, (Portal) entity);
 
         PortalModel.renderable.worldTransform.set(matrix4).inv().translate(this.portalMeshLocalOffset).scale(this.portalMeshScale.x, this.portalMeshScale.y, this.portalMeshScale.z);
+        if (portalCloseToCamera){
+            Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+        }
         currentShader.render(PortalModel.renderable);
+        if (portalCloseToCamera){
+            Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+        }
         currentShader.end();
     }
 

@@ -26,6 +26,7 @@ import finalforeach.cosmicreach.entities.player.PlayerEntity;
 import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
 import finalforeach.cosmicreach.world.Chunk;
 import finalforeach.cosmicreach.world.Zone;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -36,7 +37,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Map;
 
 @Mixin(Entity.class)
-public abstract class PortalableEntityMixin implements IPortalableEntity, IModEntity {
+public abstract class PortalableEntityMixin implements IPortalableEntity{
     @Unique
     private static Vector3 cosmicReach_Seamless_Portals$portalPosCheckEpsilon = new Vector3(0f, 0.05f, 0f);
 
@@ -61,12 +62,18 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
     @Shadow public transient Zone zone;
     @Shadow public boolean noClip;
     @Shadow private transient float floorFriction;
+
+    @Shadow public abstract void getBoundingBox(BoundingBox boundingBox);
+
+    @Shadow @Final protected static transient Matrix4 tmpModelMatrix;
     @Unique
     private transient boolean cosmicReach_Seamless_Portals$justTeleported = false;
     @Unique
     private transient Portal cosmicReach_Seamless_Portals$teleportPortal;
     @Unique
     private transient boolean cosmicReach_Seamless_Portals$ignorePortals = false;
+    @Unique
+    public transient Array<Portal> cosmicReach_Seamless_Portals$nearbyPortals = new Array<>();
     @Unique
     private static final float cosmicReach_Seamless_Portals$terminalVelocity = 100; // This value was chosen randomly
 
@@ -97,6 +104,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
         this.cosmicReach_Seamless_Portals$tmpPortaledBoundingBox.getBounds().max.add(new Vector3(0.01F, 0.01F, 0.01F));
         this.cosmicReach_Seamless_Portals$justTeleported = false;
         this.cosmicReach_Seamless_Portals$teleportPortal = null;
+        this.cosmicReach_Seamless_Portals$nearbyPortals.clear();
         cosmicReach_Seamless_Portals$updateTrackedPortals(deltaTime, zone);
     }
 
@@ -105,9 +113,9 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
         coefficient *= 0.999997F;
         float f;
         if (coefficient >= 1.0F) {
-            f = (float)Math.pow(Math.exp((double)(-coefficient * 0.05F)), 20.0);
+            f = (float)Math.pow(Math.exp(-coefficient * 0.05F), 20.0);
         } else {
-            f = (float)Math.pow((double)(1.0F - coefficient), 0.05000000074505806);
+            f = (float)Math.pow(1.0F - coefficient, 0.05000000074505806);
         }
 
         vel.x *= f;
@@ -148,12 +156,18 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
 
         Ray posChange = new Ray(prevPos.cpy().add(cosmicReach_Seamless_Portals$portalPosCheckEpsilon), targetPosition.cpy().add(cosmicReach_Seamless_Portals$portalPosCheckEpsilon).sub(prevPos));
 
+        this.getBoundingBox(this.globalBoundingBox);
         for (Map.Entry<EntityUniqueId, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
             Portal portal = portalEntry.getValue();
             if (portal.isPortalDestroyed) {
                 continue;
             }
-            if (portal.zone == zone && portal.isNotOnSameSideOfPortal(prevPos.cpy().add(cosmicReach_Seamless_Portals$portalPosCheckEpsilon), targetPosition.cpy().add(cosmicReach_Seamless_Portals$portalPosCheckEpsilon)) && Intersector.intersectRayOrientedBounds(posChange, portal.getMeshBoundingBox(), new Vector3())){
+            if (portal.zone != zone) continue;
+            portal.getBoundingBox(cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox);
+            if (this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox.intersects(this.globalBoundingBox)) {
+                this.cosmicReach_Seamless_Portals$nearbyPortals.add(portal);
+            }
+            if (portal.isNotOnSameSideOfPortal(prevPos.cpy().add(cosmicReach_Seamless_Portals$portalPosCheckEpsilon), targetPosition.cpy().add(cosmicReach_Seamless_Portals$portalPosCheckEpsilon)) && Intersector.intersectRayOrientedBounds(posChange, portal.getMeshBoundingBox(), new Vector3())){
                 if (portal.linkedPortal == null){
                     this.pendingDamage += 1000000;
                     break;
@@ -379,53 +393,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity, IModEn
     }
 
     @Override
-    public void cosmicReach_Seamless_Portals$renderNoAnim(Camera renderCamera) {
-        if (this.modelInstance != null) {
-            Vector3 tmpPos = new Vector3();
-            tmpPos.set(this.lastRenderPosition);
-            TickRunner.INSTANCE.partTickLerp(tmpPos, this.position);
-            if (renderCamera.frustum.boundsInFrustum(this.globalBoundingBox)) {
-                Matrix4 tmpMatrix = new Matrix4();
-                tmpMatrix.idt();
-                tmpMatrix.translate(tmpPos);
-                float r = this.modelLightColor.r;
-                float g = this.modelLightColor.g;
-                float b = this.modelLightColor.b;
-                if (this.invulnerabiltyFrames > 0) {
-                    b = 0.0F;
-                    g = 0.0F;
-                }
-
-                this.modelInstance.setTint(r, g, b, 1.0F);
-                ((IModEntityModelInstance) this.modelInstance).renderNoAnim((Entity)(Object) this, renderCamera, tmpMatrix);
-            }
-        }
-    }
-
-    @Override
-    public void cosmicReach_Seamless_Portals$renderAfterMatrixSetNoAnim(Camera renderCamera, Matrix4 customMatrix) {
-        float r = this.modelLightColor.r;
-        float g = this.modelLightColor.g;
-        float b = this.modelLightColor.b;
-        if (this.invulnerabiltyFrames > 0) {
-            b = 0.0F;
-            g = 0.0F;
-        }
-
-        this.modelInstance.setTint(r, g, b, 1.0F);
-        this.modelInstance.render((Entity) (Object) this, renderCamera, customMatrix);
-    }
-
-    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lcom/badlogic/gdx/math/Vector3;set(Lcom/badlogic/gdx/math/Vector3;)Lcom/badlogic/gdx/math/Vector3;", ordinal = 1))
-    public Vector3 nullifyAnimations(Vector3 instance, Vector3 vector, Operation<Vector3> original){
-        return null;
-    }
-
-    @Inject(method = "render", at = @At("RETURN"))
-    public void advanceAnimations(Camera worldCamera, CallbackInfo ci){
-        Vector3 tmpPos = new Vector3();
-        tmpPos.set(this.lastRenderPosition);
-        TickRunner.INSTANCE.partTickLerp(tmpPos, this.position);
-        this.lastRenderPosition.set(tmpPos);
+    public Array<Portal> cosmicReach_Seamless_Portals$getNearbyPortals() {
+        return cosmicReach_Seamless_Portals$nearbyPortals;
     }
 }

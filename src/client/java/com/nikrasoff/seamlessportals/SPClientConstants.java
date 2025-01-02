@@ -2,18 +2,30 @@ package com.nikrasoff.seamlessportals;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.ObjectMap;
+import com.nikrasoff.seamlessportals.rendering.portal_entity_renderers.DefaultPortalEntityRenderer;
+import com.nikrasoff.seamlessportals.rendering.portal_entity_renderers.IPortalEntityRenderer;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalablePlayerController;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.rendering.models.PortalModel;
+import com.nikrasoff.seamlessportals.rendering.portal_entity_renderers.PortalPortalEntityRenderer;
 import finalforeach.cosmicreach.GameAssetLoader;
+import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.GameState;
+import finalforeach.cosmicreach.items.Item;
 import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
+import finalforeach.cosmicreach.rendering.items.ItemModel;
 import finalforeach.cosmicreach.util.Identifier;
+
+import java.lang.ref.WeakReference;
+import java.util.function.Function;
 
 import static com.nikrasoff.seamlessportals.SeamlessPortalsConstants.MOD_ID;
 
 public class SPClientConstants implements ISPClientConstants {
+    private static ObjectMap<Class<? extends Entity>, IPortalEntityRenderer> entityRendererMap;
+    private static IPortalEntityRenderer defaultRenderer;
     @Override
     public IEntityModelInstance getNewPortalModelInstance() {
         return PortalModel.model.getNewModelInstance();
@@ -39,6 +51,8 @@ public class SPClientConstants implements ISPClientConstants {
     public static Texture UI_SPACIAL_ANCHOR_ICON;
 
     public static void init(){
+        entityRendererMap = new ObjectMap<>();
+        defaultRenderer = new DefaultPortalEntityRenderer();
         UI_LASER_RIGHT_ON = GameAssetLoader.getTexture(Identifier.of(MOD_ID, "textures/ui/laser_right_on.png"));
         UI_LASER_RIGHT_OFF = GameAssetLoader.getTexture(Identifier.of(MOD_ID, "textures/ui/laser_right_off.png"));
         UI_LASER_LEFT_ON = GameAssetLoader.getTexture(Identifier.of(MOD_ID, "textures/ui/laser_left_on.png"));
@@ -50,5 +64,30 @@ public class SPClientConstants implements ISPClientConstants {
         UI_TEXT_CURSOR = GameAssetLoader.getTexture(Identifier.of(MOD_ID, "textures/ui/text_cursor.png"));
         UI_PORTAL_GEN_ICON = GameAssetLoader.getTexture(Identifier.of(MOD_ID, "textures/ui/portal_generator_icon.png"));
         UI_SPACIAL_ANCHOR_ICON = GameAssetLoader.getTexture(Identifier.of(MOD_ID, "textures/ui/spacial_anchor_icon.png"));
+        registerPortalEntityRenderer(Portal.class, new PortalPortalEntityRenderer());
+    }
+
+    public static void registerPortalEntityRenderer(Class<? extends Entity> clazz, IPortalEntityRenderer entityRenderer){
+        if (entityRendererMap == null){
+            throw new RuntimeException("You tried to register an entity renderer before the entity renderer map was even created");
+        }
+        if (entityRendererMap.containsKey(clazz)){
+            throw new RuntimeException("Cannot have multiple entity renderers registered to the same entity class: " + clazz.getSimpleName());
+        }
+        entityRendererMap.put(clazz, entityRenderer);
+    }
+
+    public static IPortalEntityRenderer getPortalEntityRenderer(Class<? extends Entity> clazz){
+        if (entityRendererMap == null){
+            return null;
+        }
+        Class<? extends Entity> cl = clazz;
+        for(IPortalEntityRenderer r; cl != null; cl = (Class<? extends Entity>) cl.getSuperclass()) {
+            r = entityRendererMap.get(cl);
+            if (r != null) {
+                return r;
+            }
+        }
+        return defaultRenderer;
     }
 }

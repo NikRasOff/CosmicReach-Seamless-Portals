@@ -24,13 +24,13 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
     public abstract void render(Entity entity, Camera worldCamera, Matrix4 modelMat);
 
     @Override
-    public void renderNoAnim(Entity entity, Camera worldCamera, Matrix4 modelMat){
+    public void cosmicReach_Seamless_Portals$renderNoAnim(Entity entity, Camera worldCamera, Matrix4 modelMat){
         setAnimTimer(getAnimTimer() - Gdx.graphics.getDeltaTime());
         this.render(entity, worldCamera, modelMat);
     }
 
     @Override
-    public void updateAnimation(Entity entity) {;
+    public void cosmicReach_Seamless_Portals$updateAnimation() {;
         setAnimTimer(getAnimTimer() + Gdx.graphics.getDeltaTime());
     }
 }

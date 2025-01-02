@@ -24,6 +24,7 @@ repositories {
 
 dependencies {
     cosmicReach("finalforeach:cosmicreach:${cosmic_reach_version}")
+    mod files('build/libs/CosmicTooltips-1.3.7-merged-bundle.jar')
 }
 
 processResources {

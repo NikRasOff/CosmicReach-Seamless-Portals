@@ -16,12 +16,13 @@
     "ZoneLoaderMixin"
   ],
   "client": [
-    "BlockGameMixin",
     "BlockSelectionMixin",
     "EntityModelInstanceMixin",
     "InGameMixin",
     "ItemRendererMixin",
-    "PlayerControllerMixin"
+    "PlayerControllerMixin",
+    "EntityAnimationMixin",
+    "ItemEntityAnimationMixin"
   ],
   "injectors": {
     "defaultRequire": 1

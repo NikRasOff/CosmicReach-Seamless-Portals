@@ -2,14 +2,20 @@ package com.nikrasoff.seamlessportals.mixin;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.nikrasoff.seamlessportals.SPClientConstants;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.effects.PulseEffect;
+import com.nikrasoff.seamlessportals.extras.ClientPortalEntityTools;
+import com.nikrasoff.seamlessportals.extras.PortalEntityTools;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalablePlayerController;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import com.nikrasoff.seamlessportals.portals.PortalSaveSystem;
 import com.nikrasoff.seamlessportals.rendering.models.ObjItemModel;
+import com.nikrasoff.seamlessportals.rendering.portal_entity_renderers.IPortalEntityRenderer;
+import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.entities.PlayerController;
+import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,6 +32,11 @@ public abstract class InGameMixin implements IPortalIngame {
 
     @Shadow
     static PlayerController playerController;
+
+    @Shadow
+    public static Player getLocalPlayer() {
+        return null;
+    }
 
     @Unique
     private float cosmicReach_Seamless_Portals$tempFovForPortals = 0;
@@ -46,6 +57,11 @@ public abstract class InGameMixin implements IPortalIngame {
         Camera renderFromCamera = getWorldCamera();
 
         SeamlessPortals.effectManager.render(renderFromCamera);
+        if (getLocalPlayer() == null) return;
+        for (Entity e : getLocalPlayer().getZone().getAllEntities()){
+            IPortalEntityRenderer r = SPClientConstants.getPortalEntityRenderer(e.getClass());
+            if (r != null) r.advanceAnimations(e);
+        }
     }
 
     @Inject(method = "render", at = @At("RETURN"))

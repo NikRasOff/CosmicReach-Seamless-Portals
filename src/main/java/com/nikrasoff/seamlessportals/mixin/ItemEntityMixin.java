@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.nikrasoff.seamlessportals.extras.interfaces.IModEntity;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.TickRunner;
 import finalforeach.cosmicreach.entities.Entity;
@@ -19,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemEntity.class)
-public abstract class ItemEntityMixin extends Entity implements IModEntity {
+public abstract class ItemEntityMixin extends Entity{
     @Shadow
     ItemStack itemStack;
 
@@ -31,34 +30,6 @@ public abstract class ItemEntityMixin extends Entity implements IModEntity {
 
     public ItemEntityMixin(String entityTypeId) {
         super(entityTypeId);
-    }
-
-    @Override
-    public void cosmicReach_Seamless_Portals$renderNoAnim(Camera renderCamera){
-        if (renderCamera.frustum.boundsInFrustum(this.globalBoundingBox)) {
-            if (this.modelInstance == null && this.itemStack != null) {
-                this.modelInstance = GameSingletons.itemEntityModelLoader.load(this.itemStack);
-            }
-
-            if (this.modelInstance != null) {
-                Matrix4 tmpMatrix = new Matrix4();
-                Vector3 tmpPos = new Vector3();
-                tmpMatrix.idt();
-                tmpPos.set(this.lastRenderPosition);
-                TickRunner.INSTANCE.partTickSlerp(tmpPos, this.position);
-                tmpMatrix.translate(tmpPos);
-                float partTick = TickRunner.INSTANCE.getPartTick();
-                float a = this.age + partTick * 0.05F + this.randomHoverOffsetTime;
-                float hover = MathUtils.sin(a);
-                float spin = a * 60.0F;
-                tmpMatrix.scl(this.renderSize);
-                tmpMatrix.rotate(Vector3.Y, spin);
-                tmpMatrix.translate(-0.5F, -0.5F, -0.5F);
-                tmpMatrix.translate(0.0F, this.renderSize / 2.0F + this.renderSize * hover / 2.0F, 0.0F);
-                this.cosmicReach_Seamless_Portals$renderAfterMatrixSetNoAnim(renderCamera, tmpMatrix);
-            }
-
-        }
     }
 
     @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lcom/badlogic/gdx/math/Vector3;set(Lcom/badlogic/gdx/math/Vector3;)Lcom/badlogic/gdx/math/Vector3;", ordinal = 1))

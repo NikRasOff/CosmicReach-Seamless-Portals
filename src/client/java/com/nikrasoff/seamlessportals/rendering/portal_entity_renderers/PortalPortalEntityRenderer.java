@@ -1,6 +1,7 @@
 package com.nikrasoff.seamlessportals.rendering.portal_entity_renderers;
 
 import com.badlogic.gdx.graphics.Camera;
+import com.nikrasoff.seamlessportals.api.IPortalEntityRenderer;
 import finalforeach.cosmicreach.entities.Entity;
 
 public class PortalPortalEntityRenderer implements IPortalEntityRenderer {

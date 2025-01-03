@@ -1,19 +1,11 @@
 package com.nikrasoff.seamlessportals;
 
-import com.badlogic.gdx.utils.Array;
 import com.github.puzzle.core.loader.provider.mod.entrypoint.impls.ModInitializer;
 import com.github.puzzle.core.loader.provider.mod.entrypoint.impls.PostModInitializer;
 import com.github.puzzle.game.PuzzleRegistries;
 import com.github.puzzle.game.block.DataModBlock;
 import com.github.puzzle.game.commands.CommandManager;
-import com.github.puzzle.game.commands.CommandSource;
-import com.github.puzzle.game.commands.ServerCommandSource;
 import com.github.puzzle.game.events.OnRegisterBlockEvent;
-import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.tree.CommandNode;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
@@ -21,7 +13,6 @@ import com.nikrasoff.seamlessportals.commands.ClearAnchorsCommand;
 import com.nikrasoff.seamlessportals.commands.ListAnchorsCommand;
 import com.nikrasoff.seamlessportals.effects.IEffectManager;
 import com.nikrasoff.seamlessportals.entities.DestabiliserPulseEntity;
-import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
 import com.nikrasoff.seamlessportals.networking.packets.*;
 import com.nikrasoff.seamlessportals.portals.HPGPortal;
 import com.nikrasoff.seamlessportals.portals.Portal;
@@ -33,7 +24,6 @@ import finalforeach.cosmicreach.blockentities.BlockEntity;
 import finalforeach.cosmicreach.blockevents.BlockEvents;
 import finalforeach.cosmicreach.blocks.Block;
 import finalforeach.cosmicreach.blocks.BlockStateGenerator;
-import finalforeach.cosmicreach.chat.Chat;
 import finalforeach.cosmicreach.entities.EntityCreator;
 import finalforeach.cosmicreach.items.loot.Loot;
 import finalforeach.cosmicreach.items.recipes.CraftingRecipes;
@@ -47,10 +37,6 @@ import finalforeach.cosmicreach.worldgen.Ore;
 import meteordevelopment.orbit.EventHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.spongepowered.asm.mixin.injection.struct.InjectorGroupInfo;
-
-import java.util.Map;
-import java.util.function.Predicate;
 
 public class SeamlessPortals implements ModInitializer, PostModInitializer {
     public static PortalManager portalManager = new PortalManager();

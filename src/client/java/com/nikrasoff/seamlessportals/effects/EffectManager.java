@@ -48,6 +48,7 @@ public class EffectManager implements IEffectManager {
                 return;
             }
             e.render(delta, renderFromCamera);
+            e.advanceAnimation(delta);
         });
     }
     public void removeEffect(IEffect e){

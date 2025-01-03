@@ -9,6 +9,7 @@ import java.util.Map;
 
 public interface IEffect {
     void setupEffect(float lifetime, Vector3 position, Zone zone);
+    void advanceAnimation(float delta);
     void render(float delta, Camera playerCamera);
     boolean isInZone(Zone zone);
     void applyArguments(Map<String, Object> argMap);

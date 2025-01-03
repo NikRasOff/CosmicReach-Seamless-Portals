@@ -24,8 +24,6 @@ import finalforeach.cosmicreach.util.ArrayUtils;
 import finalforeach.cosmicreach.world.EntityRegion;
 import finalforeach.cosmicreach.world.Zone;
 
-import java.util.Arrays;
-
 public class Portal extends Entity {
     public static GameSound portalOpenSound = GameSound.of("seamlessportals:sounds/portals/portal_open.ogg");
     public static GameSound portalCloseSound = GameSound.of("seamlessportals:sounds/portals/portal_close.ogg");

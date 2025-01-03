@@ -6,5 +6,6 @@ import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
 
 public interface ISPClientConstants {
     IEntityModelInstance getNewPortalModelInstance();
+    IEntityModelInstance getNewPulseModelInstance();
     void animateCameraTurning(Vector3 originalPos, Vector3 newPos, Portal portal);
 }

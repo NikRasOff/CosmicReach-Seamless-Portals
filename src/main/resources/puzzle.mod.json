@@ -25,7 +25,11 @@
     ]
   },
   "mixins": [
-    "seamlessportals.mixins.json"
+    "seamlessportals.mixins.json",
+    {
+      "config": "seamlessportals.client.mixins.json",
+      "environment": "client"
+    }
   ],
   "depends": {
     "cosmic-reach": ">=${cr_version}",

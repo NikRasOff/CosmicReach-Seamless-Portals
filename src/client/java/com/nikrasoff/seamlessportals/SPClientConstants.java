@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.nikrasoff.seamlessportals.rendering.portal_entity_renderers.DefaultPortalEntityRenderer;
-import com.nikrasoff.seamlessportals.rendering.portal_entity_renderers.IPortalEntityRenderer;
+import com.nikrasoff.seamlessportals.api.IPortalEntityRenderer;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalablePlayerController;
 import com.nikrasoff.seamlessportals.portals.Portal;
@@ -13,13 +13,8 @@ import com.nikrasoff.seamlessportals.rendering.portal_entity_renderers.PortalPor
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.GameState;
-import finalforeach.cosmicreach.items.Item;
 import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
-import finalforeach.cosmicreach.rendering.items.ItemModel;
 import finalforeach.cosmicreach.util.Identifier;
-
-import java.lang.ref.WeakReference;
-import java.util.function.Function;
 
 import static com.nikrasoff.seamlessportals.SeamlessPortalsConstants.MOD_ID;
 
@@ -29,6 +24,11 @@ public class SPClientConstants implements ISPClientConstants {
     @Override
     public IEntityModelInstance getNewPortalModelInstance() {
         return PortalModel.model.getNewModelInstance();
+    }
+
+    @Override
+    public IEntityModelInstance getNewPulseModelInstance() {
+        return null;
     }
 
     @Override

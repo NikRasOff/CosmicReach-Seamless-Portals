@@ -58,15 +58,15 @@ public abstract class PulseEffect implements IEffect {
     }
 
     @Override
-    public void render(float delta, Camera playerCamera) {
-//        SeamlessPortals.LOGGER.info("Pulse effect scale = " + modelScale);
+    public void advanceAnimation(float delta) {
         this.animationSequence.update(delta);
         if (this.animationSequence.isFinished()) {
             SeamlessPortals.effectManager.removeEffect(this);
-            SeamlessPortals.LOGGER.info("Pulse effect finished rendering");
-            return;
         }
+    }
 
+    @Override
+    public void render(float delta, Camera playerCamera) {
         tmpMat.idt();
         tmpMat.translate(position);
         tmpMat.scale(modelScale.x, modelScale.y, modelScale.z);

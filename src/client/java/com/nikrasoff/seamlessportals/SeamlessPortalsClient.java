@@ -17,7 +17,7 @@ import com.nikrasoff.seamlessportals.items.screens.SpacialAnchorScreen;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import com.nikrasoff.seamlessportals.rendering.models.ObjItemModel;
 import com.nikrasoff.seamlessportals.rendering.models.PortalModel;
-import com.nikrasoff.seamlessportals.rendering.portal_entity_renderers.IPortalEntityRendererInitialiser;
+import com.nikrasoff.seamlessportals.api.IPortalEntityRendererInitialiser;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.Threads;
 import finalforeach.cosmicreach.rendering.items.ItemRenderer;

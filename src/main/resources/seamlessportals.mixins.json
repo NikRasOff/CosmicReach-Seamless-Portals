@@ -15,15 +15,6 @@
     "PortalDespawnMixin",
     "ZoneLoaderMixin"
   ],
-  "client": [
-    "BlockSelectionMixin",
-    "EntityModelInstanceMixin",
-    "InGameMixin",
-    "ItemRendererMixin",
-    "PlayerControllerMixin",
-    "EntityAnimationMixin",
-    "ItemEntityAnimationMixin"
-  ],
   "injectors": {
     "defaultRequire": 1
   }

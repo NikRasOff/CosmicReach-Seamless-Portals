@@ -26,7 +26,7 @@ void main() {
     outline_coord.x += u_time * 0.03125 + int(initial_color.r * 32);
     outline_coord.y += u_time * 0.03125 + int(initial_color.g * 32);
     vec4 final_color = u_outlineColor;
-    final_color.a = min(texture(u_noiseTex, outline_coord).b + 0.5, 1);
+    final_color.a *= min(texture(u_noiseTex, outline_coord).b + 0.5, 1);
 
     vec4 convColor = texture(u_convEventTexture, v_texCoord0.yx);
     convColor.a = (final_color.a - 0.5) * u_convEventAlpha;

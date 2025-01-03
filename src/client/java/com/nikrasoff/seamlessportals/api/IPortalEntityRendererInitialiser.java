@@ -1,4 +1,4 @@
-package com.nikrasoff.seamlessportals.rendering.portal_entity_renderers;
+package com.nikrasoff.seamlessportals.api;
 
 import com.nikrasoff.seamlessportals.SPClientConstants;
 import finalforeach.cosmicreach.entities.Entity;

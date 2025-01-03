@@ -26,7 +26,7 @@ void main() {
     outline_coord.x += u_time * 0.03125 + int(initial_color.r * 32);
     outline_coord.y += u_time * 0.03125 + int(initial_color.g * 32);
     vec4 final_color = u_outlineColor;
-    final_color.a = min(texture(u_noiseTex, outline_coord).b + 0.5, 1);
+    final_color.a *= min(texture(u_noiseTex, outline_coord).b + 0.5, 1);
     float dist_to_edge = min(u_portalSize.y / 2 - abs(v_texCoord0.x - 0.5) * u_portalSize.y, u_portalSize.x / 2 - abs(v_texCoord0.y - 0.5) * u_portalSize.x);
     float a = 1 - max(0, 0.125 - dist_to_edge);
     final_color.a *= max(0, 1 - a * a * a);

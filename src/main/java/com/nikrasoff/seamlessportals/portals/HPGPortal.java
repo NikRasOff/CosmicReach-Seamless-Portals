@@ -197,7 +197,6 @@ public class HPGPortal extends Portal {
     }
 
     private boolean tryBumping(Vector3 dir, float maxAmount, Zone z){
-        // Tries placing the portal along a direction, but with a blacklist
         float bumpAmount = 0.01f;
         float bumpCount = 0;
         Matrix4 portalMatrix = this.getRotationMatrix();

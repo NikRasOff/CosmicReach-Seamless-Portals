@@ -1,4 +1,4 @@
-package com.nikrasoff.seamlessportals.rendering.portal_entity_renderers;
+package com.nikrasoff.seamlessportals.api;
 
 import com.badlogic.gdx.graphics.Camera;
 import finalforeach.cosmicreach.entities.Entity;

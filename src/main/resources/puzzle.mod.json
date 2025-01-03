@@ -27,7 +27,7 @@
   "mixins": [
     "seamlessportals.mixins.json"
   ],
-  "dependencies": {
+  "depends": {
     "cosmic-reach": ">=${cr_version}",
     "puzzle-loader": ">=${puzzle_version}"
   },

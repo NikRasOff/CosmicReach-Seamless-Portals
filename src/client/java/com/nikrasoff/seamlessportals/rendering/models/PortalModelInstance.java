@@ -238,6 +238,8 @@ public class PortalModelInstance implements IEntityModelInstance {
             return;
         }
 
+        Matrix4 renderMatrix = matrix4.cpy();
+
         PortalShader currentShader;
         if (((Portal) entity).linkedPortal == null){
             if (entity instanceof HPGPortal) currentShader = PortalModel.hpgNullPortalShader;
@@ -255,7 +257,7 @@ public class PortalModelInstance implements IEntityModelInstance {
 
         currentShader.setUniforms(this, (Portal) entity);
 
-        PortalModel.renderable.worldTransform.set(matrix4).inv().translate(this.portalMeshLocalOffset).scale(this.portalMeshScale.x, this.portalMeshScale.y, this.portalMeshScale.z);
+        PortalModel.renderable.worldTransform.set(renderMatrix).inv().translate(this.portalMeshLocalOffset).scale(this.portalMeshScale.x, this.portalMeshScale.y, this.portalMeshScale.z);
         if (portalCloseToCamera){
             Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
         }

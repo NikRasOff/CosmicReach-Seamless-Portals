@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
@@ -214,23 +215,25 @@ public class HPGPortal extends Portal {
 
     public boolean isPortalOnValidSurface(Zone z){
         float blockCheckBump = 0.1f;
-        tmpVec3.set(this.viewDirection).scl(this.isSecond ? -blockCheckBump : blockCheckBump);
-        this.position.add(tmpVec3);
+        Vector3 tvec = this.viewDirection.cpy().scl(this.isSecond ? -blockCheckBump : blockCheckBump);
+        this.position.add(tvec);
 //        SeamlessPortals.LOGGER.info("\nTesting at pos " + this.position);
         OrientedBoundingBox bb = this.getMeshBoundingBox();
-        this.position.sub(tmpVec3);
+        this.position.sub(tvec);
         Vector3[] vertices = bb.getVertices();
 
         IntVector3 min = IntVector3.leastVector(vertices);
         IntVector3 max = IntVector3.greatestVector(vertices);
+
+        BoundingBox tBB = new BoundingBox();
 
         for (int bx = min.x; bx <= max.x; ++bx){
             for (int by = min.y; by <= max.y; ++by){
                 for (int bz = min.z; bz <= max.z; ++bz){
                     BlockState checkBlock = z.getBlockState(bx, by, bz);
                     if (checkBlock != null && !checkBlock.walkThrough){
-                        checkBlock.getBoundingBox(tmpBB, bx, by, bz);
-                        if (bb.intersects(tmpBB)){
+                        checkBlock.getBoundingBox(tBB, bx, by, bz);
+                        if (bb.intersects(tBB)){
                             if (this.isUnstable){
                                 return checkBlock.hasTag("portal_whitelisted");
                             }
@@ -238,11 +241,15 @@ public class HPGPortal extends Portal {
                                 if (Arrays.asList(defaultBlacklist).contains(checkBlock.getBlockId())){
                                     return false;
                                 }
-                                if (checkBlock.hasTag("portal_blacklisted")) return false;
+                                if (checkBlock.hasTag("portal_blacklisted")) {
+                                    return false;
+                                }
                             }
                         }
                     }
-                    else return false;
+                    else{
+                        return false;
+                    }
                 }
             }
         }

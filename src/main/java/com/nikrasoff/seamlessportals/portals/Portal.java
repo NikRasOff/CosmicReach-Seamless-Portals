@@ -251,7 +251,7 @@ public class Portal extends Entity {
 
     public OrientedBoundingBox getMeshBoundingBox(){
         Matrix4 pm = this.getPortalMatrix();
-        return new OrientedBoundingBox(meshBB, pm.cpy().inv());
+        return new OrientedBoundingBox(meshBB, pm.inv());
     }
 
     public Matrix4 getPortaledTransform(Matrix4 transform){
@@ -294,7 +294,9 @@ public class Portal extends Entity {
         // Synchronized to get rid of weird flickering when teleporting
         Matrix4 m = new Matrix4();
         synchronized (lock){
-            m.setToLookAt(this.position, this.position.cpy().add(this.viewDirection), this.upVector);
+            Matrix4 tmpMat1 = new Matrix4();
+            m.setToLookAt(this.viewDirection, this.upVector);
+            m.mul(tmpMat1.setToTranslation(-position.x, -position.y, -position.z));
         }
         return m;
     }
@@ -395,7 +397,9 @@ public class Portal extends Entity {
                     if (checkBlock != null && !checkBlock.walkThrough) {
                         checkBlock.getAllBoundingBoxes(tempBounds, bx, by, bz);
                         for (BoundingBox bb1 : tempBounds) {
-                            if (bb.intersects(bb1)) return true;
+                            if (bb.intersects(bb1)) {
+                                return true;
+                            }
                         }
                     }
                 }

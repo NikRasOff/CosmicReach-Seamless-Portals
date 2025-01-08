@@ -10,6 +10,10 @@ public class ClientPortalEntityTools {
         IModEntity portalableEntity = (IModEntity) entity;
         portalableEntity.cosmicReach_Seamless_Portals$renderNoAnim(camera);
     }
+    public static void renderDuplicate(Entity entity, Camera renderCamera, Portal portal){
+        IModEntity e = (IModEntity) entity;
+        e.cosmicReach_Seamless_Portals$renderDuplicate(renderCamera, portal);
+    }
     public static void advanceAnimations(Entity entity){
         IModEntity e = (IModEntity) entity;
         e.cosmicReach_Seamless_Portals$advanceAnimations();

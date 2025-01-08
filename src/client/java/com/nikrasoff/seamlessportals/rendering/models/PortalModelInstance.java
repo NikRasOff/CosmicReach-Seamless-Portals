@@ -22,6 +22,7 @@ import com.nikrasoff.seamlessportals.rendering.shaders.PortalShader;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.GameState;
+import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.rendering.entities.IEntityModel;
 import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
 import finalforeach.cosmicreach.settings.GraphicsSettings;
@@ -189,6 +190,9 @@ public class PortalModelInstance implements IEntityModelInstance {
                 IPortalEntityRenderer r = SPClientConstants.getPortalEntityRenderer(e.getClass());
                 if (r != null){
                     r.render(e, portalCamera);
+                    if (e != InGame.getLocalPlayer().getEntity() && r.shouldRenderDuplicate(e, portal)){
+                        r.renderDuplicate(e, portalCamera, portal);
+                    }
                 }
             });
 

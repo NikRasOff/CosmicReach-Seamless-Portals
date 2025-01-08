@@ -2,14 +2,19 @@ package com.nikrasoff.seamlessportals.mixin;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.nikrasoff.seamlessportals.SPClientConstants;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalablePlayerController;
+import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import com.nikrasoff.seamlessportals.rendering.models.ObjItemModel;
 import com.nikrasoff.seamlessportals.api.IPortalEntityRenderer;
 import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.entities.PlayerController;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.gamestates.InGame;
@@ -20,6 +25,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Map;
 
 @Mixin(InGame.class)
 public abstract class InGameMixin implements IPortalIngame {
@@ -55,7 +62,16 @@ public abstract class InGameMixin implements IPortalIngame {
         if (getLocalPlayer() == null) return;
         for (Entity e : getLocalPlayer().getZone().getAllEntities()){
             IPortalEntityRenderer r = SPClientConstants.getPortalEntityRenderer(e.getClass());
-            if (r != null) r.advanceAnimations(e);
+            if (r != null) {
+                for (Map.Entry<EntityUniqueId, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
+                    Portal portal = portalEntry.getValue();
+                    if (portal.linkedPortal == null) continue;
+                    if (r.shouldRenderDuplicate(e, portal)){
+                        r.renderDuplicate(e, renderFromCamera, portal);
+                    }
+                }
+                r.advanceAnimations(e);
+            }
         }
     }
 

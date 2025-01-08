@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.nikrasoff.seamlessportals.extras.interfaces.ISliceableItemModel;
+import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import finalforeach.cosmicreach.items.Item;
 import finalforeach.cosmicreach.rendering.items.ItemModel;
@@ -14,7 +16,7 @@ import finalforeach.cosmicreach.util.Identifier;
 
 import java.lang.ref.WeakReference;
 
-public class ObjItemModel extends ItemModel {
+public class ObjItemModel extends ItemModel implements ISliceableItemModel {
     public static Camera itemCam;
     public Matrix4 heldModelMatrix = new Matrix4();
     public Matrix4 onGroundModelMatrix = new Matrix4();
@@ -112,5 +114,14 @@ public class ObjItemModel extends ItemModel {
     static {
         setupItemCam();
         heldItemCamera = new PerspectiveCamera();
+    }
+
+    @Override
+    public void renderAsSlicedEntity(Vector3 position, Camera renderCamera, Matrix4 modelMatrix, Portal portal) {
+        tmpMat4.set(modelMatrix);
+        tmpMat4.mul(this.onGroundModelMatrix);
+        if (this.modelInstance == null) return;
+        modelInstance.transform.set(tmpMat4);
+        SeamlessPortalsRenderUtil.renderModelSliced(modelInstance, renderCamera, position, portal);
     }
 }

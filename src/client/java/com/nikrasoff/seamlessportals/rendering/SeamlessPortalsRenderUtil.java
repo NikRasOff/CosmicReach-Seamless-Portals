@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
+import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.rendering.shaders.ModelShader;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.entities.Entity;
@@ -35,6 +36,7 @@ public class SeamlessPortalsRenderUtil {
     private static final Matrix4 idtMatrix = new Matrix4();
 
     private static final float[] tmpVec4 = new float[4];
+    private static final float[] tmpVec3 = new float[3];
     private static final Color tintColor = new Color();
     private static final BlockPosition tmpBlockPos1 = new BlockPosition(null, 0, 0, 0);
     private static final BlockPosition tmpBlockPos2 = new BlockPosition(null, 0, 0, 0);
@@ -47,6 +49,23 @@ public class SeamlessPortalsRenderUtil {
         assets = new AssetManager();
         shader = new ModelShader();
         shader.init();
+    }
+
+    public static void renderModelSliced(ModelInstance instance, Camera camera, Vector3 worldPos, Portal portal){
+        if (portal != null){
+            shader.program.setUniformi("u_turnOnSlicing", 1);
+            tmpVec3[0] = portal.position.x;
+            tmpVec3[1] = portal.position.y;
+            tmpVec3[2] = portal.position.z;
+            shader.program.setUniform3fv("u_portalOrigin", tmpVec3, 0, 3);
+            tmpVec3[0] = portal.viewDirection.x;
+            tmpVec3[1] = portal.viewDirection.y;
+            tmpVec3[2] = portal.viewDirection.z;
+            shader.program.setUniform3fv("u_portalNormal", tmpVec3, 0, 3);
+            shader.program.setUniformi("u_invertPortalNormal", Math.max(portal.getPortalSide(worldPos), 0));
+        }
+        renderModel(instance, camera, worldPos, true, true);
+        shader.program.setUniformi("u_turnOnSlicing", 0);
     }
 
     public static void renderModel(ModelInstance instance, Camera camera, Vector3 worldPos, boolean useAmbientLight, boolean applyFog){

@@ -1,7 +1,5 @@
 package com.nikrasoff.seamlessportals.mixin;
 
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -16,7 +14,6 @@ import com.nikrasoff.seamlessportals.extras.interfaces.*;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import finalforeach.cosmicreach.GameSingletons;
-import finalforeach.cosmicreach.TickRunner;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
@@ -26,7 +23,6 @@ import finalforeach.cosmicreach.entities.player.PlayerEntity;
 import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
 import finalforeach.cosmicreach.world.Chunk;
 import finalforeach.cosmicreach.world.Zone;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -48,11 +44,8 @@ public abstract class PortalableEntityMixin implements IPortalableEntity{
     @Shadow public Vector3 onceVelocity;
     @Shadow private Vector3 acceleration;
     @Shadow public BoundingBox localBoundingBox;
-    @Shadow protected transient Vector3 lastRenderPosition;
     @Shadow
     public transient BoundingBox globalBoundingBox;
-    @Shadow private transient Color modelLightColor;
-    @Shadow protected transient int invulnerabiltyFrames;
 
     @Shadow public abstract void setPosition(Vector3 position);
 
@@ -64,8 +57,6 @@ public abstract class PortalableEntityMixin implements IPortalableEntity{
     @Shadow private transient float floorFriction;
 
     @Shadow public abstract void getBoundingBox(BoundingBox boundingBox);
-
-    @Shadow @Final protected static transient Matrix4 tmpModelMatrix;
     @Unique
     private transient boolean cosmicReach_Seamless_Portals$justTeleported = false;
     @Unique
@@ -211,9 +202,6 @@ public abstract class PortalableEntityMixin implements IPortalableEntity{
                 if (portal.zone == zone && portal.isNotOnSameSideOfPortal(portalCollisionCheckPos, checkCenter) && Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3())){
                     if (!portal.getMeshBoundingBox().intersects(this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox)){
                         return null;
-                    }
-                    else{
-                        System.out.println(this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox + " and [" + portal.getMeshBoundingBox().getCorner000(new Vector3()) + "|" + portal.getMeshBoundingBox().getCorner111(new Vector3()) + "]");
                     }
                 }
             }

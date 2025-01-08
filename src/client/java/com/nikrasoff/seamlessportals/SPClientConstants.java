@@ -14,6 +14,7 @@ import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
+import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.util.Identifier;
 
 import static com.nikrasoff.seamlessportals.SeamlessPortalsConstants.MOD_ID;
@@ -49,6 +50,7 @@ public class SPClientConstants implements ISPClientConstants {
     public static Texture UI_TEXT_CURSOR;
     public static Texture UI_PORTAL_GEN_ICON;
     public static Texture UI_SPACIAL_ANCHOR_ICON;
+    public static GameShader OVERRIDE_ITEM_SHADER;
 
     public static void init(){
         entityRendererMap = new ObjectMap<>();
@@ -65,6 +67,7 @@ public class SPClientConstants implements ISPClientConstants {
         UI_PORTAL_GEN_ICON = GameAssetLoader.getTexture(Identifier.of(MOD_ID, "textures/ui/portal_generator_icon.png"));
         UI_SPACIAL_ANCHOR_ICON = GameAssetLoader.getTexture(Identifier.of(MOD_ID, "textures/ui/spacial_anchor_icon.png"));
         registerPortalEntityRenderer(Portal.class, new PortalPortalEntityRenderer());
+        OVERRIDE_ITEM_SHADER = new GameShader(Identifier.of(MOD_ID, "shaders/override/item_shader.vert.glsl"), Identifier.of(MOD_ID, "shaders/override/item_shader.frag.glsl"));
     }
 
     public static void registerPortalEntityRenderer(Class<? extends Entity> clazz, IPortalEntityRenderer entityRenderer){

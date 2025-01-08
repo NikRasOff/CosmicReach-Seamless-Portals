@@ -10,7 +10,12 @@
     "InGameMixin",
     "ItemEntityAnimationMixin",
     "ItemRendererMixin",
-    "PlayerControllerMixin"
+    "PlayerControllerMixin",
+    "ItemEntityModelMixin",
+    "item_models.ItemModelBlockMixin",
+    "item_models.ItemModelThingMixin",
+    "item_models.ExperimentalItemModelMixin",
+    "item_models.PuzzleModelWrapperMixin"
   ],
   "injectors": {
     "defaultRequire": 1

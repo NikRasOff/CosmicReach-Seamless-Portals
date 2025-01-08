@@ -48,9 +48,7 @@ public class Portal extends Entity {
 
     private final BoundingBox meshBB = new BoundingBox();
     public static final Object lock = new Object();
-    protected static final Vector3 tmpVec3 = new Vector3();
     protected static final Array<BoundingBox> tempBounds = new Array<>();
-    protected static final BoundingBox tmpBB = new BoundingBox();
 
     public static Portal readPortal(CRBinDeserializer deserializer){
         // It took so much time to make this work... and yet it's still somehow broken
@@ -265,6 +263,21 @@ public class Portal extends Entity {
         return newTransform;
     }
 
+    public Matrix4 getFullyPortaledTransform(Matrix4 transform){
+        if (linkedPortal == null) return transform.cpy();
+        Vector3 newPos = this.getPortaledPos(transform.getTranslation(new Vector3()));
+        Matrix4 newTransform = transform.cpy();
+        Matrix4 thisPort = this.getPortalMatrix();
+        Matrix4 linkedPort = this.linkedPortal.getPortalMatrix();
+        thisPort.setTranslation(0, 0, 0);
+        linkedPort.setTranslation(0, 0, 0);
+        thisPort.inv();
+        newTransform.mul(thisPort);
+        newTransform.mul(linkedPort);
+        newTransform.setTranslation(newPos);
+        return newTransform;
+    }
+
     public float getDistanceToPortalPlane(Vector3 pos){
         Plane portalPlane = new Plane(this.viewDirection, this.position);
         return Math.abs(portalPlane.distance(pos));
@@ -291,9 +304,24 @@ public class Portal extends Entity {
     public Matrix4 getPortalMatrix(){
         // Synchronized to get rid of weird flickering when teleporting
         Matrix4 m = new Matrix4();
-        synchronized (lock){
+        synchronized (lock){ // I'm doing all of this manually because otherwise multithreading fucks everything up
             Matrix4 tmpMat1 = new Matrix4();
-            m.setToLookAt(this.viewDirection, this.upVector);
+            Vector3 l_vez = new Vector3();
+            Vector3 l_vex = new Vector3();
+            Vector3 l_vey = new Vector3();
+            l_vez.set(this.viewDirection).nor();
+            l_vex.set(this.viewDirection).crs(this.upVector).nor();
+            l_vey.set(l_vex).crs(l_vez).nor();
+            m.idt();
+            m.val[0] = l_vex.x;
+            m.val[4] = l_vex.y;
+            m.val[8] = l_vex.z;
+            m.val[1] = l_vey.x;
+            m.val[5] = l_vey.y;
+            m.val[9] = l_vey.z;
+            m.val[2] = -l_vez.x;
+            m.val[6] = -l_vez.y;
+            m.val[10] = -l_vez.z;
             m.mul(tmpMat1.setToTranslation(-position.x, -position.y, -position.z));
         }
         return m;

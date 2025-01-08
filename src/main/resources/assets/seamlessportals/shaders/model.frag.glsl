@@ -11,6 +11,11 @@ uniform vec3 u_skyAmbientColor;
 uniform sampler2D u_diffuseTex;
 uniform vec4 u_ambientLight;
 
+uniform vec3 u_portalNormal;
+uniform vec3 u_portalOrigin;
+uniform int u_turnOnSlicing;
+uniform int u_invertPortalNormal;
+
 in vec2 v_texCoord0;
 in vec3 v_worldPos;
 
@@ -61,6 +66,14 @@ vec3 getFogColor(vec3 fogBaseColor, vec3 blocklight, float fogDensity, vec3 worl
 }
 
 void main() {
+    // Portal slicing
+    if (u_turnOnSlicing == 1){
+        vec3 portalCheckVec = v_worldPos - u_portalOrigin;
+        if (dot(portalCheckVec, ((u_invertPortalNormal == 1) ? -u_portalNormal : u_portalNormal)) < 0){
+            discard;
+        }
+    }
+
     vec4 tex = texture(u_diffuseTex, v_texCoord0);
 
     if(tex.a == 0)

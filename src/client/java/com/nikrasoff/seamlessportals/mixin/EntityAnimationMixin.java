@@ -62,7 +62,7 @@ public abstract class EntityAnimationMixin implements IModEntity {
     @Override
     public void cosmicReach_Seamless_Portals$renderDuplicate(Camera playerCamera, Portal portal){
         BoundingBox tmpBB1 = new BoundingBox(this.globalBoundingBox);
-        Vector3 addition = portal.linkedPortal.position.cpy().sub(portal.position);
+        Vector3 addition = portal.getPortaledPos(this.position).sub(this.position);
         tmpBB1.min.add(addition);
         tmpBB1.max.add(addition);
         tmpBB1.update();

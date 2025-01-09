@@ -53,14 +53,15 @@ public class SeamlessPortalsRenderUtil {
 
     public static void renderModelSliced(ModelInstance instance, Camera camera, Vector3 worldPos, Portal portal){
         if (portal != null){
+            shader.program.bind();
             shader.program.setUniformi("u_turnOnSlicing", 1);
-            tmpVec3[0] = portal.position.x;
-            tmpVec3[1] = portal.position.y;
-            tmpVec3[2] = portal.position.z;
+            tmpVec3[0] = portal.linkedPortal.position.x;
+            tmpVec3[1] = portal.linkedPortal.position.y;
+            tmpVec3[2] = portal.linkedPortal.position.z;
             shader.program.setUniform3fv("u_portalOrigin", tmpVec3, 0, 3);
-            tmpVec3[0] = portal.viewDirection.x;
-            tmpVec3[1] = portal.viewDirection.y;
-            tmpVec3[2] = portal.viewDirection.z;
+            tmpVec3[0] = portal.linkedPortal.viewDirection.x;
+            tmpVec3[1] = portal.linkedPortal.viewDirection.y;
+            tmpVec3[2] = portal.linkedPortal.viewDirection.z;
             shader.program.setUniform3fv("u_portalNormal", tmpVec3, 0, 3);
             shader.program.setUniformi("u_invertPortalNormal", Math.max(portal.getPortalSide(worldPos), 0));
         }

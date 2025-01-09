@@ -61,8 +61,8 @@ public abstract class ItemModelBlockMixin implements ISliceableItemModel {
             this.shader.bindOptionalUniform4f("tintColor", color);
             if (portal != null && position != null){
                 this.shader.shader.setUniformi("u_turnOnSlicing", 1);
-                this.shader.bindOptionalUniform3f("u_portalOrigin", portal.position);
-                this.shader.bindOptionalUniform3f("u_portalNormal", portal.viewDirection);
+                this.shader.bindOptionalUniform3f("u_portalOrigin", portal.linkedPortal.position);
+                this.shader.bindOptionalUniform3f("u_portalNormal", portal.linkedPortal.viewDirection);
                 this.shader.bindOptionalInt("u_invertPortalNormal", Math.max(portal.getPortalSide(position), 0));
             }
             this.mesh.bind(this.shader.shader);

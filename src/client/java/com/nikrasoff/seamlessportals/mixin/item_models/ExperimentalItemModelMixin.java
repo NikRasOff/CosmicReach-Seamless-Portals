@@ -54,6 +54,8 @@ public abstract class ExperimentalItemModelMixin implements ISliceablePuzzleMode
 
     @Override
     public void renderAsSlicedEntity(Vector3 position, ItemStack stack, Camera renderCamera, Matrix4 modelMatrix, Portal portal) {
+        modelMatrix.translate(0.5F, 0.2F, 0.5F);
+        modelMatrix.scale(0.7F, 0.7F, 0.7F);
         DataTagManifest stackManifest;
         try {
             stackManifest = DataTagUtil.getManifestFromStack(stack);
@@ -85,8 +87,8 @@ public abstract class ExperimentalItemModelMixin implements ISliceablePuzzleMode
         this.program.bindOptionalTexture("texDiffuse", this.getTextureFromIndex(currentEntry), 0);
         if (portal != null && position != null){
             this.program.shader.setUniformi("u_turnOnSlicing", 1);
-            this.program.bindOptionalUniform3f("u_portalOrigin", portal.position);
-            this.program.bindOptionalUniform3f("u_portalNormal", portal.viewDirection);
+            this.program.bindOptionalUniform3f("u_portalOrigin", portal.linkedPortal.position);
+            this.program.bindOptionalUniform3f("u_portalNormal", portal.linkedPortal.viewDirection);
             this.program.bindOptionalInt("u_invertPortalNormal", Math.max(portal.getPortalSide(position), 0));
         }
         if (this.getMeshFromIndex(currentEntry) != null) {

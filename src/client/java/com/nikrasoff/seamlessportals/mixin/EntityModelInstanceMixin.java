@@ -56,8 +56,8 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
     void doPortalStuff(Entity entity, Camera worldCamera, Matrix4 modelMat, CallbackInfo ci){
         if (this.cosmicReach_Seamless_Portals$slicingPortal != null){
             this.shader.shader.setUniformi("u_turnOnSlicing", 1);
-            this.shader.bindOptionalUniform3f("u_portalOrigin", this.cosmicReach_Seamless_Portals$slicingPortal.position);
-            this.shader.bindOptionalUniform3f("u_portalNormal", this.cosmicReach_Seamless_Portals$slicingPortal.viewDirection);
+            this.shader.bindOptionalUniform3f("u_portalOrigin", this.cosmicReach_Seamless_Portals$slicingPortal.linkedPortal.position);
+            this.shader.bindOptionalUniform3f("u_portalNormal", this.cosmicReach_Seamless_Portals$slicingPortal.linkedPortal.viewDirection);
             this.shader.bindOptionalInt("u_invertPortalNormal", Math.max(cosmicReach_Seamless_Portals$slicingPortal.getPortalSide(entity.position), 0));
         }
     }

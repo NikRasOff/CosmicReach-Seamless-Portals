@@ -56,8 +56,8 @@ public abstract class ItemModelThingMixin implements ISliceableItemModel {
         this.program.bindOptionalInt("isInSlot", 0);
         if (portal != null && position != null){
             this.program.shader.setUniformi("u_turnOnSlicing", 1);
-            this.program.bindOptionalUniform3f("u_portalOrigin", portal.position);
-            this.program.bindOptionalUniform3f("u_portalNormal", portal.viewDirection);
+            this.program.bindOptionalUniform3f("u_portalOrigin", portal.linkedPortal.position);
+            this.program.bindOptionalUniform3f("u_portalNormal", portal.linkedPortal.viewDirection);
             this.program.bindOptionalInt("u_invertPortalNormal", Math.max(portal.getPortalSide(position), 0));
         }
         this.mesh.render(this.program.shader, 4);

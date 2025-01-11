@@ -60,6 +60,30 @@ public abstract class EntityAnimationMixin implements IModEntity {
     }
 
     @Override
+    public void cosmicReach_Seamless_Portals$renderSliced(Camera playerCamera, Portal portal) {
+        if (this.modelInstance != null) {
+            Vector3 tmpPos = new Vector3();
+            tmpPos.set(this.lastRenderPosition);
+            TickRunner.INSTANCE.partTickLerp(tmpPos, this.position);
+            if (playerCamera.frustum.boundsInFrustum(this.globalBoundingBox)) {
+                Matrix4 tmpMatrix = new Matrix4();
+                tmpMatrix.idt();
+                tmpMatrix.translate(tmpPos);
+                float r = this.modelLightColor.r;
+                float g = this.modelLightColor.g;
+                float b = this.modelLightColor.b;
+                if (this.invulnerabiltyFrames > 0) {
+                    b = 0.0F;
+                    g = 0.0F;
+                }
+
+                this.modelInstance.setTint(r, g, b, 1.0F);
+                ((IModEntityModelInstance) this.modelInstance).cosmicReach_Seamless_Portals$renderSliced((Entity)(Object) this, playerCamera, tmpMatrix, portal, false);
+            }
+        }
+    }
+
+    @Override
     public void cosmicReach_Seamless_Portals$renderDuplicate(Camera playerCamera, Portal portal){
         BoundingBox tmpBB1 = new BoundingBox(this.globalBoundingBox);
         Vector3 addition = portal.getPortaledPos(this.position).sub(this.position);
@@ -83,7 +107,7 @@ public abstract class EntityAnimationMixin implements IModEntity {
                 }
 
                 this.modelInstance.setTint(r, g, b, 1.0F);
-                ((IModEntityModelInstance) this.modelInstance).cosmicReach_Seamless_Portals$renderDuplicate((Entity)(Object) this, playerCamera, tmpMatrix, portal);
+                ((IModEntityModelInstance) this.modelInstance).cosmicReach_Seamless_Portals$renderSliced((Entity)(Object) this, playerCamera, tmpMatrix, portal, true);
             }
         }
     }
@@ -102,8 +126,10 @@ public abstract class EntityAnimationMixin implements IModEntity {
         this.modelInstance.render((Entity) (Object) this, renderCamera, customMatrix);
     }
 
+
+
     @Unique
-    public void cosmicReach_Seamless_Portals$renderDuplicateAfterMatrixSet(Camera renderCamera, Matrix4 renderMatrix, Portal portal){
+    public void cosmicReach_Seamless_Portals$renderSlicedAfterMatrixSet(Camera renderCamera, Matrix4 renderMatrix, Portal portal, boolean isDuplicate){
         float r = this.modelLightColor.r;
         float g = this.modelLightColor.g;
         float b = this.modelLightColor.b;
@@ -114,7 +140,7 @@ public abstract class EntityAnimationMixin implements IModEntity {
 
         this.modelInstance.setTint(r, g, b, 1.0F);
 
-        ((IModEntityModelInstance) this.modelInstance).cosmicReach_Seamless_Portals$renderDuplicate((Entity) (Object) this, renderCamera, renderMatrix, portal);
+        ((IModEntityModelInstance) this.modelInstance).cosmicReach_Seamless_Portals$renderSliced((Entity) (Object) this, renderCamera, renderMatrix, portal, isDuplicate);
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/entities/Entity;renderModelAfterMatrixSet(Lcom/badlogic/gdx/graphics/Camera;)V"))

@@ -2,9 +2,8 @@ package com.nikrasoff.seamlessportals.mixin;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.BoundingBox;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.nikrasoff.seamlessportals.SPClientConstants;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
@@ -66,7 +65,7 @@ public abstract class InGameMixin implements IPortalIngame {
                 for (Map.Entry<EntityUniqueId, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
                     Portal portal = portalEntry.getValue();
                     if (portal.linkedPortal == null) continue;
-                    if (r.shouldRenderDuplicate(e, portal)){
+                    if (r.isCloseToPortal(e, portal)){
                         r.renderDuplicate(e, renderFromCamera, portal);
                     }
                 }
@@ -79,6 +78,28 @@ public abstract class InGameMixin implements IPortalIngame {
     private void resetPlayerCamera(CallbackInfo ci){
         SeamlessPortalsRenderUtil.renderContext.end();
         ((IPortalablePlayerController) playerController).cosmicReach_Seamless_Portals$resetPlayerCameraUp();
+    }
+
+    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/entities/Entity;render(Lcom/badlogic/gdx/graphics/Camera;)V"))
+    private void fuckUpEntityRendering(Entity instance, Camera worldCamera, Operation<Void> original){
+        IPortalEntityRenderer r = SPClientConstants.getPortalEntityRenderer(instance.getClass());
+        if (r == null) {
+            original.call(instance, worldCamera);
+            return;
+        }
+        if (getLocalPlayer() != null && getLocalPlayer().getEntity() == instance){
+            original.call(instance, worldCamera);
+            return;
+        }
+        for (Map.Entry<EntityUniqueId, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
+            Portal portal = portalEntry.getValue();
+            if (r.isCloseToPortal(instance, portal)){
+                r.renderSliced(instance, worldCamera, portal);
+//                SeamlessPortals.LOGGER.info("Rendering duplicate now!");
+                return;
+            }
+        }
+        original.call(instance, worldCamera);
     }
 
     @Accessor(value = "playerController")

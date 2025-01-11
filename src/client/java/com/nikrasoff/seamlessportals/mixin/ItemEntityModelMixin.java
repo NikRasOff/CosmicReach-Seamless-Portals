@@ -21,14 +21,14 @@ public abstract class ItemEntityModelMixin implements IModEntityModelInstance {
 
     @Shadow public abstract void render(Entity entity, Camera worldCamera, Matrix4 modelMat);
 
-    @Unique
-    public void cosmicReach_Seamless_Portals$renderDuplicate(Entity entity, Camera renderCamera, Matrix4 modelMatrix, Portal portal){
+    @Override
+    public void cosmicReach_Seamless_Portals$renderSliced(Entity entity, Camera renderCamera, Matrix4 modelMatrix, Portal portal, boolean isDuplicate) {
         if (this.model instanceof ItemModelWrapper w){
             // Why does puzzle have its own item model system? That doesn't make any sense
-            ((ISliceableItemModel) w).renderAsSlicedPuzzleEntity(entity.position, Reflection.getFieldContents(entity, "itemStack"), renderCamera, modelMatrix, portal);
+            ((ISliceableItemModel) w).renderAsSlicedPuzzleEntity(entity.position, Reflection.getFieldContents(entity, "itemStack"), renderCamera, modelMatrix, portal, isDuplicate);
         }
         else if (this.model instanceof ISliceableItemModel m){
-            m.renderAsSlicedEntity(entity.position, renderCamera, modelMatrix, portal);
+            m.renderAsSlicedEntity(entity.position, renderCamera, modelMatrix, portal, isDuplicate);
         }
         else this.render(entity, renderCamera, modelMatrix);
     }

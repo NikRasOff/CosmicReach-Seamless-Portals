@@ -38,7 +38,7 @@ public abstract class ItemModelBlockMixin implements ISliceableItemModel {
     Color blockLightEmitting;
 
     @Override
-    public void renderAsSlicedEntity(Vector3 position, Camera renderCamera, Matrix4 modelMatrix, Portal portal) {
+    public void renderAsSlicedEntity(Vector3 position, Camera renderCamera, Matrix4 modelMatrix, Portal portal, boolean isDuplicate) {
         if (this.mesh != null) {
             if (!BlockModelJson.useIndices) {
                 SharedQuadIndexData.bind();
@@ -61,9 +61,16 @@ public abstract class ItemModelBlockMixin implements ISliceableItemModel {
             this.shader.bindOptionalUniform4f("tintColor", color);
             if (portal != null && position != null){
                 this.shader.shader.setUniformi("u_turnOnSlicing", 1);
-                this.shader.bindOptionalUniform3f("u_portalOrigin", portal.linkedPortal.position);
-                this.shader.bindOptionalUniform3f("u_portalNormal", portal.linkedPortal.viewDirection);
-                this.shader.bindOptionalInt("u_invertPortalNormal", Math.max(portal.getPortalSide(position), 0));
+                if (isDuplicate){
+                    this.shader.bindOptionalUniform3f("u_portalOrigin", portal.linkedPortal.position);
+                    this.shader.bindOptionalUniform3f("u_portalNormal", portal.linkedPortal.viewDirection);
+                    this.shader.bindOptionalInt("u_invertPortalNormal", Math.max(portal.getPortalSide(position), 0));
+                }
+                else {
+                    this.shader.bindOptionalUniform3f("u_portalOrigin", portal.position);
+                    this.shader.bindOptionalUniform3f("u_portalNormal", portal.viewDirection);
+                    this.shader.bindOptionalInt("u_invertPortalNormal", Math.max(-portal.getPortalSide(position), 0));
+                }
             }
             this.mesh.bind(this.shader.shader);
             this.mesh.render(this.shader.shader, 4);

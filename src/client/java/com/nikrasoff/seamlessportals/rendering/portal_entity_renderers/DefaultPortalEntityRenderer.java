@@ -8,8 +8,6 @@ import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.entities.Entity;
 
 public class DefaultPortalEntityRenderer implements IPortalEntityRenderer {
-    static protected BoundingBox tmpBB1 = new BoundingBox();
-    static protected BoundingBox tmpBB2 = new BoundingBox();
     @Override
     public void render(Entity entity, Camera renderCamera) {
         ClientPortalEntityTools.renderWithoutAnimation(entity, renderCamera);
@@ -21,13 +19,8 @@ public class DefaultPortalEntityRenderer implements IPortalEntityRenderer {
     }
 
     @Override
-    public boolean shouldRenderDuplicate(Entity entity, Portal portal) {
-        if (entity.zone != portal.zone){
-            return false;
-        }
-        entity.getBoundingBox(tmpBB1);
-        portal.getBoundingBox(tmpBB2);
-        return tmpBB1.intersects(tmpBB2);
+    public void renderSliced(Entity entity, Camera renderCamera, Portal portal) {
+        ClientPortalEntityTools.renderSliced(entity, renderCamera, portal);
     }
 
     @Override

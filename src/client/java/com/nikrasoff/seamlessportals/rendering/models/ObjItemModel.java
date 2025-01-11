@@ -117,11 +117,11 @@ public class ObjItemModel extends ItemModel implements ISliceableItemModel {
     }
 
     @Override
-    public void renderAsSlicedEntity(Vector3 position, Camera renderCamera, Matrix4 modelMatrix, Portal portal) {
+    public void renderAsSlicedEntity(Vector3 position, Camera renderCamera, Matrix4 modelMatrix, Portal portal, boolean isDuplicate) {
         tmpMat4.set(modelMatrix);
         tmpMat4.mul(this.onGroundModelMatrix);
         if (this.modelInstance == null) return;
         modelInstance.transform.set(tmpMat4);
-        SeamlessPortalsRenderUtil.renderModelSliced(modelInstance, renderCamera, position, portal);
+        SeamlessPortalsRenderUtil.renderModelSliced(modelInstance, renderCamera, position, portal, isDuplicate);
     }
 }

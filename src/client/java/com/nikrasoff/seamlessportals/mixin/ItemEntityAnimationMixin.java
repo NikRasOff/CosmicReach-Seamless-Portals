@@ -1,5 +1,6 @@
 package com.nikrasoff.seamlessportals.mixin;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
@@ -63,6 +64,33 @@ public abstract class ItemEntityAnimationMixin extends EntityAnimationMixin impl
     }
 
     @Override
+    public void cosmicReach_Seamless_Portals$renderSliced(Camera playerCamera, Portal portal) {
+        if (playerCamera.frustum.boundsInFrustum(this.globalBoundingBox)) {
+            if (this.modelInstance == null && this.itemStack != null) {
+                this.modelInstance = GameSingletons.itemEntityModelLoader.load(this.itemStack);
+            }
+
+            if (this.modelInstance != null) {
+                Matrix4 tmpMatrix = new Matrix4();
+                Vector3 tmpPos = new Vector3();
+                tmpMatrix.idt();
+                tmpPos.set(this.lastRenderPosition);
+                TickRunner.INSTANCE.partTickSlerp(tmpPos, this.position);
+                tmpMatrix.translate(tmpPos);
+                float partTick = TickRunner.INSTANCE.getPartTick();
+                float a = this.age + partTick * 0.05F + this.randomHoverOffsetTime;
+                float hover = MathUtils.sin(a);
+                float spin = a * 60.0F;
+                tmpMatrix.scl(this.renderSize);
+                tmpMatrix.rotate(Vector3.Y, spin);
+                tmpMatrix.translate(-0.5F, -0.5F, -0.5F);
+                tmpMatrix.translate(0.0F, this.renderSize / 2.0F + this.renderSize * hover / 2.0F, 0.0F);
+                this.cosmicReach_Seamless_Portals$renderSlicedAfterMatrixSet(playerCamera, tmpMatrix, portal, false);
+            }
+        }
+    }
+
+    @Override
     public void cosmicReach_Seamless_Portals$renderDuplicate(Camera playerCamera, Portal portal) {
         BoundingBox tmpBB1 = new BoundingBox(this.globalBoundingBox);
         Vector3 addition = portal.getPortaledPos(this.position).sub(this.position);
@@ -90,7 +118,7 @@ public abstract class ItemEntityAnimationMixin extends EntityAnimationMixin impl
                 tmpMatrix.translate(-0.5f, -0.5f, -0.5f);
                 tmpMatrix.translate(0.0F, this.renderSize / 2.0F + this.renderSize * hover / 2.0F, 0.0F);
                 tmpMatrix = portal.getFullyPortaledTransform(tmpMatrix);
-                this.cosmicReach_Seamless_Portals$renderDuplicateAfterMatrixSet(playerCamera, tmpMatrix, portal);
+                this.cosmicReach_Seamless_Portals$renderSlicedAfterMatrixSet(playerCamera, tmpMatrix, portal, true);
             }
         }
     }
@@ -102,6 +130,11 @@ public abstract class ItemEntityAnimationMixin extends EntityAnimationMixin impl
 
     @Override
     public void cosmicReach_Seamless_Portals$advanceAnimations() {
-
+        if (!GameSingletons.isHost) {
+            this.age += Gdx.graphics.getDeltaTime();
+        }
+        Vector3 tmpPos = new Vector3(this.lastRenderPosition);
+        TickRunner.INSTANCE.partTickSlerp(tmpPos, this.position);
+        this.lastRenderPosition.set(tmpPos);
     }
 }

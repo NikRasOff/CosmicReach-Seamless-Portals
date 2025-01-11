@@ -21,6 +21,9 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
     @Unique
     Portal cosmicReach_Seamless_Portals$slicingPortal;
 
+    @Unique
+    boolean cosmicReach_Seamless_Portals$isEntityDuplicate = false;
+
     @Accessor(value = "animTimer")
     abstract float getAnimTimer();
 
@@ -45,8 +48,9 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
     }
 
     @Override
-    public void cosmicReach_Seamless_Portals$renderDuplicate(Entity entity, Camera renderCamera, Matrix4 modelMatrix, Portal portal) {
+    public void cosmicReach_Seamless_Portals$renderSliced(Entity entity, Camera renderCamera, Matrix4 modelMatrix, Portal portal, boolean isDuplicate) {
         cosmicReach_Seamless_Portals$slicingPortal = portal;
+        cosmicReach_Seamless_Portals$isEntityDuplicate = isDuplicate;
         this.cosmicReach_Seamless_Portals$renderNoAnim(entity, renderCamera, modelMatrix);
         cosmicReach_Seamless_Portals$slicingPortal = null;
         this.shader.shader.setUniformi("u_turnOnSlicing", 0);
@@ -56,9 +60,16 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
     void doPortalStuff(Entity entity, Camera worldCamera, Matrix4 modelMat, CallbackInfo ci){
         if (this.cosmicReach_Seamless_Portals$slicingPortal != null){
             this.shader.shader.setUniformi("u_turnOnSlicing", 1);
-            this.shader.bindOptionalUniform3f("u_portalOrigin", this.cosmicReach_Seamless_Portals$slicingPortal.linkedPortal.position);
-            this.shader.bindOptionalUniform3f("u_portalNormal", this.cosmicReach_Seamless_Portals$slicingPortal.linkedPortal.viewDirection);
-            this.shader.bindOptionalInt("u_invertPortalNormal", Math.max(cosmicReach_Seamless_Portals$slicingPortal.getPortalSide(entity.position), 0));
+            if (cosmicReach_Seamless_Portals$isEntityDuplicate){
+                this.shader.bindOptionalUniform3f("u_portalOrigin", this.cosmicReach_Seamless_Portals$slicingPortal.linkedPortal.position);
+                this.shader.bindOptionalUniform3f("u_portalNormal", this.cosmicReach_Seamless_Portals$slicingPortal.linkedPortal.viewDirection);
+                this.shader.bindOptionalInt("u_invertPortalNormal", Math.max(cosmicReach_Seamless_Portals$slicingPortal.getPortalSide(entity.position), 0));
+            }
+            else {
+                this.shader.bindOptionalUniform3f("u_portalOrigin", this.cosmicReach_Seamless_Portals$slicingPortal.position);
+                this.shader.bindOptionalUniform3f("u_portalNormal", this.cosmicReach_Seamless_Portals$slicingPortal.viewDirection);
+                this.shader.bindOptionalInt("u_invertPortalNormal", Math.max(-cosmicReach_Seamless_Portals$slicingPortal.getPortalSide(entity.position), 0));
+            }
         }
     }
 }

@@ -189,9 +189,14 @@ public class PortalModelInstance implements IEntityModelInstance {
             portal.linkedPortal.zone.forEachEntity((e) -> {
                 IPortalEntityRenderer r = SPClientConstants.getPortalEntityRenderer(e.getClass());
                 if (r != null){
-                    r.render(e, portalCamera);
-                    if (e != InGame.getLocalPlayer().getEntity() && r.shouldRenderDuplicate(e, portal)){
-                        r.renderDuplicate(e, portalCamera, portal);
+                    if (r.isCloseToPortal(e, portal)){
+                        r.renderSliced(e, portalCamera, portal);
+                        if (e != InGame.getLocalPlayer().getEntity()){
+                            r.renderDuplicate(e, portalCamera, portal);
+                        }
+                    }
+                    else {
+                        r.render(e, portalCamera);
                     }
                 }
             });

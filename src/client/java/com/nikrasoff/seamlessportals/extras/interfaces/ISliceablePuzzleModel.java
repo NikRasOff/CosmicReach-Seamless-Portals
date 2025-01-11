@@ -7,5 +7,5 @@ import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.items.ItemStack;
 
 public interface ISliceablePuzzleModel {
-    void renderAsSlicedEntity(Vector3 position, ItemStack stack, Camera renderCamera, Matrix4 modelMatrix, Portal portal);
+    void renderAsSlicedEntity(Vector3 position, ItemStack stack, Camera renderCamera, Matrix4 modelMatrix, Portal portal, boolean isDuplicate);
 }

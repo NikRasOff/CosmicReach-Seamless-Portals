@@ -10,6 +10,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
 public class ConvergenceEventPacket extends GamePacket {
+    // The funny >:)
     EntityUniqueId portalID = new EntityUniqueId();
     int textureNum = 0;
     public ConvergenceEventPacket(){}

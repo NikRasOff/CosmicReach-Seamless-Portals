@@ -13,11 +13,14 @@ public class PortalPortalEntityRenderer implements IPortalEntityRenderer {
 
     @Override
     public void renderDuplicate(Entity entity, Camera renderCamera, Portal portal) {
-
     }
 
     @Override
-    public boolean shouldRenderDuplicate(Entity entity, Portal portal) {
+    public void renderSliced(Entity entity, Camera renderCamera, Portal portal) {
+    }
+
+    @Override
+    public boolean isCloseToPortal(Entity entity, Portal portal) {
         return false;
     }
 }

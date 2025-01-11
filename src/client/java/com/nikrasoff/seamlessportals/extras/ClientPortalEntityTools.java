@@ -18,14 +18,16 @@ public class ClientPortalEntityTools {
         IModEntity e = (IModEntity) entity;
         e.cosmicReach_Seamless_Portals$advanceAnimations();
     }
-
     public static boolean hasBeenRenderedThisFrame(Entity entity){
         IModEntity entity1 = (IModEntity) entity;
         return entity1.cosmicReach_Seamless_Portals$checkIfHasBeenRendered();
     }
-
     public static void resetIfEntityRendered(Entity entity){
         IModEntity entity1 = (IModEntity) entity;
         entity1.cosmicReach_Seamless_Portals$resetRender();
+    }
+    public static void renderSliced(Entity entity, Camera renderCamera, Portal portal){
+        IModEntity e = (IModEntity) entity;
+        e.cosmicReach_Seamless_Portals$renderSliced(renderCamera, portal);
     }
 }

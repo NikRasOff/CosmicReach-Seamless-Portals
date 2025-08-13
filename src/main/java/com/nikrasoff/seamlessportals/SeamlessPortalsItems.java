@@ -1,6 +1,5 @@
 package com.nikrasoff.seamlessportals;
 
-import com.github.puzzle.game.items.IModItem;
 import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
 import com.nikrasoff.seamlessportals.items.SyncedOmniumCrystal;
 import com.nikrasoff.seamlessportals.items.UnstableHandheldPortalGen;
@@ -9,6 +8,7 @@ import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.items.Item;
 import finalforeach.cosmicreach.items.ItemThing;
 import finalforeach.cosmicreach.util.Identifier;
+import io.github.puzzle.cosmic.item.AbstractCosmicItem;
 
 public class SeamlessPortalsItems {
     public static Item OMNIUM_CRYSTAL;
@@ -27,9 +27,9 @@ public class SeamlessPortalsItems {
         OMNIUM_CRYSTAL = Item.getItem("seamlessportals:omnium_crystal");
 
         CALIBRATED_OMNIUM_CRYSTAL = new SyncedOmniumCrystal();
-        IModItem.registerItem(CALIBRATED_OMNIUM_CRYSTAL);
-        Item.registerItem(new HandheldPortalGen());
-        IModItem.registerItem(new WarpCore());
-        Item.registerItem(new UnstableHandheldPortalGen());
+        AbstractCosmicItem.register(CALIBRATED_OMNIUM_CRYSTAL);
+        AbstractCosmicItem.register(new HandheldPortalGen());
+        AbstractCosmicItem.register(new WarpCore());
+        AbstractCosmicItem.register(new UnstableHandheldPortalGen());
     }
 }

@@ -11,8 +11,11 @@ uniform float u_fogDensity;
 uniform vec3 u_sunDirection;
 uniform vec3 cameraPosition;
 uniform vec3 skyAmbientColor;
+uniform vec3 trueCameraPosition;
+uniform bool u_applyFog;
 
 uniform sampler2D texDiffuse;
+uniform sampler2D texEmission;
 uniform vec4 tintColor;
 
 uniform vec3 u_portalNormal;
@@ -41,7 +44,13 @@ void main()
     }
 
     outColor = texColor * tintColor;
+    vec4 emissionColor = texture(texEmission, v_texCoord0);
+    outColor.rgb = max(outColor.rgb, emissionColor.rgb * emissionColor.a);
 
-    vec3 fogColor = getFogColor(skyAmbientColor, tintColor.rgb, u_fogDensity, worldPos, cameraPosition);
-    outColor.rgb = applyFog(fogColor, outColor.rgb, u_fogDensity, worldPos, cameraPosition);
+    vec3 fogColor = getFogColor(skyAmbientColor, tintColor.rgb, u_fogDensity, worldPos, trueCameraPosition);
+
+    if(u_applyFog)
+    {
+        outColor.rgb = applyFog(fogColor, outColor.rgb, u_fogDensity, worldPos, trueCameraPosition);
+    }
 }

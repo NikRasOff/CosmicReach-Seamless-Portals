@@ -1,9 +1,12 @@
 package com.nikrasoff.seamlessportals.api;
 
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.nikrasoff.seamlessportals.extras.interfaces.IModEntityModelInstance;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.rendering.entities.instances.EntityModelInstance;
 
 public interface IPortalEntityRenderer {
     BoundingBox tmpBB1 = new BoundingBox();
@@ -20,8 +23,15 @@ public interface IPortalEntityRenderer {
             return false;
         }
         entity.getBoundingBox(tmpBB1);
-        portal.getBoundingBox(tmpBB2);
-        return tmpBB1.intersects(tmpBB2);
+        return portal.getFatBoundingBox().intersects(tmpBB1);
     }
     default void advanceAnimations(Entity entity){}
+    // For rendering duplicates of base game entity model instances
+    static void renderModelInstanceDuplicate(EntityModelInstance instance, Entity entity, Camera renderCamera, Matrix4 modelMatrix, Portal portal){
+        ((IModEntityModelInstance) instance).cosmicReach_Seamless_Portals$renderSliced(entity, renderCamera, modelMatrix, portal, true);
+    }
+    // For rendering sliced base game entity model instances
+    static void renderModelInstanceSliced(EntityModelInstance instance, Entity entity, Camera renderCamera, Matrix4 modelMatrix, Portal portal){
+        ((IModEntityModelInstance) instance).cosmicReach_Seamless_Portals$renderSliced(entity, renderCamera, modelMatrix, portal, false);
+    }
 }

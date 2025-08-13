@@ -11,6 +11,7 @@ import com.nikrasoff.seamlessportals.extras.interfaces.ISliceableItemModel;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import finalforeach.cosmicreach.items.Item;
+import finalforeach.cosmicreach.rendering.items.HeldItemRenderParams;
 import finalforeach.cosmicreach.rendering.items.ItemModel;
 import finalforeach.cosmicreach.util.Identifier;
 
@@ -85,7 +86,7 @@ public class ObjItemModel extends ItemModel implements ISliceableItemModel {
     }
 
     @Override
-    public void renderAsHeldItem(Vector3 worldPosition, Camera worldCamera, float popUpTimer, float maxPopUpTimer, float swingTimer, float maxSwingTimer) {
+    public void renderAsHeldItem(Vector3 worldPosition, Camera worldCamera, HeldItemRenderParams renderParams) {
         heldItemCamera.fieldOfView = 50.0F;
         heldItemCamera.viewportHeight = worldCamera.viewportHeight;
         heldItemCamera.viewportWidth = worldCamera.viewportWidth;

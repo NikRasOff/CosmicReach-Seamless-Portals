@@ -1,18 +1,17 @@
 package com.nikrasoff.seamlessportals.items;
 
-import com.github.puzzle.game.items.IModItem;
 import finalforeach.cosmicreach.items.Item;
 import finalforeach.cosmicreach.lang.Lang;
 import finalforeach.cosmicreach.sounds.GameSound;
 import finalforeach.cosmicreach.util.Identifier;
+import io.github.puzzle.cosmic.item.AbstractCosmicItem;
 
-public class HandheldPortalGen implements IModItem {
+public class HandheldPortalGen extends AbstractCosmicItem {
     public static final String hpgID = "seamlessportals:handheld_portal_generator";
     public static final GameSound hpgFireSound = GameSound.of("seamlessportals:sounds/portals/hpg_fire.ogg");
 
-    @Override
-    public Identifier getIdentifier() {
-        return Identifier.of(hpgID);
+    public HandheldPortalGen() {
+        super(Identifier.of(hpgID));
     }
 
     @Override
@@ -31,32 +30,12 @@ public class HandheldPortalGen implements IModItem {
     }
 
     @Override
-    public boolean isCatalogHidden() {
-        return false;
-    }
-
-    @Override
-    public boolean hasIntProperty(String s) {
-        return false;
-    }
-
-    @Override
-    public int getIntProperty(String s, int i) {
-        return 0;
-    }
-
-    @Override
-    public boolean hasTag(String s) {
-        return false;
-    }
-
-    @Override
     public String getName() {
         return Lang.get(hpgID);
     }
 
     @Override
-    public int getMaxStackSize() {
+    public int getDefaultStackLimit() {
         return 1;
     }
 }

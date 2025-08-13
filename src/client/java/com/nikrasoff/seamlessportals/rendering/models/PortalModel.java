@@ -15,10 +15,13 @@ import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import com.nikrasoff.seamlessportals.rendering.shaders.*;
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.gamestates.InGame;
+import finalforeach.cosmicreach.rendering.GameTexture;
 import finalforeach.cosmicreach.rendering.entities.IEntityModel;
 import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
 import finalforeach.cosmicreach.ui.UI;
 import finalforeach.cosmicreach.util.Identifier;
+
+import java.util.function.Supplier;
 
 public class PortalModel implements IEntityModel, Disposable {
     public static boolean debugReady = false;
@@ -45,12 +48,12 @@ public class PortalModel implements IEntityModel, Disposable {
         hpgNullPortalShader = new HPGNullPortalShader();
         hpgNullPortalShader.init();
         model = new PortalModel();
-        noiseTexture = GameAssetLoader.getTexture(Identifier.of(SeamlessPortalsConstants.MOD_ID, "textures/special/funky_noise.png"));
+        noiseTexture = GameTexture.load(Identifier.of(SeamlessPortalsConstants.MOD_ID, "textures/special/funky_noise.png").toString()).get();
         noiseTexture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         noiseTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-        convEventTextures.add(GameAssetLoader.getTexture(Identifier.of(SeamlessPortalsConstants.MOD_ID, "textures/special/convergence_event1.png")));
-        convEventTextures.add(GameAssetLoader.getTexture(Identifier.of(SeamlessPortalsConstants.MOD_ID, "textures/special/convergence_event2.png")));
-        convEventTextures.add(GameAssetLoader.getTexture(Identifier.of(SeamlessPortalsConstants.MOD_ID, "textures/special/convergence_event3.png")));
+        convEventTextures.add(GameTexture.load(Identifier.of(SeamlessPortalsConstants.MOD_ID, "textures/special/convergence_event1.png").toString()).get());
+        convEventTextures.add(GameTexture.load(Identifier.of(SeamlessPortalsConstants.MOD_ID, "textures/special/convergence_event2.png").toString()).get());
+        convEventTextures.add(GameTexture.load(Identifier.of(SeamlessPortalsConstants.MOD_ID, "textures/special/convergence_event3.png").toString()).get());
     }
 
     public PortalModel(){
@@ -99,6 +102,16 @@ public class PortalModel implements IEntityModel, Disposable {
         if (this.portalFrameBuffer != null){
             this.portalFrameBuffer.dispose();
         }
+    }
+
+    @Override
+    public IEntityModelInstance getNewModelInstance(Supplier<? extends IEntityModelInstance> supplier) {
+        return null;
+    }
+
+    @Override
+    public <T extends IEntityModelInstance> T getNewModelInstance(Class<T> aClass) {
+        return null;
     }
 
     @Override

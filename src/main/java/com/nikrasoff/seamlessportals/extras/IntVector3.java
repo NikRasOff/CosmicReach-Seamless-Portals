@@ -1,5 +1,6 @@
 package com.nikrasoff.seamlessportals.extras;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blocks.BlockPosition;
@@ -24,7 +25,7 @@ public class IntVector3 {
     }
 
     public IntVector3(Vector3 vector){
-        this((int) vector.x, (int) vector.y, (int) vector.z);
+        this(MathUtils.floor(vector.x), MathUtils.floor(vector.y), MathUtils.floor(vector.z));
     }
 
     public IntVector3(IntVector3 vector){
@@ -34,12 +35,8 @@ public class IntVector3 {
     public IntVector3(BlockPosition blockPos){
         this(blockPos.getGlobalX(), blockPos.getGlobalY(), blockPos.getGlobalZ());
     }
-
-    public static IntVector3 flooredVector(Vector3 v){
-        return new IntVector3((int) Math.floor(v.x), (int) Math.floor(v.y), (int) Math.floor(v.z));
-    }
     public IntVector3 set(Vector3 other){
-        return this.set((int)other.x, (int)other.y, (int)other.z);
+        return this.set(MathUtils.floor(other.x), MathUtils.floor(other.y), MathUtils.floor(other.z));
     }
     public IntVector3 set(IntVector3 other){
         return this.set(other.x, other.y, other.z);
@@ -114,7 +111,7 @@ public class IntVector3 {
     public static IntVector3 leastVector(Vector3... v){
         IntVector3 r = new IntVector3(v[0]);
         for(int i = 1; i < v.length; ++i){
-            r.set(IntVector3.lesserVector(r, IntVector3.flooredVector(v[i])));
+            r.set(IntVector3.lesserVector(r, new IntVector3(v[i])));
         }
         return r;
     }
@@ -130,7 +127,7 @@ public class IntVector3 {
     public static IntVector3 greatestVector(Vector3... v){
         IntVector3 r = new IntVector3(v[0]);
         for(int i = 1; i < v.length; ++i){
-            r.set(IntVector3.greaterVector(r, IntVector3.flooredVector(v[i])));
+            r.set(IntVector3.greaterVector(r, new IntVector3(v[i])));
         }
         return r;
     }

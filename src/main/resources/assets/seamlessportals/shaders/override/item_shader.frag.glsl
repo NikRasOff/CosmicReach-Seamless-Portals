@@ -20,6 +20,9 @@ out vec4 outColor;
 
 void main()
 {
+    // I didn't see any other way portal slicing could be implemented
+    // besides overriding the shaders
+
     // Portal slicing
     if (u_turnOnSlicing == 1){
         vec3 portalCheckVec = v_worldPos - u_portalOrigin;

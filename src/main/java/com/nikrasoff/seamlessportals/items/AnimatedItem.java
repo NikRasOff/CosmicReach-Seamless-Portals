@@ -1,89 +1,69 @@
 package com.nikrasoff.seamlessportals.items;
 
-import com.github.puzzle.game.items.IModItem;
-import com.github.puzzle.game.items.ITickingItem;
-import com.github.puzzle.game.items.data.DataTag;
-import com.github.puzzle.game.items.data.DataTagManifest;
-import com.github.puzzle.game.items.data.attributes.IntDataAttribute;
-import com.github.puzzle.game.util.DataTagUtil;
-import finalforeach.cosmicreach.entities.ItemEntity;
-import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.util.Identifier;
-import finalforeach.cosmicreach.world.Zone;
+import io.github.puzzle.cosmic.api.entity.IEntity;
+import io.github.puzzle.cosmic.api.item.IItemStack;
+import io.github.puzzle.cosmic.api.item.ITickingItem;
+import io.github.puzzle.cosmic.api.util.DataPointUtil;
+import io.github.puzzle.cosmic.api.world.IZone;
+import io.github.puzzle.cosmic.impl.data.point.DataPointManifest;
+import io.github.puzzle.cosmic.impl.data.point.single.IntegerDataPoint;
+import io.github.puzzle.cosmic.item.AbstractCosmicItem;
 
 import static com.nikrasoff.seamlessportals.SeamlessPortalsConstants.MOD_ID;
 
-public abstract class AnimatedItem implements IModItem, ITickingItem {
-    public final DataTagManifest tagManifest = new DataTagManifest();
-
+public abstract class AnimatedItem extends AbstractCosmicItem implements ITickingItem {
     int textureCount;
     int ticksPerFrame;
 
-    public AnimatedItem(int textureCount, int ticksPerFrame, String texturePrefix){
+    public AnimatedItem(int textureCount, int ticksPerFrame, String texturePrefix, Identifier id){
+        super(id);
         for (int i = 0; i < textureCount; ++i){
-            this.addTexture(IModItem.MODEL_2_5D_ITEM, Identifier.of(MOD_ID, texturePrefix + (i + 1) + ".png"));
+            this.addTexture(ItemModelType.ITEM_MODEL_3D, Identifier.of(MOD_ID, texturePrefix + (i + 1) + ".png"));
         }
         this.textureCount = textureCount;
         this.ticksPerFrame = ticksPerFrame;
     }
 
     @Override
-    public DataTagManifest getTagManifest() {
-        return tagManifest;
-    }
-
-    @Override
-    public abstract Identifier getIdentifier();
-    @Override
-    public abstract String getName();
-
-    @Override
-    public abstract int getMaxStackSize();
-
-    @Override
-    public abstract boolean isCatalogHidden();
-
-    @Override
-    public void tickStack(float fixedUpdateTimeStep, ItemStack itemStack, boolean isBeingHeld) {
-        DataTagManifest tag = DataTagUtil.getManifestFromStack(itemStack);
-        if (!tag.hasTag("currentEntry")) {
-            tag.addTag(new DataTag<>("currentEntry", new IntDataAttribute(0)));
+    public void tickStack(float fixedUpdateTimeStep, IItemStack itemStack, boolean isBeingHeld) {
+        DataPointManifest tag = (DataPointManifest) DataPointUtil.getManifestFromStack(itemStack);
+        if (!tag.has("currentEntry")) {
+            tag.put("currentEntry", new IntegerDataPoint(0));
         }
-        if (!tag.hasTag("tickCount")) {
-            tag.addTag(new DataTag<>("tickCount", new IntDataAttribute(0)));
+        if (!tag.has("tickCount")) {
+            tag.put("tickCount", new IntegerDataPoint(0));
         }
 
-        Integer tickCount = tag.getTag("tickCount").getTagAsType(Integer.class).getValue();
-        Integer currentEntry = tag.getTag("currentEntry").getTagAsType(Integer.class).getValue();
+        Integer tickCount = tag.get("tickCount").cast(Integer.class).getValue();
+        Integer currentEntry = tag.get("currentEntry").cast(Integer.class).getValue();
         tickCount += 1;
         if (tickCount >= this.ticksPerFrame * 2){
             tickCount = 0;
             currentEntry = (currentEntry + 1) % this.textureCount;
         }
-        tag.addTag(new DataTag<>("currentEntry", new IntDataAttribute(currentEntry)));
-        tag.addTag(new DataTag<>("tickCount", new IntDataAttribute(tickCount)));
-        DataTagUtil.setManifestOnStack(tag, itemStack);
+        tag.get("currentEntry").cast(Integer.class).setValue(currentEntry);
+        tag.get("tickCount").cast(Integer.class).setValue(tickCount);
     }
 
     @Override
-    public void tickEntity(Zone zone, double deltaTime, ItemEntity itemEntity, ItemStack itemStack) {
-        DataTagManifest tag = DataTagUtil.getManifestFromStack(itemStack);
-        if (!tag.hasTag("currentEntry")) {
-            tag.addTag(new DataTag<>("currentEntry", new IntDataAttribute(0)));
+    public void tickEntity(IZone zone, double deltaTime, IEntity entity, IItemStack itemStack) {
+        DataPointManifest tag = (DataPointManifest) DataPointUtil.getManifestFromStack(itemStack);
+        if (!tag.has("currentEntry")) {
+            tag.put("currentEntry", new IntegerDataPoint(0));
         }
-        if (!tag.hasTag("tickCount")) {
-            tag.addTag(new DataTag<>("tickCount", new IntDataAttribute(0)));
+        if (!tag.has("tickCount")) {
+            tag.put("tickCount", new IntegerDataPoint(0));
         }
 
-        Integer tickCount = tag.getTag("tickCount").getTagAsType(Integer.class).getValue();
-        Integer currentEntry = tag.getTag("currentEntry").getTagAsType(Integer.class).getValue();
+        Integer tickCount = tag.get("tickCount").cast(Integer.class).getValue();
+        Integer currentEntry = tag.get("currentEntry").cast(Integer.class).getValue();
         tickCount += 1;
         if (tickCount >= this.ticksPerFrame){
             tickCount = 0;
             currentEntry = (currentEntry + 1) % this.textureCount;
         }
-        tag.addTag(new DataTag<>("currentEntry", new IntDataAttribute(currentEntry)));
-        tag.addTag(new DataTag<>("tickCount", new IntDataAttribute(tickCount)));
-        DataTagUtil.setManifestOnStack(tag, itemStack);
+        tag.get("currentEntry").cast(Integer.class).setValue(currentEntry);
+        tag.get("tickCount").cast(Integer.class).setValue(tickCount);
     }
 }

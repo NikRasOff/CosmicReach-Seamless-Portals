@@ -9,8 +9,6 @@ import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.InGame;
-import finalforeach.cosmicreach.rendering.SharedQuadIndexData;
-import finalforeach.cosmicreach.rendering.blockmodels.BlockModelJson;
 import finalforeach.cosmicreach.rendering.items.ItemModelBlock;
 import finalforeach.cosmicreach.rendering.meshes.IGameMesh;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
@@ -40,10 +38,6 @@ public abstract class ItemModelBlockMixin implements ISliceableItemModel {
     @Override
     public void renderAsSlicedEntity(Vector3 position, Camera renderCamera, Matrix4 modelMatrix, Portal portal, boolean isDuplicate) {
         if (this.mesh != null) {
-            if (!BlockModelJson.useIndices) {
-                SharedQuadIndexData.bind();
-            }
-
             this.shader.bind(renderCamera);
             this.shader.bindOptionalMatrix4("u_projViewTrans", renderCamera.combined);
             this.shader.bindOptionalMatrix4("u_modelMat", modelMatrix);
@@ -74,12 +68,10 @@ public abstract class ItemModelBlockMixin implements ISliceableItemModel {
             }
             this.mesh.bind(this.shader.shader);
             this.mesh.render(this.shader.shader, 4);
+            this.shader.bindOptionalBool("u_isItem", true);
             this.mesh.unbind(this.shader.shader);
-            this.shader.unbind();
             this.shader.shader.setUniformi("u_turnOnSlicing", 0);
-            if (!BlockModelJson.useIndices) {
-                SharedQuadIndexData.unbind();
-            }
+            this.shader.unbind();
         }
     }
 }

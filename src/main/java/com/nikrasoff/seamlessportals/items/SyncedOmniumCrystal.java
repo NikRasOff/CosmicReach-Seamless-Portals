@@ -1,14 +1,12 @@
 package com.nikrasoff.seamlessportals.items;
 
 import com.github.puzzle.core.loader.util.ModLocator;
-import com.github.puzzle.game.PuzzleRegistries;
-import com.github.puzzle.game.items.IModItem;
-import com.github.puzzle.game.items.data.DataTagManifest;
-import com.github.puzzle.game.util.DataTagUtil;
 import com.nikrasoff.seamlessportals.SPMainT;
 import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.lang.Lang;
 import finalforeach.cosmicreach.util.Identifier;
+import io.github.puzzle.cosmic.api.util.DataPointUtil;
+import io.github.puzzle.cosmic.impl.data.point.DataPointManifest;
 
 import static com.nikrasoff.seamlessportals.SeamlessPortalsConstants.MOD_ID;
 
@@ -17,12 +15,7 @@ public class SyncedOmniumCrystal extends AnimatedItem {
 
 
     public SyncedOmniumCrystal(){
-        super(8, 4, "omnium_crystal_calibrated");
-    }
-
-    @Override
-    public Identifier getIdentifier() {
-        return CALIBRATED_OMNIUM_ID;
+        super(8, 4, "omnium_crystal_calibrated", CALIBRATED_OMNIUM_ID);
     }
 
     @Override
@@ -35,21 +28,21 @@ public class SyncedOmniumCrystal extends AnimatedItem {
             if (SPMainT.areAdvancedTooltipsOn()){
                 return this.getName();
             }
-            DataTagManifest manifest = DataTagUtil.getManifestFromStack(stack);
-            if (manifest.hasTag("frequency")) {
-                return  Lang.get(CALIBRATED_OMNIUM_ID.toString()) + "\n" + Lang.get("seamlessportals:calibrated_omnium_crystal.frequency") + manifest.getTag("frequency").getValue();
+            DataPointManifest manifest = (DataPointManifest) DataPointUtil.getManifestFromStack(stack);
+            if (manifest.has("frequency")) {
+                return  Lang.get(CALIBRATED_OMNIUM_ID.toString()) + "\n" + Lang.get("seamlessportals:calibrated_omnium_crystal.frequency") + manifest.get("frequency").getValue();
             }
             return this.getName();
         }
-        DataTagManifest manifest = DataTagUtil.getManifestFromStack(stack);
-        if (manifest.hasTag("frequency")) {
-            return Lang.get("seamlessportals:calibrated_omnium_crystal.frequency") + manifest.getTag("frequency").getValue() + "\n" + Lang.get(CALIBRATED_OMNIUM_ID.toString());
+        DataPointManifest manifest = (DataPointManifest) DataPointUtil.getManifestFromStack(stack);
+        if (manifest.has("frequency")) {
+            return Lang.get("seamlessportals:calibrated_omnium_crystal.frequency") + manifest.get("frequency").getValue() + "\n" + Lang.get(CALIBRATED_OMNIUM_ID.toString());
         }
         return this.getName();
     }
 
     @Override
-    public int getMaxStackSize() {
+    public int getDefaultStackLimit() {
         return 1;
     }
 

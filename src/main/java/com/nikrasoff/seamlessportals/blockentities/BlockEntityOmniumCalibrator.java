@@ -9,8 +9,9 @@ import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.items.ItemSlot;
-import finalforeach.cosmicreach.items.containers.FurnaceSlotContainer;
-import finalforeach.cosmicreach.networking.packets.blocks.BlockEntityDataPacket;
+import finalforeach.cosmicreach.items.SlotContainerWindows;
+import finalforeach.cosmicreach.items.containers.SlotContainer;
+import finalforeach.cosmicreach.networking.packets.blockentities.BlockEntityDataPacket;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
@@ -42,7 +43,7 @@ public class BlockEntityOmniumCalibrator extends BlockEntity implements IBlockEn
 
     public void onInteract(Player player, Zone zone) {
         super.onInteract(player, zone);
-        GameSingletons.openBlockEntityScreen(player, zone, this);
+        GameSingletons.openBlockEntityScreen(SlotContainerWindows.add(this), player, zone, this);
     }
 
     public void read(CRBinDeserializer deserial) {
@@ -112,6 +113,11 @@ public class BlockEntityOmniumCalibrator extends BlockEntity implements IBlockEn
     @Override
     public ItemSlot getFirstMatchingItemSlot(Predicate<ItemSlot> slotPredicate) {
         return this.slotContainer.getFirstMatchingItemSlot(slotPredicate);
+    }
+
+    @Override
+    public SlotContainer getSlotContainer() {
+        return slotContainer;
     }
 
     public float getProgressRatio(){

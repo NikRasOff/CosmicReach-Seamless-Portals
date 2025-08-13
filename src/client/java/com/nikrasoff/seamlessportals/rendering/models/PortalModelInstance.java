@@ -8,10 +8,12 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.Vector4;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.nikrasoff.seamlessportals.SPClientConstants;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.animations.*;
+import com.nikrasoff.seamlessportals.extras.ClientPortalEntityTools;
 import com.nikrasoff.seamlessportals.extras.FloatContainer;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
 import com.nikrasoff.seamlessportals.portals.HPGPortal;
@@ -23,6 +25,7 @@ import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.InGame;
+import finalforeach.cosmicreach.rendering.entities.IEntityAnimation;
 import finalforeach.cosmicreach.rendering.entities.IEntityModel;
 import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
 import finalforeach.cosmicreach.settings.GraphicsSettings;
@@ -31,7 +34,7 @@ import finalforeach.cosmicreach.world.Sky;
 import java.util.HashMap;
 
 public class PortalModelInstance implements IEntityModelInstance {
-    private final PortalModel portalModel;
+    private PortalModel portalModel;
 
     HashMap<String, ISPAnimation> allAnimations = new HashMap<>();
     ISPAnimation currentAnimation;
@@ -130,13 +133,13 @@ public class PortalModelInstance implements IEntityModelInstance {
     }
 
     private void setCameraNearClipPlane(Camera playerCamera, Portal portal){
-        Matrix4 clipPlane = new Matrix4();
-        clipPlane.setToLookAt(portal.position, portal.position.cpy().add(portal.viewDirection), new Vector3(0, 1, 0));
-
         int dot = (int) Math.signum(portal.viewDirection.dot(portal.position.cpy().sub(playerCamera.position)));
 
-        Vector3 viewSpacePos = portal.linkedPortal.position.cpy().mul(this.portalCamera.view);
-        Vector3 viewSpaceNormal = portal.linkedPortal.position.cpy().add(portal.linkedPortal.viewDirection).mul(this.portalCamera.view);
+        Vector3 tmpPortalPos = portal.linkedPortal.position.cpy();
+        tmpPortalPos.add(portal.linkedPortal.viewDirection.cpy().scl(portal.getPortalSide(playerCamera.position) * 0.01f));
+
+        Vector3 viewSpacePos = tmpPortalPos.cpy().mul(this.portalCamera.view);
+        Vector3 viewSpaceNormal = tmpPortalPos.cpy().add(portal.linkedPortal.viewDirection).mul(this.portalCamera.view);
         viewSpaceNormal.sub(viewSpacePos).nor().scl(dot);
         float viewSpaceDist = -viewSpacePos.dot(viewSpaceNormal);
 
@@ -190,9 +193,23 @@ public class PortalModelInstance implements IEntityModelInstance {
                 IPortalEntityRenderer r = SPClientConstants.getPortalEntityRenderer(e.getClass());
                 if (r != null){
                     if (r.isCloseToPortal(e, portal)){
-                        r.renderSliced(e, portalCamera, portal);
-                        if (e != InGame.getLocalPlayer().getEntity()){
-                            r.renderDuplicate(e, portalCamera, portal);
+                        if (e != InGame.getLocalPlayer().getEntity() && !portal.linkedPortal.isNotOnSameSideOfPortal(portalCamera.position, portal.linkedPortal.getPortaledPos(e.position))){
+                            if (ClientPortalEntityTools.isJustTeleported(e)){
+                                r.renderSliced(e, portalCamera, portal);
+                            }
+                            else {
+                                r.renderDuplicate(e, portalCamera, portal);
+                            }
+                        }
+                    }
+                    if (r.isCloseToPortal(e, portal.linkedPortal)){
+                        if (portal.linkedPortal.isNotOnSameSideOfPortal(portalCamera.position, e.position)){
+                            if (ClientPortalEntityTools.isJustTeleported(e)){
+                                r.renderDuplicate(e, portalCamera, portal.linkedPortal);
+                            }
+                            else {
+                                r.renderSliced(e, portalCamera, portal.linkedPortal);
+                            }
                         }
                     }
                     else {
@@ -224,7 +241,7 @@ public class PortalModelInstance implements IEntityModelInstance {
     }
 
     @Override
-    public void render(Entity entity, Camera camera, Matrix4 matrix4) {
+    public void render(Entity entity, Camera camera, Matrix4 matrix4, boolean shouldRender) {
         if (!this.isPortalMeshGenerated){
             this.updatePortalMeshScale((PerspectiveCamera) camera, (Portal) entity);
         }
@@ -235,6 +252,7 @@ public class PortalModelInstance implements IEntityModelInstance {
         if (this.currentAnimation != null){
             this.currentAnimation.update(Gdx.graphics.getDeltaTime());
         }
+        if (!shouldRender) return;
         if (entity.zone != GameSingletons.client().getLocalPlayer().getZone() || ((Portal) entity).isPortalDestroyed || (entity).position.dst(camera.position) > 50){
             return;
         }
@@ -278,7 +296,7 @@ public class PortalModelInstance implements IEntityModelInstance {
     }
 
     @Override
-    public void setCurrentAnimation(String s) {
+    public void addAnimation(String s) {
         this.currentAnimation = this.allAnimations.get(s);
         if (this.currentAnimation != null){
             this.currentAnimation.restart();
@@ -289,7 +307,27 @@ public class PortalModelInstance implements IEntityModelInstance {
     }
 
     @Override
+    public void removeAnimation(String s) {
+        throw new RuntimeException("Removing portal animations not implemented");
+    }
+
+    @Override
+    public void removeAnimation(IEntityAnimation iEntityAnimation) {
+        throw new RuntimeException("Not implemented!");
+    }
+
+    @Override
     public void setEntityModel(IEntityModel iEntityModel) {
+        this.portalModel = (PortalModel) iEntityModel;
+    }
+
+    @Override
+    public Array<? extends IEntityAnimation> getAnimations() {
+        return null;
+    }
+
+    @Override
+    public void shadowAnimations(Array<? extends IEntityAnimation> array) {
 
     }
 }

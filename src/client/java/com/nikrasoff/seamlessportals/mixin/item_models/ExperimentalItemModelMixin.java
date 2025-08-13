@@ -6,10 +6,6 @@ import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.github.puzzle.game.engine.items.ExperimentalItemModel;
-import com.github.puzzle.game.items.IModItem;
-import com.github.puzzle.game.items.data.DataTagManifest;
-import com.github.puzzle.game.util.DataTagUtil;
 import com.nikrasoff.seamlessportals.SPClientConstants;
 import com.nikrasoff.seamlessportals.extras.interfaces.ISliceablePuzzleModel;
 import com.nikrasoff.seamlessportals.portals.Portal;
@@ -20,6 +16,12 @@ import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.world.Sky;
 import finalforeach.cosmicreach.world.Zone;
+import io.github.puzzle.cosmic.api.item.IItem;
+import io.github.puzzle.cosmic.api.util.DataPointUtil;
+import io.github.puzzle.cosmic.impl.client.item.CosmicItemModel;
+import io.github.puzzle.cosmic.impl.data.point.DataPointManifest;
+import io.github.puzzle.cosmic.item.AbstractCosmicItem;
+import io.github.puzzle.cosmic.item.ItemDataPointSpecs;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -27,10 +29,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ExperimentalItemModel.class)
+@Mixin(CosmicItemModel.class)
 public abstract class ExperimentalItemModelMixin implements ISliceablePuzzleModel {
-    @Shadow
-    IModItem item;
 
     @Shadow @Final
     static Color tintColor;
@@ -45,8 +45,11 @@ public abstract class ExperimentalItemModelMixin implements ISliceablePuzzleMode
 
     @Shadow public abstract Mesh getMeshFromIndex(int i);
 
+    @Shadow
+    IItem item;
+
     @Inject(method = "<init>", at = @At("RETURN"))
-    public void overrideShader(IModItem item, CallbackInfo ci){ // Kinda had to do this one
+    public void overrideShader(IItem item, CallbackInfo ci){ // Kinda had to do this one
         if (SPClientConstants.OVERRIDE_ITEM_SHADER != null){
             this.program = SPClientConstants.OVERRIDE_ITEM_SHADER;
         }
@@ -56,17 +59,17 @@ public abstract class ExperimentalItemModelMixin implements ISliceablePuzzleMode
     public void renderAsSlicedEntity(Vector3 position, ItemStack stack, Camera renderCamera, Matrix4 modelMatrix, Portal portal, boolean isDuplicate) {
         modelMatrix.translate(0.5F, 0.2F, 0.5F);
         modelMatrix.scale(0.7F, 0.7F, 0.7F);
-        DataTagManifest stackManifest;
+        DataPointManifest stackManifest;
         try {
-            stackManifest = DataTagUtil.getManifestFromStack(stack);
+            stackManifest = (DataPointManifest) DataPointUtil.getManifestFromStack(stack);
         } catch (Exception var11) {
             stackManifest = null;
         }
 
         int currentEntry;
         if (stackManifest != null) {
-            currentEntry = stackManifest.hasTag("currentEntry") ? stackManifest.getTag("currentEntry").getTagAsType(Integer.class).getValue() : 0;
-            currentEntry = currentEntry >= this.item.getTextures().size() ? 0 : currentEntry;
+            currentEntry = stackManifest.has(ItemDataPointSpecs.TEXTURE_INDEX) ? (Integer)stackManifest.get(ItemDataPointSpecs.TEXTURE_INDEX).getValue() : 0;
+            currentEntry = currentEntry >= AbstractCosmicItem.getTextures(this.item).size() ? 0 : currentEntry;
         } else {
             currentEntry = 0;
         }

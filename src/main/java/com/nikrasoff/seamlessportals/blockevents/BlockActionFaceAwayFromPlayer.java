@@ -71,6 +71,6 @@ public class BlockActionFaceAwayFromPlayer implements IBlockAction {
 
     @Override
     public void act(BlockEventArgs blockEventArgs) {
-        this.act(blockEventArgs.srcBlockState, blockEventArgs.zone, blockEventArgs.blockPos, blockEventArgs.srcIdentity.getPlayer());
+        this.act(blockEventArgs.srcBlockState, blockEventArgs.zone, blockEventArgs.blockPos, blockEventArgs.srcPlayer);
     }
 }

@@ -14,6 +14,7 @@ import com.nikrasoff.seamlessportals.networking.packets.PortalClearPacket;
 import finalforeach.cosmicreach.BlockSelection;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.audio.SoundManager;
+import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.networking.client.ClientNetworkManager;
@@ -32,7 +33,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class BlockSelectionMixin {
     @Shadow public static boolean enabled;
 
-    @Shadow public static ShapeRenderer shapeRenderer;
+    @Shadow
+    private static ShapeRenderer shapeRenderer;
     @Unique
     private Vector3 cosmicReach_Seamless_Portals$portalRaycastHitDebug = new Vector3();
     @Unique
@@ -57,7 +59,7 @@ public abstract class BlockSelectionMixin {
     }
 
     @Inject(method = "raycast", at = @At("HEAD"), cancellable = true)
-    private void customRaycast(Zone zone, Camera worldCamera, CallbackInfo ci){
+    private void customRaycast(Zone zone, Camera worldCamera, Player player, CallbackInfo ci){
         if (InGame.getLocalPlayer() != null){
             ItemStack heldItemStack = UI.hotbar.getSelectedItemStack();
             if (heldItemStack != null && heldItemStack.getItem() != null && (heldItemStack.getItem().getID().equals(HandheldPortalGen.hpgID) || heldItemStack.getItem().getID().equals(UnstableHandheldPortalGen.hpgID))){

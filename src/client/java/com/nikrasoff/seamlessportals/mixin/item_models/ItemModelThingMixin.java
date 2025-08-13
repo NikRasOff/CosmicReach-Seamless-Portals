@@ -22,10 +22,10 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(ItemThingModel.class)
 public abstract class ItemModelThingMixin implements ISliceableItemModel {
     @Shadow @Final
-    static Color tintColor;
+    private static Color tintColor;
 
     @Shadow @Final
-    static BlockPosition tmpBlockPos;
+    private static BlockPosition tmpBlockPos;
 
     @Shadow
     GameShader program;
@@ -49,6 +49,7 @@ public abstract class ItemModelThingMixin implements ISliceableItemModel {
         }
 
         this.program.bind(renderCamera);
+        this.program.bindOptionalBool("u_isItem", true);
         this.program.bindOptionalMatrix4("u_projViewTrans", renderCamera.combined);
         this.program.bindOptionalMatrix4("u_modelMat", modelMatrix);
         this.program.bindOptionalUniform4f("tintColor", tintColor);

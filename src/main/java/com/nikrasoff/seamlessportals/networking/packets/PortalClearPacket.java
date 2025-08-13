@@ -32,7 +32,7 @@ public class PortalClearPacket extends GamePacket {
     public void handle(NetworkIdentity networkIdentity, ChannelHandlerContext channelHandlerContext) {
         if (networkIdentity.getSide() != NetworkSide.CLIENT){
             Player pl = networkIdentity.getPlayer();
-            ItemStack hpgStack = pl.inventory.getSlot(this.hpgSlotNum).itemStack;
+            ItemStack hpgStack = pl.inventory.getSlot(this.hpgSlotNum).getItemStack();
             if (hpgStack != null && hpgStack.getItem() != null && (hpgStack.getItem().getID().equals(HandheldPortalGen.hpgID) || hpgStack.getItem().getID().equals(UnstableHandheldPortalGen.hpgID))){
                 ExtraPortalUtils.clearPortals(networkIdentity.getPlayer(), hpgStack);
             }

@@ -1,9 +1,5 @@
 package com.nikrasoff.seamlessportals.items.containers;
 
-import com.github.puzzle.game.items.data.DataTag;
-import com.github.puzzle.game.items.data.DataTagManifest;
-import com.github.puzzle.game.items.data.attributes.IntDataAttribute;
-import com.github.puzzle.game.util.DataTagUtil;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsItems;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
@@ -12,6 +8,9 @@ import finalforeach.cosmicreach.items.ItemSlot;
 import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.items.containers.SlotContainer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
+import io.github.puzzle.cosmic.api.util.DataPointUtil;
+import io.github.puzzle.cosmic.impl.data.point.DataPointManifest;
+import io.github.puzzle.cosmic.impl.data.point.single.IntegerDataPoint;
 
 public class OmniumCalibratorSlotContainer extends SlotContainer {
 
@@ -60,25 +59,25 @@ public class OmniumCalibratorSlotContainer extends SlotContainer {
         int freq = SeamlessPortals.portalManager.getNextOmniumFrequency();
 
         ItemStack calibOmnium1 = new ItemStack(SeamlessPortalsItems.CALIBRATED_OMNIUM_CRYSTAL, 1);
-        DataTagManifest omnium1Data = DataTagUtil.getManifestFromStack(calibOmnium1);
-        omnium1Data.addTag(new DataTag<>("frequency", new IntDataAttribute(freq)));
+        DataPointManifest omnium1Data = (DataPointManifest) DataPointUtil.getManifestFromStack(calibOmnium1);
+        omnium1Data.put("frequency", new IntegerDataPoint(freq));
         this.getOutputSlot1().setItemStack(calibOmnium1);
 
         ItemStack calibOmnium2 = new ItemStack(SeamlessPortalsItems.CALIBRATED_OMNIUM_CRYSTAL, 1);
-        DataTagManifest omnium2Data = DataTagUtil.getManifestFromStack(calibOmnium2);
-        omnium2Data.addTag(new DataTag<>("frequency", new IntDataAttribute(freq)));
+        DataPointManifest omnium2Data = (DataPointManifest) DataPointUtil.getManifestFromStack(calibOmnium2);
+        omnium2Data.put("frequency", new IntegerDataPoint(freq));
         this.getOutputSlot2().setItemStack(calibOmnium2);
     }
 
     public void checkProcess(){
         ItemSlot input = this.getInputSlot();
         if (input.isEmpty() || !this.canProcessBegin()) return;
-        ItemStack inputStack = input.itemStack;
+        ItemStack inputStack = input.getItemStack();
         if (inputStack.getItem() == SeamlessPortalsItems.OMNIUM_CRYSTAL){
             if (inputStack.amount >= 2){
                 ItemSlot processSlot = this.getProcessSlot();
                 processSlot.setItemStack(inputStack.copy());
-                processSlot.itemStack.amount = 2;
+                processSlot.getItemStack().amount = 2;
                 processSlot.onItemSlotUpdate();
                 input.addAmount(-2);
                 input.onItemSlotUpdate();

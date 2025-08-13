@@ -1,23 +1,23 @@
-{
-    "recipes":
-    [
-        {
-            "pattern": [
-                "***",
-                "o|o",
-                "***"
-            ],
-            "inputs":
+[
+    {
+        "inputs": [
             {
-                "*": "base:ingot_aluminium",
-                "o": "seamlessportals:laser_emitter",
-                "|": "seamlessportals:omnium_crystal"
+                "item": "base:ingot_aluminium",
+                "amount": 6
             },
-            "output": 
             {
-                "item": "seamlessportals:omnium_calibrator[active=false]",
+                "item": "base:laser_emitter[type=single,direction=NegZ]",
+                "amount": 2
+            },
+            {
+                "item": "seamlessportals:omnium_crystal",
                 "amount": 1
             }
+        ],
+        "output":
+        {
+            "item": "seamlessportals:omnium_calibrator[active=false]",
+            "amount": 1
         }
-    ]
-}
+    }
+]

@@ -1,34 +1,26 @@
-{
-    "recipes":
-    [
-        {
-            "pattern": [
-                "***",
-                "***",
-                "***"
-            ],
-            "inputs":
+[
+    {
+        "inputs": [
             {
-                "*": "seamlessportals:omnium_crystal"
-            },
-            "output": 
-            {
-                "item": "seamlessportals:omnium_block[default]",
+                "item": "seamlessportals:omnium_block",
                 "amount": 1
             }
-        },
-        {
-            "inputs":
-            [
-                {
-                    "seamlessportals:omnium_block[default]": 1
-                }
-            ],
-            "output": 
+        ],
+        "output": {
+            "item": "seamlessportals:omnium_crystal",
+            "amount": 9
+        }
+    },
+    {
+        "inputs": [
             {
                 "item": "seamlessportals:omnium_crystal",
                 "amount": 9
             }
+        ],
+        "output": {
+            "item": "seamlessportals:omnium_block",
+            "amount": 1
         }
-    ]
-}
+    }
+]

@@ -1,9 +1,7 @@
 package com.nikrasoff.seamlessportals.mixin;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
-import com.nikrasoff.seamlessportals.extras.interfaces.IPortalWorldLoader;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.ZoneLoader;

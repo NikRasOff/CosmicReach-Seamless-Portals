@@ -1,7 +1,5 @@
 package com.nikrasoff.seamlessportals.items.containers;
 
-import com.github.puzzle.game.items.data.DataTagManifest;
-import com.github.puzzle.game.util.DataTagUtil;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsItems;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
@@ -12,6 +10,8 @@ import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.items.containers.SlotContainer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
+import io.github.puzzle.cosmic.api.util.DataPointUtil;
+import io.github.puzzle.cosmic.impl.data.point.DataPointManifest;
 
 public class SpacialAnchorSlotContainer extends SlotContainer {
 
@@ -45,13 +45,13 @@ public class SpacialAnchorSlotContainer extends SlotContainer {
     }
 
     public void registerSpacialAnchor(ItemStack crystal){
-        DataTagManifest data = DataTagUtil.getManifestFromStack(crystal);
-        if (!data.hasTag("frequency")){
+        DataPointManifest data = (DataPointManifest) DataPointUtil.getManifestFromStack(crystal);
+        if (!data.has("frequency")){
             if (this.primed) deregisterSpacialAnchor();
             this.primed = false;
             return;
         }
-        int frequency = (int) data.getTag("frequency").getValue();
+        int frequency = (int) data.get("frequency").getValue();
         if (frequency != this.frequency) {
             deregisterSpacialAnchor();
             SeamlessPortals.portalManager.registerSpacialAnchor(frequency, new PortalSpawnBlockInfo(this.blockEntitySpacialAnchor.zone.zoneId, new IntVector3(this.blockEntitySpacialAnchor.getGlobalX(), this.blockEntitySpacialAnchor.getGlobalY(), this.blockEntitySpacialAnchor.getGlobalZ()), this.blockEntitySpacialAnchor.getBlockState().getStateParamsStr()));
@@ -74,10 +74,10 @@ public class SpacialAnchorSlotContainer extends SlotContainer {
 
     public void checkInput(){
         ItemSlot input = this.getInputSlot();
-        if (input.itemStack == null || input.itemStack.getItem() == null || input.itemStack.getItem() != SeamlessPortalsItems.CALIBRATED_OMNIUM_CRYSTAL) {
+        if (input.getItemStack() == null || input.getItemStack().getItem() == null || input.getItemStack().getItem() != SeamlessPortalsItems.CALIBRATED_OMNIUM_CRYSTAL) {
             deregisterSpacialAnchor();
         } else if (!primed) {
-            registerSpacialAnchor(input.itemStack);
+            registerSpacialAnchor(input.getItemStack());
         }
     }
 

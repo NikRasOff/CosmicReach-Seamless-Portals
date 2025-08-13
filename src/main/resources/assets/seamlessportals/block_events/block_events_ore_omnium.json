@@ -23,6 +23,16 @@
             },
             {
                 "actionId": "base:loot_drop",
+                "if":
+                {
+                    "srcPlayer":
+                    {
+                        "gamemode":
+                        {
+                            "allows_items_drop_on_break": true
+                        }
+                    }
+                },
                 "parameters":
                 {
                     "position": [0, 0, 0],

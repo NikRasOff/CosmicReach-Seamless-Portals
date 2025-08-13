@@ -1,9 +1,6 @@
 package com.nikrasoff.seamlessportals.blockentities;
 
-import com.nikrasoff.seamlessportals.SeamlessPortals;
-import com.nikrasoff.seamlessportals.items.containers.OmniumCalibratorSlotContainer;
 import com.nikrasoff.seamlessportals.items.containers.SpacialAnchorSlotContainer;
-import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blockentities.BlockEntity;
 import finalforeach.cosmicreach.blockentities.BlockEntityCreator;
@@ -11,6 +8,8 @@ import finalforeach.cosmicreach.blockentities.IBlockEntityWithContainer;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.items.ItemSlot;
+import finalforeach.cosmicreach.items.SlotContainerWindows;
+import finalforeach.cosmicreach.items.containers.SlotContainer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
 import finalforeach.cosmicreach.world.Zone;
@@ -40,7 +39,7 @@ public class BlockEntitySpacialAnchor extends BlockEntity implements IBlockEntit
 
     public void onInteract(Player player, Zone zone) {
         super.onInteract(player, zone);
-        GameSingletons.openBlockEntityScreen(player, zone, this);
+        GameSingletons.openBlockEntityScreen(SlotContainerWindows.add(this), player, zone, this);
     }
 
     public void read(CRBinDeserializer deserial) {
@@ -70,5 +69,10 @@ public class BlockEntitySpacialAnchor extends BlockEntity implements IBlockEntit
     @Override
     public ItemSlot getFirstMatchingItemSlot(Predicate<ItemSlot> slotPredicate) {
         return this.slotContainer.getFirstMatchingItemSlot(slotPredicate);
+    }
+
+    @Override
+    public SlotContainer getSlotContainer() {
+        return this.slotContainer;
     }
 }

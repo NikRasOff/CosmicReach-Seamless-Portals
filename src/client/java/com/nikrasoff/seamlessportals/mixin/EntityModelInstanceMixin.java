@@ -3,10 +3,11 @@ package com.nikrasoff.seamlessportals.mixin;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.utils.FloatArray;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntityModelInstance;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.entities.Entity;
-import finalforeach.cosmicreach.rendering.entities.EntityModelInstance;
+import finalforeach.cosmicreach.rendering.entities.instances.EntityModelInstance;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,27 +25,37 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
     @Unique
     boolean cosmicReach_Seamless_Portals$isEntityDuplicate = false;
 
-    @Accessor(value = "animTimer")
+    @Accessor(value = "globalAnimTimer")
     abstract float getAnimTimer();
 
-    @Accessor(value = "animTimer")
+    @Accessor(value = "globalAnimTimer")
     abstract void setAnimTimer(float value);
 
     @Shadow
-    public abstract void render(Entity entity, Camera worldCamera, Matrix4 modelMat);
+    public abstract void render(Entity entity, Camera worldCamera, Matrix4 modelMat, boolean shouldRender);
 
     @Shadow
-    GameShader shader;
+    public GameShader shader;
+
+    @Shadow private FloatArray currentAnimationTimers;
 
     @Override
     public void cosmicReach_Seamless_Portals$renderNoAnim(Entity entity, Camera worldCamera, Matrix4 modelMat){
-        setAnimTimer(getAnimTimer() - Gdx.graphics.getDeltaTime());
-        this.render(entity, worldCamera, modelMat);
+        float dt = Gdx.graphics.getDeltaTime();
+        setAnimTimer(getAnimTimer() - dt);
+        for (int i = 0; i < this.currentAnimationTimers.size; ++i){
+            this.currentAnimationTimers.items[i] -= dt;
+        }
+        this.render(entity, worldCamera, modelMat, true);
     }
 
     @Override
-    public void cosmicReach_Seamless_Portals$updateAnimation() {;
-        setAnimTimer(getAnimTimer() + Gdx.graphics.getDeltaTime());
+    public void cosmicReach_Seamless_Portals$updateAnimation() {
+        float dt = Gdx.graphics.getDeltaTime();
+        setAnimTimer(getAnimTimer() + dt);
+        for (int i = 0; i < this.currentAnimationTimers.size; ++i){
+            this.currentAnimationTimers.items[i] += dt;
+        }
     }
 
     @Override
@@ -57,7 +68,7 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
     }
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/rendering/shaders/GameShader;bindOptionalTexture(Ljava/lang/String;Lcom/badlogic/gdx/graphics/Texture;I)I"))
-    void doPortalStuff(Entity entity, Camera worldCamera, Matrix4 modelMat, CallbackInfo ci){
+    void doPortalStuff(Entity entity, Camera worldCamera, Matrix4 modelMat, boolean shouldRender, CallbackInfo ci){
         if (this.cosmicReach_Seamless_Portals$slicingPortal != null){
             this.shader.shader.setUniformi("u_turnOnSlicing", 1);
             if (cosmicReach_Seamless_Portals$isEntityDuplicate){

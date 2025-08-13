@@ -8,7 +8,7 @@ uniform vec3 skyAmbientColor;
 uniform vec4 tintColor;
 uniform vec3 worldAmbientColor;
 
-uniform int u_renderDistanceInChunks;
+#import "base:shaders/common/renderDistance.glsl"
 
 in vec2 v_texCoord0;
 in vec3 worldPos;
@@ -28,7 +28,7 @@ uniform float u_fogDensity;
 
 #import "base:shaders/common/fog.glsl"
 
-void main() 
+void main()
 {
     // Portal slicing
     if (u_turnOnSlicing == 1){
@@ -37,7 +37,6 @@ void main()
             discard;
         }
     }
-
     vec2 tilingTexCoords = v_texCoord0;
 
     vec4 texColor = texture(texDiffuse, v_texCoord0);
@@ -61,15 +60,16 @@ void main()
 
     //lightTint = max(lightTint, vec3(0.1));
     //texColor = vec4(1);
-   
+
     outColor = tintColor * vec4(texColor.rgb * lightTint, texColor.a);
 
-    vec3 fogColor = getFogColor(skyAmbientColor, blocklight.rgb, u_fogDensity, worldPos, cameraPosition);
+    vec3 fogColor = skyAmbientColor;//vec3(1) - pow(vec3(1) - skyAmbientColor, vec3(2));
+    fogColor = getFogColor(fogColor, blocklight.rgb, u_fogDensity, worldPos, cameraPosition);
     outColor.rgb = applyFog(fogColor, outColor.rgb, u_fogDensity, worldPos, cameraPosition);
 
     outColor.rgb = max(outColor.rgb, texColor.rgb * worldAmbientColor);
-    
 
-    float gamma = 1.0;//1.5;
+
+    float gamma = 1.1;//1.5;
     outColor.rgb = pow(outColor.rgb, vec3(1.0/gamma));
 }

@@ -1,7 +1,6 @@
 package com.nikrasoff.seamlessportals.portals;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
@@ -10,22 +9,21 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
+import com.nikrasoff.seamlessportals.entities.components.PortalCheckComponent;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
-import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
 import com.nikrasoff.seamlessportals.networking.packets.ConvergenceEventPacket;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
 import com.nikrasoff.seamlessportals.networking.packets.UpdatePortalPacket;
-import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blocks.BlockState;
+import finalforeach.cosmicreach.entities.CommonEntityTags;
+import finalforeach.cosmicreach.entities.components.GravityComponent;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.savelib.crbin.CRBSerialized;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
 import finalforeach.cosmicreach.sounds.GameSound;
-import finalforeach.cosmicreach.util.Identifier;
 import finalforeach.cosmicreach.world.Zone;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 public class HPGPortal extends Portal {
@@ -84,10 +82,13 @@ public class HPGPortal extends Portal {
 
     public HPGPortal(){
         super("seamlessportals:entity_hpg_portal");
-        this.canDespawn = false;
-        this.hasGravity = false;
-        this.noClip = true;
-        IPortalableEntity.setIgnorePortals((IPortalableEntity) this, true);
+        this.addTag(CommonEntityTags.NO_DESPAWN);
+        this.addTag(CommonEntityTags.NOCLIP);
+        this.addTag(CommonEntityTags.PROJECTILE_IMMUNE);
+        this.addTag(CommonEntityTags.NO_ENTITY_PUSH);
+        this.addTag(CommonEntityTags.NO_BUOYANCY);
+        this.removeUpdatingComponent(GravityComponent.INSTANCE);
+        this.removeUpdatingComponent(PortalCheckComponent.INSTANCE);
         if (GameSingletons.isClient){
             this.modelInstance = SeamlessPortals.clientConstants.getNewPortalModelInstance();
         }
@@ -107,7 +108,7 @@ public class HPGPortal extends Portal {
         this.calculateLocalBB();
         this.calculateMeshBB();
         if (GameSingletons.isClient){
-            this.modelInstance.setCurrentAnimation("start");
+            this.modelInstance.addAnimation("start");
         }
     }
 
@@ -127,7 +128,7 @@ public class HPGPortal extends Portal {
     }
 
     @Override
-    public void update(Zone zone, double deltaTime) {
+    public void update(Zone zone, float deltaTime) {
         super.update(zone, deltaTime);
         if (this.isPortalInAWall(zone) || !this.isPortalOnValidSurface(zone)){
             if (this.linkedPortal != null){
@@ -234,13 +235,13 @@ public class HPGPortal extends Portal {
                         checkBlock.getBoundingBox(tBB, bx, by, bz);
                         if (bb.intersects(tBB)){
                             if (this.isUnstable){
-                                return checkBlock.hasTag("portal_whitelisted");
+                                return checkBlock.hasTag(SeamlessPortalsConstants.PORTAL_WHITELISTED);
                             }
                             else{
                                 if (Arrays.asList(defaultBlacklist).contains(checkBlock.getBlockId())){
                                     return false;
                                 }
-                                if (checkBlock.hasTag("portal_blacklisted")) {
+                                if (checkBlock.hasTag(SeamlessPortalsConstants.PORTAL_BLACKLISTED)) {
                                     return false;
                                 }
                             }

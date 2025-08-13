@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.nikrasoff.seamlessportals.SPClientConstants;
-import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.SeamlessPortalsItems;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
 import com.nikrasoff.seamlessportals.items.containers.OmniumCalibratorSlotContainer;
@@ -15,27 +14,27 @@ import com.nikrasoff.seamlessportals.ui.widgets.FakeItemSlotWidget;
 import com.nikrasoff.seamlessportals.ui.widgets.TextureSwitchWidget;
 import finalforeach.cosmicreach.items.ItemSlot;
 import finalforeach.cosmicreach.items.screens.BaseItemScreen;
-import finalforeach.cosmicreach.ui.UI;
-import finalforeach.cosmicreach.ui.widgets.ItemSlotWidget;
+import finalforeach.cosmicreach.ui.GameStyles;
+import finalforeach.cosmicreach.ui.widgets.ContainerSlotWidget;
 
 public class OmniumCalibratorScreen extends BaseItemScreen {
     BlockEntityOmniumCalibrator omniumCalibrator;
 
-    public OmniumCalibratorScreen(BlockEntityOmniumCalibrator omniumCalibrator) {
-        super(omniumCalibrator);
+    public OmniumCalibratorScreen(int windowId, BlockEntityOmniumCalibrator omniumCalibrator) {
+        super(windowId, omniumCalibrator);
         this.omniumCalibrator = omniumCalibrator;
         OmniumCalibratorSlotContainer container = omniumCalibrator.slotContainer;
         Stack stack = new Stack();
-        Actor background = new Image(UI.containerBackground9Patch);
+        Actor background = new Image(GameStyles.containerBackground9Patch);
         Table functionalTable = new Table();
-        this.slotWidgets = new ItemSlotWidget[container.numberOfSlots - 1];
+        this.slotWidgets = new ContainerSlotWidget[container.numberOfSlots - 1];
 
         ItemSlot s = container.getInputSlot();
-        ItemSlotWidget w = new ItemSlotWidget(omniumCalibrator, container, s.getSlotId(), s.isOutputOnly());
+        ContainerSlotWidget w = new ContainerSlotWidget(windowId, omniumCalibrator, container, s.getSlotId(), s.isOutputOnly());
         this.slotWidgets[0] = w;
 
         s = container.getOutputSlot1();
-        FakeItemSlotWidget w1 = new FakeItemSlotWidget(omniumCalibrator, container, s.getSlotId(), s.isOutputOnly());
+        FakeItemSlotWidget w1 = new FakeItemSlotWidget(windowId, omniumCalibrator, container, s.getSlotId(), s.isOutputOnly());
         w1.setFakeItem(SeamlessPortalsItems.OMNIUM_CRYSTAL);
         w1.addAction(new Action() {
             @Override
@@ -47,7 +46,7 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
         this.slotWidgets[1] = w1;
 
         s = container.getOutputSlot2();
-        FakeItemSlotWidget w2 = new FakeItemSlotWidget(omniumCalibrator, container, s.getSlotId(), s.isOutputOnly());
+        FakeItemSlotWidget w2 = new FakeItemSlotWidget(windowId, omniumCalibrator, container, s.getSlotId(), s.isOutputOnly());
         w2.setFakeItem(SeamlessPortalsItems.OMNIUM_CRYSTAL);
         w2.addAction(new Action() {
             @Override

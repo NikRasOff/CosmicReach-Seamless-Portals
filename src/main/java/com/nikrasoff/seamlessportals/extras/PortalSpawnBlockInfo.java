@@ -1,7 +1,5 @@
 package com.nikrasoff.seamlessportals.extras;
 
-import finalforeach.cosmicreach.world.Zone;
-
 public class PortalSpawnBlockInfo {
     public String zoneId;
     public IntVector3 position = new IntVector3();

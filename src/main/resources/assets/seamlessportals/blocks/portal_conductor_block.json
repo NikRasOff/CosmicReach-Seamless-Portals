@@ -5,7 +5,7 @@
         "default":
         {
             "modelName": "seamlessportals:models/blocks/portal_conductor.json",
-            "stateGenerators": ["base:slabs_all", "base:stairs_seamless_all"],
+            "stateGenerators": ["base:slabs_seamless_all", "base:stairs_seamless_all"],
             "tags": [
                 "tool_pickaxe_effective",
                 "portal_whitelisted"

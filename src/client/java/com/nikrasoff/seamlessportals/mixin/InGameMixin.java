@@ -6,6 +6,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.nikrasoff.seamlessportals.SPClientConstants;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.extras.ClientPortalEntityTools;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalablePlayerController;
 import com.nikrasoff.seamlessportals.portals.Portal;
@@ -66,7 +67,12 @@ public abstract class InGameMixin implements IPortalIngame {
                     Portal portal = portalEntry.getValue();
                     if (portal.linkedPortal == null) continue;
                     if (r.isCloseToPortal(e, portal)){
-                        r.renderDuplicate(e, renderFromCamera, portal);
+                        if (ClientPortalEntityTools.isJustTeleported(e)){
+                            r.renderSliced(e, renderFromCamera, portal);
+                        }
+                        else {
+                            r.renderDuplicate(e, renderFromCamera, portal);
+                        }
                     }
                 }
                 r.advanceAnimations(e);
@@ -94,8 +100,12 @@ public abstract class InGameMixin implements IPortalIngame {
         for (Map.Entry<EntityUniqueId, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
             Portal portal = portalEntry.getValue();
             if (r.isCloseToPortal(instance, portal)){
-                r.renderSliced(instance, worldCamera, portal);
-//                SeamlessPortals.LOGGER.info("Rendering duplicate now!");
+                if (ClientPortalEntityTools.isJustTeleported(instance)){
+                    r.renderDuplicate(instance, worldCamera, portal);
+                }
+                else {
+                    r.renderSliced(instance, worldCamera, portal);
+                }
                 return;
             }
         }

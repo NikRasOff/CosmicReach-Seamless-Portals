@@ -16,6 +16,8 @@ import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.items.ItemSlot;
+import finalforeach.cosmicreach.items.SlotContainerWindows;
+import finalforeach.cosmicreach.items.containers.SlotContainer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
 import finalforeach.cosmicreach.sounds.GameSound;
@@ -54,7 +56,7 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
 
     public void onInteract(Player player, Zone zone) {
         super.onInteract(player, zone);
-        GameSingletons.openBlockEntityScreen(player, zone, this);
+        GameSingletons.openBlockEntityScreen(SlotContainerWindows.add(this), player, zone, this);
     }
 
     public boolean isPortalActive(){
@@ -165,5 +167,10 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
     @Override
     public ItemSlot getFirstMatchingItemSlot(Predicate<ItemSlot> slotPredicate) {
         return this.slotContainer.getFirstMatchingItemSlot(slotPredicate);
+    }
+
+    @Override
+    public SlotContainer getSlotContainer() {
+        return this.slotContainer;
     }
 }

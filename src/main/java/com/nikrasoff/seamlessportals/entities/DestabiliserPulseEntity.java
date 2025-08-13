@@ -4,9 +4,12 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
+import com.nikrasoff.seamlessportals.entities.components.PortalCheckComponent;
 import com.nikrasoff.seamlessportals.networking.packets.CreateEffectPacket;
 import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.entities.CommonEntityTags;
 import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.entities.components.GravityComponent;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.savelib.crbin.CRBSerialized;
 import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
@@ -23,9 +26,13 @@ public class DestabiliserPulseEntity extends Entity {
 
     public DestabiliserPulseEntity() {
         super(ENTITY_ID.toString());
-        this.canDespawn = false;
-        this.hasGravity = false;
-        this.noClip = true;
+        this.addTag(CommonEntityTags.NO_DESPAWN);
+        this.addTag(CommonEntityTags.NOCLIP);
+        this.addTag(CommonEntityTags.PROJECTILE_IMMUNE);
+        this.addTag(CommonEntityTags.NO_ENTITY_PUSH);
+        this.addTag(CommonEntityTags.NO_BUOYANCY);
+        this.removeUpdatingComponent(GravityComponent.INSTANCE);
+        this.removeUpdatingComponent(PortalCheckComponent.INSTANCE);
     }
 
     public void prepareForSpawn(float radius, Vector3 pos, Zone zone){
@@ -44,7 +51,7 @@ public class DestabiliserPulseEntity extends Entity {
     }
 
     @Override
-    public void update(Zone zone, double deltaTime) {
+    public void update(Zone zone, float deltaTime) {
         super.update(zone, deltaTime);
         if (this.age >= 1.5f){
             SeamlessPortals.portalManager.createdPortals.forEach((portalID, portal) -> {

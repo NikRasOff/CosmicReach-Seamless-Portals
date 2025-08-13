@@ -6,10 +6,12 @@ import com.badlogic.gdx.math.Vector3;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
+import com.nikrasoff.seamlessportals.entities.components.PortalCheckComponent;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
-import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blockentities.BlockEntity;
+import finalforeach.cosmicreach.entities.CommonEntityTags;
+import finalforeach.cosmicreach.entities.components.GravityComponent;
 import finalforeach.cosmicreach.savelib.crbin.CRBSerialized;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
@@ -51,10 +53,13 @@ public class PortalGenPortal extends Portal {
 
     public PortalGenPortal(){
         super("seamlessportals:entity_portal_gen_portal");
-        this.canDespawn = false;
-        this.hasGravity = false;
-        this.noClip = true;
-        IPortalableEntity.setIgnorePortals((IPortalableEntity) this, true);
+        this.addTag(CommonEntityTags.NO_DESPAWN);
+        this.addTag(CommonEntityTags.NOCLIP);
+        this.addTag(CommonEntityTags.PROJECTILE_IMMUNE);
+        this.addTag(CommonEntityTags.NO_ENTITY_PUSH);
+        this.addTag(CommonEntityTags.NO_BUOYANCY);
+        this.removeUpdatingComponent(GravityComponent.INSTANCE);
+        this.removeUpdatingComponent(PortalCheckComponent.INSTANCE);
         if (GameSingletons.isClient){
             this.modelInstance = SeamlessPortals.clientConstants.getNewPortalModelInstance();
         }
@@ -108,7 +113,7 @@ public class PortalGenPortal extends Portal {
     }
 
     @Override
-    public void update(Zone zone, double deltaTime) {
+    public void update(Zone zone, float deltaTime) {
         super.update(zone, deltaTime);
 
 //        BlockState bs = zone.getBlockState(this.sourceBlock.position.toVector3());

@@ -4,7 +4,6 @@
   "package": "com.nikrasoff.seamlessportals.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "BlockEntitySyncMixin",
     "ChunkLoaderMixin",
     "ChunkSaverMixin",
     "ItemEntityMixin",

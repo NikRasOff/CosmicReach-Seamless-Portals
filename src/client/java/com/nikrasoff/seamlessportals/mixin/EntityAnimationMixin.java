@@ -5,12 +5,16 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.github.puzzle.core.loader.util.Reflection;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntity;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntityModelInstance;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.TickRunner;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
+import finalforeach.cosmicreach.rendering.entities.instances.ItemEntityModelInstance;
+import finalforeach.cosmicreach.rendering.items.ItemThingModel;
+import io.github.puzzle.cosmic.impl.client.item.CosmicItemModelWrapper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -30,9 +34,10 @@ public abstract class EntityAnimationMixin implements IModEntity {
 
     @Shadow private transient Color modelLightColor;
 
-    @Shadow protected transient int invulnerabiltyFrames;
-
     @Shadow public float age;
+
+    @Shadow public abstract boolean recentlyHit();
+
     @Unique protected transient boolean cosmicReach_Seamless_Portals$hasBeenRendered = false;
 
     @Override
@@ -48,7 +53,7 @@ public abstract class EntityAnimationMixin implements IModEntity {
                 float r = this.modelLightColor.r;
                 float g = this.modelLightColor.g;
                 float b = this.modelLightColor.b;
-                if (this.invulnerabiltyFrames > 0) {
+                if (this.recentlyHit()) {
                     b = 0.0F;
                     g = 0.0F;
                 }
@@ -72,7 +77,7 @@ public abstract class EntityAnimationMixin implements IModEntity {
                 float r = this.modelLightColor.r;
                 float g = this.modelLightColor.g;
                 float b = this.modelLightColor.b;
-                if (this.invulnerabiltyFrames > 0) {
+                if (this.recentlyHit()) {
                     b = 0.0F;
                     g = 0.0F;
                 }
@@ -101,7 +106,7 @@ public abstract class EntityAnimationMixin implements IModEntity {
                 float r = this.modelLightColor.r;
                 float g = this.modelLightColor.g;
                 float b = this.modelLightColor.b;
-                if (this.invulnerabiltyFrames > 0) {
+                if (this.recentlyHit()) {
                     b = 0.0F;
                     g = 0.0F;
                 }
@@ -117,13 +122,18 @@ public abstract class EntityAnimationMixin implements IModEntity {
         float r = this.modelLightColor.r;
         float g = this.modelLightColor.g;
         float b = this.modelLightColor.b;
-        if (this.invulnerabiltyFrames > 0) {
+        if (this.recentlyHit()) {
             b = 0.0F;
             g = 0.0F;
         }
 
         this.modelInstance.setTint(r, g, b, 1.0F);
-        this.modelInstance.render((Entity) (Object) this, renderCamera, customMatrix);
+        if (this.modelInstance instanceof ItemEntityModelInstance && Reflection.getFieldContents(this.modelInstance, "model") instanceof CosmicItemModelWrapper w){
+            w.renderAsEntity(this.position, Reflection.getFieldContents(this, "itemStack"), renderCamera, customMatrix);
+        }
+        else {
+            this.modelInstance.render((Entity) (Object) this, renderCamera, customMatrix, true);
+        }
     }
 
 
@@ -133,7 +143,7 @@ public abstract class EntityAnimationMixin implements IModEntity {
         float r = this.modelLightColor.r;
         float g = this.modelLightColor.g;
         float b = this.modelLightColor.b;
-        if (this.invulnerabiltyFrames > 0) {
+        if (this.recentlyHit()) {
             b = 0.0F;
             g = 0.0F;
         }
@@ -143,7 +153,7 @@ public abstract class EntityAnimationMixin implements IModEntity {
         ((IModEntityModelInstance) this.modelInstance).cosmicReach_Seamless_Portals$renderSliced((Entity) (Object) this, renderCamera, renderMatrix, portal, isDuplicate);
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/entities/Entity;renderModelAfterMatrixSet(Lcom/badlogic/gdx/graphics/Camera;)V"))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/entities/Entity;renderModelAfterMatrixSet(Lcom/badlogic/gdx/graphics/Camera;Z)V"))
     public void checkIfRendered(Camera worldCamera, CallbackInfo ci){
         this.cosmicReach_Seamless_Portals$hasBeenRendered = true;
     }

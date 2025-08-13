@@ -1,7 +1,9 @@
-public method finalforeach/cosmicreach/items/recipes/CraftingRecipes loadRecipe (Lcom/badlogic/gdx/utils/JsonValue;)V
+public method finalforeach/cosmicreach/items/recipes/CraftingRecipes loadRecipe (Lfinalforeach/cosmicreach/util/Identifier;Lcom/badlogic/gdx/utils/Json;Lcom/badlogic/gdx/utils/JsonValue;)V
 public method finalforeach/cosmicreach/blocks/BlockStateGenerator loadGeneratorsFromFile (Lcom/badlogic/gdx/files/FileHandle;)V
 public method finalforeach/cosmicreach/items/loot/Loot loadLoot (Lcom/badlogic/gdx/utils/JsonValue;)V
 public class finalforeach/cosmicreach/rendering/entities/BoneAnimation
 public class finalforeach/cosmicreach/rendering/entities/EntityAnimation
 
 public field finalforeach/cosmicreach/blockentities/BlockEntity zone
+public field finalforeach/cosmicreach/entities/Entity acceleration
+public field finalforeach/cosmicreach/entities/Entity floorFriction

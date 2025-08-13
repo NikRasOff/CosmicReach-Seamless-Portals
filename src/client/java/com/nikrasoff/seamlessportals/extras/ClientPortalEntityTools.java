@@ -2,6 +2,7 @@ package com.nikrasoff.seamlessportals.extras;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntity;
+import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.entities.Entity;
 
@@ -29,5 +30,10 @@ public class ClientPortalEntityTools {
     public static void renderSliced(Entity entity, Camera renderCamera, Portal portal){
         IModEntity e = (IModEntity) entity;
         e.cosmicReach_Seamless_Portals$renderSliced(renderCamera, portal);
+    }
+
+    public static boolean isJustTeleported(Entity entity){
+        IPortalableEntity p = (IPortalableEntity) entity;
+        return p.cosmicReach_Seamless_Portals$isJustTeleported();
     }
 }

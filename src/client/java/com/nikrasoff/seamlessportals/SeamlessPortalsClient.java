@@ -32,7 +32,7 @@ public class SeamlessPortalsClient implements ClientModInitializer {
         SeamlessPortals.clientConstants = new SPClientConstants();
         GameSingletons.registerBlockEntityScreenOpener("seamlessportals:omnium_calibrator", (info) -> {
             BlockEntityOmniumCalibrator omniumCalibrator = (BlockEntityOmniumCalibrator) info.blockEntity();
-            final OmniumCalibratorScreen screen = new OmniumCalibratorScreen((BlockEntityOmniumCalibrator) info.blockEntity());
+            final OmniumCalibratorScreen screen = new OmniumCalibratorScreen(info.windowId(), (BlockEntityOmniumCalibrator) info.blockEntity());
             UI.addOpenBaseItemScreen(omniumCalibrator.slotContainer, screen);
             screen.getActor().addAction(new Action() {
                 public boolean act(float delta) {
@@ -47,7 +47,7 @@ public class SeamlessPortalsClient implements ClientModInitializer {
         });
         GameSingletons.registerBlockEntityScreenOpener("seamlessportals:spacial_anchor", (info) -> {
             BlockEntitySpacialAnchor spacialAnchor = (BlockEntitySpacialAnchor) info.blockEntity();
-            final SpacialAnchorScreen screen = new SpacialAnchorScreen((BlockEntitySpacialAnchor) info.blockEntity());
+            final SpacialAnchorScreen screen = new SpacialAnchorScreen(info.windowId(), (BlockEntitySpacialAnchor) info.blockEntity());
             UI.addOpenBaseItemScreen(spacialAnchor.slotContainer, screen);
             screen.getActor().addAction(new Action() {
                 public boolean act(float delta) {
@@ -62,7 +62,7 @@ public class SeamlessPortalsClient implements ClientModInitializer {
         });
         GameSingletons.registerBlockEntityScreenOpener("seamlessportals:portal_generator", (info) -> {
             BlockEntityPortalGenerator portalGenerator = (BlockEntityPortalGenerator) info.blockEntity();
-            final PortalGeneratorScreen screen = new PortalGeneratorScreen((BlockEntityPortalGenerator) info.blockEntity());
+            final PortalGeneratorScreen screen = new PortalGeneratorScreen(info.windowId(), (BlockEntityPortalGenerator) info.blockEntity());
             UI.addOpenBaseItemScreen(portalGenerator.slotContainer, screen);
             screen.getActor().addAction(new Action() {
                 public boolean act(float delta) {

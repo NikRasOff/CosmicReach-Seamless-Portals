@@ -6,15 +6,18 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.badlogic.gdx.utils.Array;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.entities.components.PortalCheckComponent;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
-import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
 import com.nikrasoff.seamlessportals.networking.packets.PortalDeletePacket;
 import finalforeach.cosmicreach.GameSingletons;
 import finalforeach.cosmicreach.blocks.BlockState;
+import finalforeach.cosmicreach.entities.CommonEntityTags;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.entities.EntityUniqueId;
+import finalforeach.cosmicreach.entities.IDamageSource;
+import finalforeach.cosmicreach.entities.components.GravityComponent;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.savelib.crbin.CRBSerialized;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
@@ -48,10 +51,10 @@ public class Portal extends Entity {
 
     private final BoundingBox meshBB = new BoundingBox();
     public static final Object lock = new Object();
-    protected static final Array<BoundingBox> tempBounds = new Array<>();
+    protected static final Array<BoundingBox> tempBounds = new Array<>(BoundingBox.class);
 
     public static Portal readPortal(CRBinDeserializer deserializer){
-        // It took so much time to make this work... and yet it's still somehow broken
+        // It took so much time to make this work... and it finally works!
         Portal portal = new Portal();
         if (deserializer != null) {
             portal.read(deserializer);
@@ -94,10 +97,13 @@ public class Portal extends Entity {
 
     public Portal(){
         super("seamlessportals:entity_portal");
-        this.canDespawn = false;
-        this.hasGravity = false;
-        this.noClip = true;
-        IPortalableEntity.setIgnorePortals((IPortalableEntity) this, true);
+        this.addTag(CommonEntityTags.NO_DESPAWN);
+        this.addTag(CommonEntityTags.NOCLIP);
+        this.addTag(CommonEntityTags.PROJECTILE_IMMUNE);
+        this.addTag(CommonEntityTags.NO_ENTITY_PUSH);
+        this.addTag(CommonEntityTags.NO_BUOYANCY);
+        this.removeUpdatingComponent(GravityComponent.INSTANCE);
+        this.removeUpdatingComponent(PortalCheckComponent.INSTANCE);
         if (GameSingletons.isClient){
             this.modelInstance = SeamlessPortals.clientConstants.getNewPortalModelInstance();
         }
@@ -117,7 +123,7 @@ public class Portal extends Entity {
         this.calculateLocalBB();
         this.calculateMeshBB();
         if (GameSingletons.isClient){
-            this.modelInstance.setCurrentAnimation("start");
+            this.modelInstance.addAnimation("start");
         }
     }
 
@@ -205,11 +211,11 @@ public class Portal extends Entity {
 
     public void playAnimation(String animName){
         if (this.isEndAnimationPlaying) return;
-        this.modelInstance.setCurrentAnimation(animName);
+        this.modelInstance.addAnimation(animName);
     }
 
     @Override
-    public void hit(float amount) {}
+    public void hit(IDamageSource damageSource, float amount) {}
 
     public static Portal fromBlockInfo(PortalSpawnBlockInfo info, Vector2 size){
         String[] strId = info.blockState.split(",");
@@ -348,13 +354,13 @@ public class Portal extends Entity {
     }
 
     @Override
-    public void update(Zone zone, double deltaTime) {
+    public void update(Zone zone, float deltaTime) {
         super.update(zone, deltaTime);
         if (this.linkedPortal != null && this.linkedPortal.zone == null){
             EntityRegion.readChunkColumn(GameSingletons.world.getZoneCreateIfNull(this.zone.zoneId), (int) this.linkedPortalChunkCoords.x, (int) this.linkedPortalChunkCoords.z, Math.floorDiv((int) this.linkedPortalChunkCoords.x, 16), Math.floorDiv((int) this.linkedPortalChunkCoords.y, 16), Math.floorDiv((int) this.linkedPortalChunkCoords.z, 16));
         }
         if (isEndAnimationPlaying){
-            this.endAnimationTimer += (float) deltaTime;
+            this.endAnimationTimer += deltaTime;
             if (this.endAnimationTimer >= 0.75f){
                 this.isPortalDestroyed = true;
                 this.onDeath();
@@ -366,7 +372,7 @@ public class Portal extends Entity {
         if (this.linkedPortal != this.pendingLinkedPortal) this.linkedPortal = this.pendingLinkedPortal;
         if (this.modelInstance != null) {
             tmpModelMatrix.setToLookAt(this.position, this.position.cpy().add(this.viewDirection), this.upVector);
-            this.renderModelAfterMatrixSet(worldCamera);
+            this.renderModelAfterMatrixSet(worldCamera, true);
         }
     }
 

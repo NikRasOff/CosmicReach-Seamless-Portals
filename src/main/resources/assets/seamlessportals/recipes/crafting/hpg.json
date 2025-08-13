@@ -1,37 +1,40 @@
-{
-    "recipes":
-    [
-        {
-            "pattern": [
-                "aoa"
-            ],
-            "inputs":
+[
+    {
+        "inputs": [
             {
-                "o": "seamlessportals:portal_generator[active=false]",
-                "a": "base:ingot_aluminium"
-            },
-            "output": 
-            {
-                "item": "seamlessportals:handheld_portal_generator",
+                "item": "seamlessportals:warp_core",
                 "amount": 1
-            }
-        },
-        {
-            "pattern": [
-                " d ",
-                "aoa"
-            ],
-            "inputs":
-            {
-                "o": "seamlessportals:portal_generator[active=false]",
-                "a": "base:ingot_aluminium",
-                "d": "seamlessportals:portal_disruption_block[default]"
             },
-            "output":
             {
-                "item": "seamlessportals:unstable_handheld_portal_generator",
-                "amount": 1
+                "item": "base:ingot_aluminium",
+                "amount": 2
             }
+        ],
+        "output":
+        {
+            "item": "seamlessportals:handheld_portal_generator",
+            "amount": 1
         }
-    ]
-}
+    },
+    {
+        "inputs": [
+            {
+                "item": "seamlessportals:warp_core",
+                "amount": 1
+            },
+            {
+                "item": "base:ingot_aluminium",
+                "amount": 2
+            },
+            {
+                "item": "seamlessportals:portal_disruption_block",
+                "amount": 1
+            }
+        ],
+        "output":
+        {
+            "item": "seamlessportals:unstable_handheld_portal_generator",
+            "amount": 1
+        }
+    }
+]

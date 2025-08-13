@@ -22,9 +22,9 @@ import finalforeach.cosmicreach.items.ItemSlot;
 import finalforeach.cosmicreach.items.screens.BaseItemScreen;
 import finalforeach.cosmicreach.lang.Lang;
 import finalforeach.cosmicreach.networking.client.ClientNetworkManager;
-import finalforeach.cosmicreach.networking.packets.blocks.BlockEntityDataPacket;
-import finalforeach.cosmicreach.ui.UI;
-import finalforeach.cosmicreach.ui.widgets.ItemSlotWidget;
+import finalforeach.cosmicreach.networking.packets.blockentities.BlockEntityDataPacket;
+import finalforeach.cosmicreach.ui.GameStyles;
+import finalforeach.cosmicreach.ui.widgets.ContainerSlotWidget;
 
 public class PortalGeneratorScreen extends BaseItemScreen {
     BlockEntityPortalGenerator portalGenerator;
@@ -41,19 +41,19 @@ public class PortalGeneratorScreen extends BaseItemScreen {
     TextField secondaryOffsetXField;
     TextField secondaryOffsetYField;
 
-    public PortalGeneratorScreen(BlockEntityPortalGenerator portalGenerator) {
-        super(portalGenerator);
+    public PortalGeneratorScreen(int windowId, BlockEntityPortalGenerator portalGenerator) {
+        super(windowId, portalGenerator);
         if (fieldStyle == null) {
-            fieldStyle = new TextField.TextFieldStyle(font, Color.WHITE, new TextureRegionDrawable(SPClientConstants.UI_TEXT_CURSOR), null, new NinePatchDrawable(UI.containerBackground9Patch));
+            fieldStyle = new TextField.TextFieldStyle(font, Color.WHITE, new TextureRegionDrawable(SPClientConstants.UI_TEXT_CURSOR), null, new NinePatchDrawable(GameStyles.containerBackground9Patch));
         }
         if (buttonStyle == null) {
-            buttonStyle = new TextButton.TextButtonStyle(new NinePatchDrawable(UI.container9Patch), new NinePatchDrawable(UI.container9PatchHovered), new NinePatchDrawable(UI.containerSelected9Patch), font);
+            buttonStyle = new TextButton.TextButtonStyle(new NinePatchDrawable(GameStyles.container9Patch), new NinePatchDrawable(GameStyles.container9PatchHovered), new NinePatchDrawable(GameStyles.containerSelected9Patch), font);
         }
         this.portalGenerator = portalGenerator;
         PortalGeneratorSlotContainer container = portalGenerator.slotContainer;
         Stack stack = new Stack();
-        Actor background = new Image(UI.containerBackground9Patch);
-        this.slotWidgets = new ItemSlotWidget[container.numberOfSlots];
+        Actor background = new Image(GameStyles.containerBackground9Patch);
+        this.slotWidgets = new ContainerSlotWidget[container.numberOfSlots];
 
         Table backgroundTable = new Table();
         backgroundTable.add(background).minSize(450, 256);
@@ -127,7 +127,7 @@ public class PortalGeneratorScreen extends BaseItemScreen {
         lowerTable.add(primaryOffsetTable).height(64);
 
         ItemSlot s = container.getInputSlot();
-        ItemSlotWidget w = new ItemSlotWidget(portalGenerator, container, s.getSlotId(), s.isOutputOnly());
+        ContainerSlotWidget w = new ContainerSlotWidget(windowId, portalGenerator, container, s.getSlotId(), s.isOutputOnly());
         this.slotWidgets[0] = w;
 
         lowerTable.add(this.slotWidgets[0]);

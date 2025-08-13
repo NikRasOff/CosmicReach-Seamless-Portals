@@ -8,23 +8,23 @@ import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
 import com.nikrasoff.seamlessportals.items.containers.SpacialAnchorSlotContainer;
 import finalforeach.cosmicreach.items.ItemSlot;
 import finalforeach.cosmicreach.items.screens.BaseItemScreen;
-import finalforeach.cosmicreach.ui.UI;
-import finalforeach.cosmicreach.ui.widgets.ItemSlotWidget;
+import finalforeach.cosmicreach.ui.GameStyles;
+import finalforeach.cosmicreach.ui.widgets.ContainerSlotWidget;
 
 public class SpacialAnchorScreen extends BaseItemScreen {
     BlockEntitySpacialAnchor spacialAnchor;
 
-    public SpacialAnchorScreen(BlockEntitySpacialAnchor spacialAnchor) {
-        super(spacialAnchor);
+    public SpacialAnchorScreen(int windowId, BlockEntitySpacialAnchor spacialAnchor) {
+        super(windowId, spacialAnchor);
         this.spacialAnchor = spacialAnchor;
         SpacialAnchorSlotContainer container = spacialAnchor.slotContainer;
         Stack stack = new Stack();
-        Actor background = new Image(UI.containerBackground9Patch);
+        Actor background = new Image(GameStyles.containerBackground9Patch);
         Table functionalTable = new Table();
-        this.slotWidgets = new ItemSlotWidget[container.numberOfSlots];
+        this.slotWidgets = new ContainerSlotWidget[container.numberOfSlots];
 
         ItemSlot s = container.getInputSlot();
-        ItemSlotWidget w = new ItemSlotWidget(spacialAnchor, container, s.getSlotId(), s.isOutputOnly());
+        ContainerSlotWidget w = new ContainerSlotWidget(windowId, spacialAnchor, container, s.getSlotId(), s.isOutputOnly());
         this.slotWidgets[0] = w;
 
         functionalTable.add(this.slotWidgets[0]);

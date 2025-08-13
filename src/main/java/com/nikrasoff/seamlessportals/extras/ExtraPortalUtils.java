@@ -8,15 +8,7 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Queue;
-import com.github.puzzle.game.items.data.DataTag;
-import com.github.puzzle.game.items.data.DataTagManifest;
-import com.github.puzzle.game.items.data.attributes.IntDataAttribute;
-import com.github.puzzle.game.items.data.attributes.LongDataAttribute;
-import com.github.puzzle.game.items.data.attributes.StringDataAttribute;
-import com.github.puzzle.game.items.data.attributes.Vector3DataAttribute;
-import com.github.puzzle.game.util.DataTagUtil;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
-import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
 import com.nikrasoff.seamlessportals.items.UnstableHandheldPortalGen;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
 import com.nikrasoff.seamlessportals.networking.packets.UpdatePortalPacket;
@@ -30,10 +22,16 @@ import finalforeach.cosmicreach.blocks.PooledBlockPosition;
 import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.items.ItemStack;
-import finalforeach.cosmicreach.networking.packets.ContainerSyncPacket;
+import finalforeach.cosmicreach.networking.packets.items.ContainerSyncPacket;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.world.Chunk;
 import finalforeach.cosmicreach.world.Zone;
+import io.github.puzzle.cosmic.api.util.DataPointUtil;
+import io.github.puzzle.cosmic.impl.data.point.DataPointManifest;
+import io.github.puzzle.cosmic.impl.data.point.single.IntegerDataPoint;
+import io.github.puzzle.cosmic.impl.data.point.single.LongDataPoint;
+import io.github.puzzle.cosmic.impl.data.point.single.StringDataPoint;
+import io.github.puzzle.cosmic.impl.data.point.single.Vector3DataPoint;
 
 public class ExtraPortalUtils {
     private static final Ray ray = new Ray();
@@ -215,49 +213,49 @@ public class ExtraPortalUtils {
     }
     public static void fireHpg(Player player, boolean isSecondPortal, ItemStack hpgItemStack){
         boolean unstable = hpgItemStack.getItem() instanceof UnstableHandheldPortalGen;
-        DataTagManifest hpgManifest = DataTagUtil.getManifestFromStack(hpgItemStack);
+        DataPointManifest hpgManifest = (DataPointManifest) DataPointUtil.getManifestFromStack(hpgItemStack);
 
-        if (!hpgManifest.hasTag("portal1Chunk")){
-            hpgManifest.addTag(new DataTag<>("portal1Chunk", new Vector3DataAttribute(new Vector3())));
+        if (!hpgManifest.has("portal1Chunk")){
+            hpgManifest.put("portal1Chunk", new Vector3DataPoint(new Vector3()));
         }
-        if (!hpgManifest.hasTag("portal1IdTime")){
-            hpgManifest.addTag(new DataTag<>("portal1IdTime", new LongDataAttribute(-1)));
+        if (!hpgManifest.has("portal1IdTime")){
+            hpgManifest.put("portal1IdTime", new LongDataPoint((long) -1));
         }
-        if (!hpgManifest.hasTag("portal1IdRand")){
-            hpgManifest.addTag(new DataTag<>("portal1IdRand", new IntDataAttribute(-1)));
+        if (!hpgManifest.has("portal1IdRand")){
+            hpgManifest.put("portal1IdRand", new IntegerDataPoint(-1));
         }
-        if (!hpgManifest.hasTag("portal1IdNum")){
-            hpgManifest.addTag(new DataTag<>("portal1IdNum", new IntDataAttribute(-1)));
+        if (!hpgManifest.has("portal1IdNum")){
+            hpgManifest.put("portal1IdNum", new IntegerDataPoint(-1));
         }
-        if (!hpgManifest.hasTag("portal1Zone")){
-            hpgManifest.addTag(new DataTag<>("portal1Zone", new StringDataAttribute(GameSingletons.world.defaultZoneId)));
+        if (!hpgManifest.has("portal1Zone")){
+            hpgManifest.put("portal1Zone", new StringDataPoint(GameSingletons.world.defaultZoneId));
         }
-        DataTag<Vector3> primaryPortalChunkPos = hpgManifest.getTag("portal1Chunk");
-        DataTag<Integer> primaryPortalIdRand = hpgManifest.getTag("portal1IdRand");
-        DataTag<Long> primaryPortalIdTime = hpgManifest.getTag("portal1IdTime");
-        DataTag<Integer> primaryPortalIdNum = hpgManifest.getTag("portal1IdNum");
-        DataTag<String> primaryPortalZone = hpgManifest.getTag("portal1Zone");
+        Vector3DataPoint primaryPortalChunkPos = (Vector3DataPoint) hpgManifest.get("portal1Chunk");
+        IntegerDataPoint primaryPortalIdRand = (IntegerDataPoint) hpgManifest.get("portal1IdRand");
+        LongDataPoint primaryPortalIdTime = (LongDataPoint) hpgManifest.get("portal1IdTime");
+        IntegerDataPoint primaryPortalIdNum = (IntegerDataPoint) hpgManifest.get("portal1IdNum");
+        StringDataPoint primaryPortalZone = (StringDataPoint) hpgManifest.get("portal1Zone");
 
-        if (!hpgManifest.hasTag("portal2Chunk")){
-            hpgManifest.addTag(new DataTag<>("portal2Chunk", new Vector3DataAttribute(new Vector3())));
+        if (!hpgManifest.has("portal2Chunk")){
+            hpgManifest.put("portal2Chunk", new Vector3DataPoint(new Vector3()));
         }
-        if (!hpgManifest.hasTag("portal2IdTime")){
-            hpgManifest.addTag(new DataTag<>("portal2IdTime", new LongDataAttribute(-1)));
+        if (!hpgManifest.has("portal2IdTime")){
+            hpgManifest.put("portal2IdTime", new LongDataPoint((long) -1));
         }
-        if (!hpgManifest.hasTag("portal2IdRand")){
-            hpgManifest.addTag(new DataTag<>("portal2IdRand", new IntDataAttribute(-1)));
+        if (!hpgManifest.has("portal2IdRand")){
+            hpgManifest.put("portal2IdRand", new IntegerDataPoint(-1));
         }
-        if (!hpgManifest.hasTag("portal2IdNum")){
-            hpgManifest.addTag(new DataTag<>("portal2IdNum", new IntDataAttribute(-1)));
+        if (!hpgManifest.has("portal2IdNum")){
+            hpgManifest.put("portal2IdNum", new IntegerDataPoint(-1));
         }
-        if (!hpgManifest.hasTag("portal2Zone")){
-            hpgManifest.addTag(new DataTag<>("portal2Zone", new StringDataAttribute(GameSingletons.world.defaultZoneId)));
+        if (!hpgManifest.has("portal2Zone")){
+            hpgManifest.put("portal2Zone", new StringDataPoint(GameSingletons.world.defaultZoneId));
         }
-        DataTag<Vector3> secondaryPortalChunkPos = hpgManifest.getTag("portal2Chunk");
-        DataTag<Integer> secondaryPortalIdRand = hpgManifest.getTag("portal2IdRand");
-        DataTag<Long> secondaryPortalIdTime = hpgManifest.getTag("portal2IdTime");
-        DataTag<Integer> secondaryPortalIdNum = hpgManifest.getTag("portal2IdNum");
-        DataTag<String> secondaryPortalZone = hpgManifest.getTag("portal2Zone");
+        Vector3DataPoint secondaryPortalChunkPos = (Vector3DataPoint) hpgManifest.get("portal2Chunk");
+        IntegerDataPoint secondaryPortalIdRand = (IntegerDataPoint) hpgManifest.get("portal2IdRand");
+        LongDataPoint secondaryPortalIdTime = (LongDataPoint) hpgManifest.get("portal2IdTime");
+        IntegerDataPoint secondaryPortalIdNum = (IntegerDataPoint) hpgManifest.get("portal2IdNum");
+        StringDataPoint secondaryPortalZone = (StringDataPoint) hpgManifest.get("portal2Zone");
 
         PortalManager pm = SeamlessPortals.portalManager;
         workingPos.set(player.getPosition()).add(player.getEntity().viewPositionOffset);
@@ -274,14 +272,14 @@ public class ExtraPortalUtils {
                     Vector3 upDir = getUpVectorForPortals(result.hitNormal(), player);
                     HPGPortal newPortal = HPGPortal.createNewPortal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), false, unstable, player.getZone());
                     if (newPortal == null) return;
-                    primaryPortalIdTime.attribute.setValue(newPortal.uniqueId.getTime());
-                    primaryPortalIdRand.attribute.setValue(newPortal.uniqueId.getRand());
-                    primaryPortalIdNum.attribute.setValue(newPortal.uniqueId.getNumber());
-                    primaryPortalChunkPos.attribute.getValue().set(Math.floorDiv((int) newPortal.position.x, 16), Math.floorDiv((int) newPortal.position.y, 16), Math.floorDiv((int) newPortal.position.z, 16));
-                    primaryPortalZone.attribute.setValue(player.zoneId);
+                    primaryPortalIdTime.setValue(newPortal.uniqueId.getTime());
+                    primaryPortalIdRand.setValue(newPortal.uniqueId.getRand());
+                    primaryPortalIdNum.setValue(newPortal.uniqueId.getNumber());
+                    primaryPortalChunkPos.getValue().set(Math.floorDiv((int) newPortal.position.x, 16), Math.floorDiv((int) newPortal.position.y, 16), Math.floorDiv((int) newPortal.position.z, 16));
+                    primaryPortalZone.setValue(player.zoneId);
                     if (secondaryPortalIdTime.getValue() != -1){
                         if (secPortal == null){
-                            secondaryPortalIdTime.attribute.setValue((long) -1);
+                            secondaryPortalIdTime.setValue((long) -1);
                         }
                         else{
                             newPortal.linkPortal(secPortal);
@@ -349,14 +347,14 @@ public class ExtraPortalUtils {
                     if (newPortal == null) {
                         return;
                     }
-                    secondaryPortalIdTime.attribute.setValue(newPortal.uniqueId.getTime());
-                    secondaryPortalIdRand.attribute.setValue(newPortal.uniqueId.getRand());
-                    secondaryPortalIdNum.attribute.setValue(newPortal.uniqueId.getNumber());
-                    secondaryPortalChunkPos.attribute.getValue().set(Math.floorDiv((int) newPortal.position.x, 16), Math.floorDiv((int) newPortal.position.y, 16), Math.floorDiv((int) newPortal.position.z, 16));
-                    secondaryPortalZone.attribute.setValue(player.zoneId);
+                    secondaryPortalIdTime.setValue(newPortal.uniqueId.getTime());
+                    secondaryPortalIdRand.setValue(newPortal.uniqueId.getRand());
+                    secondaryPortalIdNum.setValue(newPortal.uniqueId.getNumber());
+                    secondaryPortalChunkPos.getValue().set(Math.floorDiv((int) newPortal.position.x, 16), Math.floorDiv((int) newPortal.position.y, 16), Math.floorDiv((int) newPortal.position.z, 16));
+                    secondaryPortalZone.setValue(player.zoneId);
                     if (primaryPortalIdTime.getValue() != -1){
                         if (prPortal == null){
-                            primaryPortalIdTime.attribute.setValue((long) -1);
+                            primaryPortalIdTime.setValue((long) -1);
                         }
                         else{
                             newPortal.linkPortal(prPortal);
@@ -466,49 +464,49 @@ public class ExtraPortalUtils {
         }
     }
     public static void clearPortals(Player player, ItemStack hpgItemStack){
-        DataTagManifest hpgManifest = DataTagUtil.getManifestFromStack(hpgItemStack);
+        DataPointManifest hpgManifest = (DataPointManifest) DataPointUtil.getManifestFromStack(hpgItemStack);
 
-        if (!hpgManifest.hasTag("portal1Chunk")){
-            hpgManifest.addTag(new DataTag<>("portal1Chunk", new Vector3DataAttribute(new Vector3())));
+        if (!hpgManifest.has("portal1Chunk")){
+            hpgManifest.put("portal1Chunk", new Vector3DataPoint(new Vector3()));
         }
-        if (!hpgManifest.hasTag("portal1IdTime")){
-            hpgManifest.addTag(new DataTag<>("portal1IdTime", new LongDataAttribute(-1)));
+        if (!hpgManifest.has("portal1IdTime")){
+            hpgManifest.put("portal1IdTime", new LongDataPoint((long) -1));
         }
-        if (!hpgManifest.hasTag("portal1IdRand")){
-            hpgManifest.addTag(new DataTag<>("portal1IdRand", new IntDataAttribute(-1)));
+        if (!hpgManifest.has("portal1IdRand")){
+            hpgManifest.put("portal1IdRand", new IntegerDataPoint(-1));
         }
-        if (!hpgManifest.hasTag("portal1IdNum")){
-            hpgManifest.addTag(new DataTag<>("portal1IdNum", new IntDataAttribute(-1)));
+        if (!hpgManifest.has("portal1IdNum")){
+            hpgManifest.put("portal1IdNum", new IntegerDataPoint(-1));
         }
-        if (!hpgManifest.hasTag("portal1Zone")){
-            hpgManifest.addTag(new DataTag<>("portal1Zone", new StringDataAttribute(GameSingletons.world.defaultZoneId)));
+        if (!hpgManifest.has("portal1Zone")){
+            hpgManifest.put("portal1Zone", new StringDataPoint(GameSingletons.world.defaultZoneId));
         }
-        DataTag<Vector3> primaryPortalChunkPos = hpgManifest.getTag("portal1Chunk");
-        DataTag<Integer> primaryPortalIdRand = hpgManifest.getTag("portal1IdRand");
-        DataTag<Long> primaryPortalIdTime = hpgManifest.getTag("portal1IdTime");
-        DataTag<Integer> primaryPortalIdNum = hpgManifest.getTag("portal1IdNum");
-        DataTag<String> primaryPortalZone = hpgManifest.getTag("portal1Zone");
+        Vector3DataPoint primaryPortalChunkPos = (Vector3DataPoint) hpgManifest.get("portal1Chunk");
+        IntegerDataPoint primaryPortalIdRand = (IntegerDataPoint) hpgManifest.get("portal1IdRand");
+        LongDataPoint primaryPortalIdTime = (LongDataPoint) hpgManifest.get("portal1IdTime");
+        IntegerDataPoint primaryPortalIdNum = (IntegerDataPoint) hpgManifest.get("portal1IdNum");
+        StringDataPoint primaryPortalZone = (StringDataPoint) hpgManifest.get("portal1Zone");
 
-        if (!hpgManifest.hasTag("portal2Chunk")){
-            hpgManifest.addTag(new DataTag<>("portal2Chunk", new Vector3DataAttribute(new Vector3())));
+        if (!hpgManifest.has("portal2Chunk")){
+            hpgManifest.put("portal2Chunk", new Vector3DataPoint(new Vector3()));
         }
-        if (!hpgManifest.hasTag("portal2IdTime")){
-            hpgManifest.addTag(new DataTag<>("portal2IdTime", new LongDataAttribute(-1)));
+        if (!hpgManifest.has("portal2IdTime")){
+            hpgManifest.put("portal2IdTime", new LongDataPoint((long) -1));
         }
-        if (!hpgManifest.hasTag("portal2IdRand")){
-            hpgManifest.addTag(new DataTag<>("portal2IdRand", new IntDataAttribute(-1)));
+        if (!hpgManifest.has("portal2IdRand")){
+            hpgManifest.put("portal2IdRand", new IntegerDataPoint(-1));
         }
-        if (!hpgManifest.hasTag("portal2IdNum")){
-            hpgManifest.addTag(new DataTag<>("portal2IdNum", new IntDataAttribute(-1)));
+        if (!hpgManifest.has("portal2IdNum")){
+            hpgManifest.put("portal2IdNum", new IntegerDataPoint(-1));
         }
-        if (!hpgManifest.hasTag("portal2Zone")){
-            hpgManifest.addTag(new DataTag<>("portal2Zone", new StringDataAttribute(GameSingletons.world.defaultZoneId)));
+        if (!hpgManifest.has("portal2Zone")){
+            hpgManifest.put("portal2Zone", new StringDataPoint(GameSingletons.world.defaultZoneId));
         }
-        DataTag<Vector3> secondaryPortalChunkPos = hpgManifest.getTag("portal2Chunk");
-        DataTag<Integer> secondaryPortalIdRand = hpgManifest.getTag("portal2IdRand");
-        DataTag<Long> secondaryPortalIdTime = hpgManifest.getTag("portal2IdTime");
-        DataTag<Integer> secondaryPortalIdNum = hpgManifest.getTag("portal2IdNum");
-        DataTag<String> secondaryPortalZone = hpgManifest.getTag("portal2Zone");
+        Vector3DataPoint secondaryPortalChunkPos = (Vector3DataPoint) hpgManifest.get("portal2Chunk");
+        IntegerDataPoint secondaryPortalIdRand = (IntegerDataPoint) hpgManifest.get("portal2IdRand");
+        LongDataPoint secondaryPortalIdTime = (LongDataPoint) hpgManifest.get("portal2IdTime");
+        IntegerDataPoint secondaryPortalIdNum = (IntegerDataPoint) hpgManifest.get("portal2IdNum");
+        StringDataPoint secondaryPortalZone = (StringDataPoint) hpgManifest.get("portal2Zone");
 
         EntityUniqueId id1 = new EntityUniqueId();
         id1.set(primaryPortalIdTime.getValue(), primaryPortalIdRand.getValue(), primaryPortalIdNum.getValue());
@@ -529,8 +527,8 @@ public class ExtraPortalUtils {
             }
         }
 
-        primaryPortalIdTime.attribute.setValue((long) -1);
-        secondaryPortalIdTime.attribute.setValue((long) -1);
+        primaryPortalIdTime.setValue((long) -1);
+        secondaryPortalIdTime.setValue((long) -1);
 
         if (!GameSingletons.isClient || GameSingletons.client().getLocalPlayer() != player){
             ServerSingletons.getConnection(player).send(new ContainerSyncPacket(0, player.inventory));

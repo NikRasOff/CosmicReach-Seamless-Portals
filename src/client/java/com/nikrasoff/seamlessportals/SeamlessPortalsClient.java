@@ -2,8 +2,6 @@ package com.nikrasoff.seamlessportals;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
-import com.github.puzzle.core.loader.launch.provider.mod.entrypoint.impls.ClientModInitializer;
-import com.github.puzzle.core.loader.util.PuzzleEntrypointUtil;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
@@ -18,22 +16,25 @@ import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import com.nikrasoff.seamlessportals.rendering.models.ObjItemModel;
 import com.nikrasoff.seamlessportals.rendering.models.PortalModel;
 import com.nikrasoff.seamlessportals.api.IPortalEntityRendererInitialiser;
-import finalforeach.cosmicreach.GameSingletons;
+import dev.puzzleshq.puzzleloader.cosmic.core.modInitialises.ClientModInit;
+import dev.puzzleshq.puzzleloader.loader.util.PuzzleEntrypointUtil;
+import finalforeach.cosmicreach.ClientSingletons;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.Threads;
 import finalforeach.cosmicreach.rendering.items.ItemRenderer;
 import finalforeach.cosmicreach.ui.UI;
 import finalforeach.cosmicreach.util.Identifier;
 
-public class SeamlessPortalsClient implements ClientModInitializer {
+public class SeamlessPortalsClient implements ClientModInit {
     @Override
-    public void onInit() {
+    public void onClientInit() {
         SeamlessPortals.effectManager = new EffectManager();
         SeamlessPortals.effectManager.registerEffects();
         SeamlessPortals.clientConstants = new SPClientConstants();
         GameSingletons.registerBlockEntityScreenOpener("seamlessportals:omnium_calibrator", (info) -> {
             BlockEntityOmniumCalibrator omniumCalibrator = (BlockEntityOmniumCalibrator) info.blockEntity();
             final OmniumCalibratorScreen screen = new OmniumCalibratorScreen(info.windowId(), (BlockEntityOmniumCalibrator) info.blockEntity());
-            UI.addOpenBaseItemScreen(omniumCalibrator.slotContainer, screen);
+            UI.addOpenBaseScreen(omniumCalibrator.slotContainer, screen);
             screen.getActor().addAction(new Action() {
                 public boolean act(float delta) {
                     if (!omniumCalibrator.loaded) {
@@ -48,7 +49,7 @@ public class SeamlessPortalsClient implements ClientModInitializer {
         GameSingletons.registerBlockEntityScreenOpener("seamlessportals:spacial_anchor", (info) -> {
             BlockEntitySpacialAnchor spacialAnchor = (BlockEntitySpacialAnchor) info.blockEntity();
             final SpacialAnchorScreen screen = new SpacialAnchorScreen(info.windowId(), (BlockEntitySpacialAnchor) info.blockEntity());
-            UI.addOpenBaseItemScreen(spacialAnchor.slotContainer, screen);
+            UI.addOpenBaseScreen(spacialAnchor.slotContainer, screen);
             screen.getActor().addAction(new Action() {
                 public boolean act(float delta) {
                     if (!spacialAnchor.loaded) {
@@ -63,7 +64,7 @@ public class SeamlessPortalsClient implements ClientModInitializer {
         GameSingletons.registerBlockEntityScreenOpener("seamlessportals:portal_generator", (info) -> {
             BlockEntityPortalGenerator portalGenerator = (BlockEntityPortalGenerator) info.blockEntity();
             final PortalGeneratorScreen screen = new PortalGeneratorScreen(info.windowId(), (BlockEntityPortalGenerator) info.blockEntity());
-            UI.addOpenBaseItemScreen(portalGenerator.slotContainer, screen);
+            UI.addOpenBaseScreen(portalGenerator.slotContainer, screen);
             screen.getActor().addAction(new Action() {
                 public boolean act(float delta) {
                     if (!portalGenerator.loaded) {

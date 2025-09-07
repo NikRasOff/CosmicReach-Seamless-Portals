@@ -3,14 +3,14 @@ package com.nikrasoff.seamlessportals.mixin;
 import com.badlogic.gdx.math.Vector2;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.portals.Portal;
-import finalforeach.cosmicreach.GameSingletons;
-import finalforeach.cosmicreach.ZoneLoader;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.networking.server.ServerIdentity;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.world.EntityChunk;
 import finalforeach.cosmicreach.world.Zone;
+import finalforeach.cosmicreach.world.ZoneLoader;
 import finalforeach.cosmicreach.worldgen.ChunkColumn;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,7 +22,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
-import java.util.Queue;
 
 @Mixin(ZoneLoader.class)
 public abstract class ZoneLoaderMixin{
@@ -41,7 +40,7 @@ public abstract class ZoneLoaderMixin{
         }
     }
 
-    @Inject(method = "lambda$unloadFarAwayEntityChunks$5", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/ZoneLoader;getPlayerChunkX(Lfinalforeach/cosmicreach/entities/player/Player;)I"), cancellable = true)
+    @Inject(method = "lambda$unloadFarAwayEntityChunks$1", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/ZoneLoader;getPlayerChunkX(Lfinalforeach/cosmicreach/entities/player/Player;)I"), cancellable = true)
     private void stopUnloadingEntityChunksNearPortals(EntityChunk ec, int chunkRadius, Player p, CallbackInfoReturnable<Boolean> cir){
         if (ec.hasEntities() && !cosmicReach_Seamless_Portals$isEntityChunkOutsidePortalRange(ec, chunkRadius)){
             cir.setReturnValue(false);
@@ -134,7 +133,7 @@ public abstract class ZoneLoaderMixin{
 
     }
 
-    @Inject(method = "lambda$loadSurroundingChunks$3", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/ZoneLoader;loadSurroundingChunks(Lfinalforeach/cosmicreach/world/Zone;Lfinalforeach/cosmicreach/entities/player/Player;II)V"))
+    @Inject(method = "lambda$loadSurroundingChunks$0", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/ZoneLoader;loadSurroundingChunks(Lfinalforeach/cosmicreach/world/Zone;Lfinalforeach/cosmicreach/entities/player/Player;II)V"))
     void loadChunksWithPortals(int localGenRadiusInChunks, int lesserRadius, Player p, CallbackInfo ci){
         int portalChunkLoadRadius = 2;
         for (Map.Entry<EntityUniqueId, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()) {

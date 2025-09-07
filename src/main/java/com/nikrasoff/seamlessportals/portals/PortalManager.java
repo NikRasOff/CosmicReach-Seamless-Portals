@@ -9,7 +9,8 @@ import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
-import finalforeach.cosmicreach.GameSingletons;
+import dev.puzzleshq.annotation.documentation.Note;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.blockentities.BlockEntity;
 import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
@@ -46,6 +47,7 @@ public class PortalManager {
         if (this.spacialAnchors.get(String.valueOf(frequency)).isEmpty()) this.spacialAnchors.remove(String.valueOf(frequency));
     }
 
+    @Note("This method is causing a stack overflow due to it being use to read and entity and then reads more entities, this can cause an overlap on reads causing an infinite loop.")
     public Portal getPortalWithGen(EntityUniqueId portalID, Vector3 chunkCoords, String zoneID){
         Portal result = getPortal(portalID);
         if (result != null){

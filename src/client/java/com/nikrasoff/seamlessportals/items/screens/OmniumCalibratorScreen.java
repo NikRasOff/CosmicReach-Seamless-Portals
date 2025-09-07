@@ -2,6 +2,7 @@ package com.nikrasoff.seamlessportals.items.screens;
 
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -12,12 +13,17 @@ import com.nikrasoff.seamlessportals.items.containers.OmniumCalibratorSlotContai
 import com.nikrasoff.seamlessportals.ui.widgets.DoubleProgressTexture;
 import com.nikrasoff.seamlessportals.ui.widgets.FakeItemSlotWidget;
 import com.nikrasoff.seamlessportals.ui.widgets.TextureSwitchWidget;
+import dev.puzzleshq.puzzleloader.loader.util.ReflectionUtil;
 import finalforeach.cosmicreach.items.ItemSlot;
-import finalforeach.cosmicreach.items.screens.BaseItemScreen;
 import finalforeach.cosmicreach.ui.GameStyles;
+import finalforeach.cosmicreach.ui.screens.BaseItemScreen;
 import finalforeach.cosmicreach.ui.widgets.ContainerSlotWidget;
+import io.github.puzzle.cosmic.util.annotation.Note;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class OmniumCalibratorScreen extends BaseItemScreen {
+    private final ContainerSlotWidget[] slotWidgets;
     BlockEntityOmniumCalibrator omniumCalibrator;
 
     public OmniumCalibratorScreen(int windowId, BlockEntityOmniumCalibrator omniumCalibrator) {
@@ -28,6 +34,7 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
         Actor background = new Image(GameStyles.containerBackground9Patch);
         Table functionalTable = new Table();
         this.slotWidgets = new ContainerSlotWidget[container.numberOfSlots - 1];
+        setSlotWidgets(slotWidgets);
 
         ItemSlot s = container.getInputSlot();
         ContainerSlotWidget w = new ContainerSlotWidget(windowId, omniumCalibrator, container, s.getSlotId(), s.isOutputOnly());
@@ -46,6 +53,7 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
         this.slotWidgets[1] = w1;
 
         s = container.getOutputSlot2();
+        @Note("This is widget is not recording the output correctly from what I see.")
         FakeItemSlotWidget w2 = new FakeItemSlotWidget(windowId, omniumCalibrator, container, s.getSlotId(), s.isOutputOnly());
         w2.setFakeItem(SeamlessPortalsItems.OMNIUM_CRYSTAL);
         w2.addAction(new Action() {
@@ -111,8 +119,27 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
         stack.add(functionalTable);
         stack.add(decorationTable);
         stack.setBounds(background.getX(), background.getY(), background.getWidth(), background.getHeight());
-        this.slotActor = stack;
+        this.mainActor = stack;
+//        this.slotActor = stack;
         stack.setHeight(stack.getHeight() + 16.0F);
+
         this.init();
+    }
+
+    @Override
+    public void onShow() {
+        super.onShow();
+        for (ContainerSlotWidget slotWidget : slotWidgets) {
+            try {
+                if (slotWidget instanceof FakeItemSlotWidget slotWidget1) {
+                    ReflectionUtil.getMethod(Actor.class, "setStage", Stage.class)
+                            .invoke(slotWidget1.itemStackWidget, getActor().getStage());
+                }
+                ReflectionUtil.getMethod(Actor.class, "setStage", Stage.class)
+                        .invoke(slotWidget, getActor().getStage());
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

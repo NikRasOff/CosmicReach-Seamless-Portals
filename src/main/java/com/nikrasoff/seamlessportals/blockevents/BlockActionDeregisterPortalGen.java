@@ -2,7 +2,7 @@ package com.nikrasoff.seamlessportals.blockevents;
 
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
-import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.blockevents.BlockEventArgs;
 import finalforeach.cosmicreach.blockevents.actions.ActionId;
 import finalforeach.cosmicreach.blockevents.actions.IBlockAction;

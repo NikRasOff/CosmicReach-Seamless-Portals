@@ -1,17 +1,23 @@
 package com.nikrasoff.seamlessportals.items.screens;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
 import com.nikrasoff.seamlessportals.items.containers.SpacialAnchorSlotContainer;
+import com.nikrasoff.seamlessportals.ui.widgets.FakeItemSlotWidget;
+import dev.puzzleshq.puzzleloader.loader.util.ReflectionUtil;
 import finalforeach.cosmicreach.items.ItemSlot;
-import finalforeach.cosmicreach.items.screens.BaseItemScreen;
 import finalforeach.cosmicreach.ui.GameStyles;
+import finalforeach.cosmicreach.ui.screens.BaseItemScreen;
 import finalforeach.cosmicreach.ui.widgets.ContainerSlotWidget;
 
+import java.lang.reflect.InvocationTargetException;
+
 public class SpacialAnchorScreen extends BaseItemScreen {
+    private final ContainerSlotWidget[] slotWidgets;
     BlockEntitySpacialAnchor spacialAnchor;
 
     public SpacialAnchorScreen(int windowId, BlockEntitySpacialAnchor spacialAnchor) {
@@ -36,8 +42,27 @@ public class SpacialAnchorScreen extends BaseItemScreen {
         stack.add(background);
         stack.add(functionalTable);
         stack.setBounds(background.getX(), background.getY(), background.getWidth(), background.getHeight());
-        this.slotActor = stack;
+        this.mainActor = stack;
+//        this.slotActor = stack;
+        setSlotWidgets(slotWidgets);
         stack.setHeight(stack.getHeight() + 16.0F);
         this.init();
+    }
+
+    @Override
+    public void onShow() {
+        super.onShow();
+        for (ContainerSlotWidget slotWidget : slotWidgets) {
+            try {
+                if (slotWidget instanceof FakeItemSlotWidget slotWidget1) {
+                    ReflectionUtil.getMethod(Actor.class, "setStage", Stage.class)
+                            .invoke(slotWidget1.itemStackWidget, getActor().getStage());
+                }
+                ReflectionUtil.getMethod(Actor.class, "setStage", Stage.class)
+                        .invoke(slotWidget, getActor().getStage());
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

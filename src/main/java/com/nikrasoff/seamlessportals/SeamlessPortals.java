@@ -1,23 +1,15 @@
 package com.nikrasoff.seamlessportals;
 
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
-import com.github.puzzle.core.loader.provider.mod.entrypoint.impls.ModInitializer;
-import com.github.puzzle.core.loader.provider.mod.entrypoint.impls.PostModInitializer;
-import com.github.puzzle.core.loader.util.PuzzleEntrypointUtil;
-import com.github.puzzle.game.PuzzleRegistries;
-import com.github.puzzle.game.commands.CommandManager;
-import com.github.puzzle.game.events.OnLoadAssetsEvent;
-import com.github.puzzle.game.events.OnRegisterEvent;
-import com.nikrasoff.seamlessportals.api.IPortalInteractionSolver;
 import com.nikrasoff.seamlessportals.api.IPortalSolverInitialiser;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
 import com.nikrasoff.seamlessportals.commands.ClearAnchorsCommand;
 import com.nikrasoff.seamlessportals.commands.ListAnchorsCommand;
+import com.nikrasoff.seamlessportals.commands.TopCommand;
 import com.nikrasoff.seamlessportals.effects.IEffectManager;
 import com.nikrasoff.seamlessportals.entities.DestabiliserPulseEntity;
 import com.nikrasoff.seamlessportals.networking.packets.*;
@@ -25,8 +17,13 @@ import com.nikrasoff.seamlessportals.portals.HPGPortal;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.portals.PortalGenPortal;
 import com.nikrasoff.seamlessportals.portals.PortalManager;
+import dev.puzzleshq.puzzleloader.cosmic.core.modInitialises.ModInit;
+import dev.puzzleshq.puzzleloader.cosmic.core.modInitialises.PostModInit;
+import dev.puzzleshq.puzzleloader.cosmic.core.modInitialises.PreModInit;
+import dev.puzzleshq.puzzleloader.cosmic.game.GameRegistries;
+import dev.puzzleshq.puzzleloader.loader.util.PuzzleEntrypointUtil;
 import finalforeach.cosmicreach.GameAssetLoader;
-import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.blockentities.BlockEntity;
 import finalforeach.cosmicreach.blockevents.BlockEvents;
 import finalforeach.cosmicreach.blocks.Block;
@@ -39,13 +36,13 @@ import finalforeach.cosmicreach.networking.packets.blockentities.BlockEntityData
 import finalforeach.cosmicreach.networking.packets.blockentities.BlockEntityScreenPacket;
 import finalforeach.cosmicreach.networking.server.ServerIdentity;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
+import finalforeach.cosmicreach.util.GameTag;
 import finalforeach.cosmicreach.util.Identifier;
 import finalforeach.cosmicreach.worldgen.Ore;
-import meteordevelopment.orbit.EventHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class SeamlessPortals implements ModInitializer, PostModInitializer {
+public class SeamlessPortals implements PreModInit, ModInit, PostModInit {
     public static PortalManager portalManager = new PortalManager();
     public static IEffectManager effectManager;
     public static ISPClientConstants clientConstants;
@@ -86,9 +83,10 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
             "block_events_ore_omnium"
     };
 
+
+
     @Override
     public void onInit() {
-        PuzzleRegistries.EVENT_BUS.subscribe(this);
         LOGGER.info("Initialising Seamless Portals!");
         GamePacket.registerPacket(HpgFiredPacket.class);
         GamePacket.registerPacket(PortalAnimationPacket.class);
@@ -100,8 +98,6 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
         GamePacket.registerPacket(ActivatePortalGenPacket.class);
         GamePacket.registerPacket(DeactivatePortalGenPacket.class);
         GamePacket.registerPacket(ConvergenceEventPacket.class);
-
-        SeamlessPortalsBlockEvents.registerSeamlessPortalsBlockEvents();
 
         if (!GameSingletons.isClient){
             GameSingletons.registerBlockEntityScreenOpener("seamlessportals:omnium_calibrator", (info) -> {
@@ -125,8 +121,7 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
         }
 
 
-        ListAnchorsCommand.register(CommandManager.DISPATCHER);
-        ClearAnchorsCommand.register(CommandManager.DISPATCHER);
+        TopCommand.register();
         SeamlessPortalsItems.registerItems();
     }
 
@@ -137,10 +132,6 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
         EntityCreator.registerEntityCreator("seamlessportals:entity_hpg_portal", HPGPortal::readPortal);
         EntityCreator.registerEntityCreator(DestabiliserPulseEntity.ENTITY_ID.toString(), DestabiliserPulseEntity::new);
 
-        BlockStateGenerator.loadGeneratorsFromFile(GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "block_state_generators/directional_blocks.json")));
-        for (String id: blockIds){
-            Block.loadBlock(GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "blocks/" + id + ".json")));
-        }
         Json json = new Json();
         json.setSerializer(Vector3.class, new Json.Serializer<>() {
             public void write(Json json, Vector3 object, Class knownType) {
@@ -155,6 +146,11 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
         for (String id: blockEventIds){
             BlockEvents.loadBlockEventsFromAsset(json, GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "block_events/" + id + ".json")));
         }
+
+        BlockStateGenerator.loadGeneratorsFromFile(GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "block_state_generators/directional_blocks.json")));
+        for (String id: blockIds){
+            Block.loadBlock(GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "blocks/" + id + ".json")));
+        }
         Loot.loadLoot(GameAssetLoader.loadJson("seamlessportals:loot/ore_omnium.json"));
         json = new Json();
         for (String id : recipeIds){
@@ -163,7 +159,12 @@ public class SeamlessPortals implements ModInitializer, PostModInitializer {
         BlockEntityOmniumCalibrator.registerBlockEntityCreator();
         BlockEntitySpacialAnchor.registerBlockEntityCreator();
         BlockEntityPortalGenerator.registerBlockEntityCreator();
-        oreOmnium = (new Ore(Block.getById(Identifier.of(SeamlessPortalsConstants.MOD_ID, "ore_omnium")).getDefaultBlockState(), Ore.TAG_ORE_REPLACEABLE)).setMaxElevation(-32).setMaxOresPerCluster(5).setAttemptsPerColumn(2);
+        oreOmnium = (new Ore(Block.getById(Identifier.of(SeamlessPortalsConstants.MOD_ID, "ore_omnium")).getDefaultBlockState(), GameTag.get("replaceable"))).setMaxElevation(-32).setMaxOresPerCluster(5).setAttemptsPerColumn(2);
         PuzzleEntrypointUtil.invoke("portalInteractionSolver", IPortalSolverInitialiser.class, IPortalSolverInitialiser::initPortalInteractionSolvers);
+    }
+
+    @Override
+    public void onPreInit() {
+        SeamlessPortalsBlockEvents.registerSeamlessPortalsBlockEvents();
     }
 }

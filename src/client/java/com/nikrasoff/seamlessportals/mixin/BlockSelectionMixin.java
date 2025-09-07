@@ -12,7 +12,7 @@ import com.nikrasoff.seamlessportals.items.UnstableHandheldPortalGen;
 import com.nikrasoff.seamlessportals.networking.packets.HpgFiredPacket;
 import com.nikrasoff.seamlessportals.networking.packets.PortalClearPacket;
 import finalforeach.cosmicreach.BlockSelection;
-import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.audio.SoundManager;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.gamestates.InGame;
@@ -48,13 +48,17 @@ public abstract class BlockSelectionMixin {
     @Inject(method = "render", at = @At("HEAD"))
     private void debugPortalRender(Camera worldCamera, CallbackInfo ci){
         if (UI.renderDebugInfo){
-            shapeRenderer.setProjectionMatrix(worldCamera.combined);
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-            shapeRenderer.setColor(Color.RED);
-            shapeRenderer.line(cosmicReach_Seamless_Portals$portalRaycastOriginDebug, cosmicReach_Seamless_Portals$portalRaycastHitDebug);
-            shapeRenderer.setColor(Color.BLUE);
-            shapeRenderer.line(cosmicReach_Seamless_Portals$portalRaycastHitDebug, cosmicReach_Seamless_Portals$tmpVectorForPortals.set(cosmicReach_Seamless_Portals$portalRaycastHitDebug).add(cosmicReach_Seamless_Portals$portalRaycastNormalDebug));
-            shapeRenderer.end();
+            try {
+                shapeRenderer.setProjectionMatrix(worldCamera.combined);
+                shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+                shapeRenderer.setColor(Color.RED);
+                shapeRenderer.line(cosmicReach_Seamless_Portals$portalRaycastOriginDebug, cosmicReach_Seamless_Portals$portalRaycastHitDebug);
+                shapeRenderer.setColor(Color.BLUE);
+                shapeRenderer.line(cosmicReach_Seamless_Portals$portalRaycastHitDebug, cosmicReach_Seamless_Portals$tmpVectorForPortals.set(cosmicReach_Seamless_Portals$portalRaycastHitDebug).add(cosmicReach_Seamless_Portals$portalRaycastNormalDebug));
+                shapeRenderer.end();
+            } catch (Exception ignore) {
+                shapeRenderer.end();
+            }
         }
     }
 

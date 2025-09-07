@@ -28,8 +28,9 @@ public class SeamlessPortalsItems {
 
         CALIBRATED_OMNIUM_CRYSTAL = new SyncedOmniumCrystal();
         AbstractCosmicItem.register(CALIBRATED_OMNIUM_CRYSTAL);
-        AbstractCosmicItem.register(new HandheldPortalGen());
         AbstractCosmicItem.register(new WarpCore());
-        AbstractCosmicItem.register(new UnstableHandheldPortalGen());
+
+        Item.allItems.put("seamlessportals:handheld_portal_generator", new HandheldPortalGen());
+        Item.allItems.put("seamlessportals:unstable_handheld_portal_generator", new UnstableHandheldPortalGen());
     }
 }

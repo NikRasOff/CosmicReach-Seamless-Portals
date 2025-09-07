@@ -1,7 +1,7 @@
 package com.nikrasoff.seamlessportals.items;
 
-import com.github.puzzle.core.loader.util.ModLocator;
 import com.nikrasoff.seamlessportals.SPMainT;
+import dev.puzzleshq.puzzleloader.loader.util.ModFinder;
 import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.lang.Lang;
 import finalforeach.cosmicreach.util.Identifier;
@@ -24,7 +24,7 @@ public class SyncedOmniumCrystal extends AnimatedItem {
     }
 
     public String getName(ItemStack stack){
-        if (ModLocator.isModLoaded("cosmic_tooltips")){
+        if (ModFinder.isModLoaded("cosmic_tooltips")){
             if (SPMainT.areAdvancedTooltipsOn()){
                 return this.getName();
             }

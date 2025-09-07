@@ -5,12 +5,13 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
-import com.github.puzzle.core.loader.util.Reflection;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntity;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntityModelInstance;
 import com.nikrasoff.seamlessportals.portals.Portal;
+import dev.puzzleshq.puzzleloader.loader.util.ReflectionUtil;
 import finalforeach.cosmicreach.TickRunner;
 import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
 import finalforeach.cosmicreach.rendering.entities.instances.ItemEntityModelInstance;
 import finalforeach.cosmicreach.rendering.items.ItemThingModel;
@@ -128,11 +129,15 @@ public abstract class EntityAnimationMixin implements IModEntity {
         }
 
         this.modelInstance.setTint(r, g, b, 1.0F);
-        if (this.modelInstance instanceof ItemEntityModelInstance && Reflection.getFieldContents(this.modelInstance, "model") instanceof CosmicItemModelWrapper w){
-            w.renderAsEntity(this.position, Reflection.getFieldContents(this, "itemStack"), renderCamera, customMatrix);
-        }
-        else {
-            this.modelInstance.render((Entity) (Object) this, renderCamera, customMatrix, true);
+        try {
+            if (this.modelInstance instanceof ItemEntityModelInstance && ReflectionUtil.getField(this.modelInstance, "model").get(this.modelInstance) instanceof CosmicItemModelWrapper w){
+                w.renderAsEntity(this.position, (ItemStack) ReflectionUtil.getField(this, "itemStack").get(this), renderCamera, customMatrix);
+            }
+            else {
+                this.modelInstance.render((Entity) (Object) this, renderCamera, customMatrix, true);
+            }
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
         }
     }
 

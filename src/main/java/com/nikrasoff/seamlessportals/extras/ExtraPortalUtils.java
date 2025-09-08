@@ -15,7 +15,7 @@ import com.nikrasoff.seamlessportals.networking.packets.UpdatePortalPacket;
 import com.nikrasoff.seamlessportals.portals.HPGPortal;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.portals.PortalManager;
-import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.blocks.PooledBlockPosition;

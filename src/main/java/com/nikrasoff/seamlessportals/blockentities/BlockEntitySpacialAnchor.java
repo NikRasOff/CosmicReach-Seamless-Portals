@@ -1,7 +1,8 @@
 package com.nikrasoff.seamlessportals.blockentities;
 
 import com.nikrasoff.seamlessportals.items.containers.SpacialAnchorSlotContainer;
-import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.blocks.BlockState;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.blockentities.BlockEntity;
 import finalforeach.cosmicreach.blockentities.BlockEntityCreator;
 import finalforeach.cosmicreach.blockentities.IBlockEntityWithContainer;
@@ -29,8 +30,15 @@ public class BlockEntitySpacialAnchor extends BlockEntity implements IBlockEntit
         this(blockPosition.getZone(), blockPosition.getGlobalX(), blockPosition.getGlobalY(), blockPosition.getGlobalZ());
     }
 
+    @Override
+    public void onCreate(BlockState blockState) {
+        setTicking(true);
+        super.onCreate(blockState);
+    }
+
     public void onRemove() {
         super.onRemove();
+        setTicking(false);
         if (this.slotContainer.isPrimed()){
             this.slotContainer.deregisterSpacialAnchor();
         }

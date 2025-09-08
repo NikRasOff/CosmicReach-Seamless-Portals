@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
-import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.blockentities.BlockEntity;
 import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.networking.GamePacket;

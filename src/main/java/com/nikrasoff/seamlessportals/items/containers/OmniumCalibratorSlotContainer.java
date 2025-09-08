@@ -1,13 +1,16 @@
 package com.nikrasoff.seamlessportals.items.containers;
 
+import com.badlogic.gdx.math.Vector3;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsItems;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
-import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.items.ISlotContainer;
 import finalforeach.cosmicreach.items.ItemSlot;
 import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.items.containers.SlotContainer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
+import finalforeach.cosmicreach.singletons.GameSingletons;
+import finalforeach.cosmicreach.world.Zone;
 import io.github.puzzle.cosmic.api.util.DataPointUtil;
 import io.github.puzzle.cosmic.impl.data.point.DataPointManifest;
 import io.github.puzzle.cosmic.impl.data.point.single.IntegerDataPoint;
@@ -102,5 +105,14 @@ public class OmniumCalibratorSlotContainer extends SlotContainer {
     }
     public ItemSlot getOutputSlot2(){
         return this.getSlot(3);
+    }
+
+    @Override
+    public void dropAllItems(Zone zone, Vector3 position) {
+        super.dropAllItems(zone, position);
+    }
+
+    public void clear() {
+        super.clear();
     }
 }

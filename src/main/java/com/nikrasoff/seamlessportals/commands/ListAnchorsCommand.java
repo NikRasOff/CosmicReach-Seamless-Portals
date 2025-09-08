@@ -1,27 +1,18 @@
 package com.nikrasoff.seamlessportals.commands;
 
-import com.github.puzzle.game.commands.CommandManager;
-import com.github.puzzle.game.commands.ServerCommandSource;
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.context.CommandContext;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
-import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.chat.IChat;
+import finalforeach.cosmicreach.chat.commands.Command;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.chat.Chat;
 import finalforeach.cosmicreach.networking.NetworkIdentity;
 import finalforeach.cosmicreach.networking.packets.MessagePacket;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
 
-public class ListAnchorsCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher){
-        LiteralArgumentBuilder<ServerCommandSource> cmd = CommandManager.literal("anchorList");
-        cmd.requires(ServerCommandSource::hasOperator).executes(ListAnchorsCommand::run);
-        LiteralArgumentBuilder<ServerCommandSource> cmd2 = CommandManager.literal("portal");
-        cmd2.then(cmd);
-        dispatcher.register(cmd2);
-    }
+public class ListAnchorsCommand extends Command {
 
-    public static int run(CommandContext<ServerCommandSource> context){
+    @Override
+    public void run(IChat chat) {
         if (GameSingletons.isClient){
             Chat.MAIN_CLIENT_CHAT.addMessage(null, "All spacial anchors:");
             SeamlessPortals.portalManager.spacialAnchors.forEach(entry -> {
@@ -31,8 +22,9 @@ public class ListAnchorsCommand {
                 });
             });
         }
+
         if (GameSingletons.isHost && ServerSingletons.SERVER != null){
-            NetworkIdentity identity = context.getSource().getIdentity();
+            NetworkIdentity identity = ServerSingletons.getConnection(getCallingPlayer());
             identity.send(new MessagePacket("All spacial anchors:"));
             SeamlessPortals.portalManager.spacialAnchors.forEach(entry -> {
                 identity.send(new MessagePacket("At id " + entry.key + ":"));
@@ -41,6 +33,11 @@ public class ListAnchorsCommand {
                 });
             });
         }
-        return 0;
     }
+
+    @Override
+    public String getShortDescription() {
+        return "";
+    }
+
 }

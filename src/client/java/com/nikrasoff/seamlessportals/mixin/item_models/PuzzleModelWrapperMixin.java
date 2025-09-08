@@ -20,7 +20,7 @@ public abstract class PuzzleModelWrapperMixin implements ISliceableItemModel {
 
     @Shadow public abstract void renderAsItemEntity(Vector3 vector3, Camera camera, Matrix4 matrix4);
 
-    @Shadow public abstract void renderAsEntity(Vector3 pos, IItemStack stack, Camera entityCam, Matrix4 tmpMatrix);
+    @Shadow public abstract void renderAsEntity(Vector3 pos, ItemStack stack, Camera entityCam, Matrix4 tmpMatrix);
 
     @Override
     public void renderAsSlicedEntity(Vector3 position, Camera renderCamera, Matrix4 modelMatrix, Portal portal, boolean isDuplicate) {
@@ -38,7 +38,7 @@ public abstract class PuzzleModelWrapperMixin implements ISliceableItemModel {
             s.renderAsSlicedEntity(position, stack, renderCamera, modelMatrix, portal, isDuplicate);
         }
         else {
-            this.renderAsEntity(position, (IItemStack) stack, renderCamera, modelMatrix);
+            this.renderAsEntity(position, stack, renderCamera, modelMatrix);
         }
     }
 }

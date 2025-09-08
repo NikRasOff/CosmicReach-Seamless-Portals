@@ -7,7 +7,7 @@ import com.nikrasoff.seamlessportals.extras.IntVector3;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
 import com.nikrasoff.seamlessportals.items.containers.PortalGeneratorSlotContainer;
 import com.nikrasoff.seamlessportals.portals.Portal;
-import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.blockentities.BlockEntity;
 import finalforeach.cosmicreach.blockentities.BlockEntityCreator;
 import finalforeach.cosmicreach.blockentities.IBlockEntityWithContainer;
@@ -50,8 +50,15 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
 
     public void onRemove() {
         super.onRemove();
+        setTicking(false);
         this.isBeingDeleted = true;
         this.slotContainer.dropAllItems(this.zone, (float)this.getGlobalX() + 0.5F, (float)this.getGlobalY() + 0.5F, (float)this.getGlobalZ() + 0.5F);
+    }
+
+    @Override
+    public void onCreate(BlockState blockState) {
+        setTicking(true);
+        super.onCreate(blockState);
     }
 
     public void onInteract(Player player, Zone zone) {

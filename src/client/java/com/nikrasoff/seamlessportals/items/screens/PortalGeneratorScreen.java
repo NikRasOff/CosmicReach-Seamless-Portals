@@ -5,28 +5,35 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.github.puzzle.game.ui.font.CosmicReachFont;
 import com.nikrasoff.seamlessportals.SPClientConstants;
+import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
 import com.nikrasoff.seamlessportals.extras.SomeStringUtils;
 import com.nikrasoff.seamlessportals.items.containers.PortalGeneratorSlotContainer;
 import com.nikrasoff.seamlessportals.networking.packets.ActivatePortalGenPacket;
 import com.nikrasoff.seamlessportals.networking.packets.DeactivatePortalGenPacket;
 import com.nikrasoff.seamlessportals.networking.packets.PortalGeneratorUpdatePacket;
+import com.nikrasoff.seamlessportals.ui.widgets.FakeItemSlotWidget;
+import dev.puzzleshq.puzzleloader.loader.util.ReflectionUtil;
+import finalforeach.cosmicreach.CosmicReachFont;
 import finalforeach.cosmicreach.chat.Chat;
 import finalforeach.cosmicreach.items.ItemSlot;
-import finalforeach.cosmicreach.items.screens.BaseItemScreen;
 import finalforeach.cosmicreach.lang.Lang;
 import finalforeach.cosmicreach.networking.client.ClientNetworkManager;
 import finalforeach.cosmicreach.networking.packets.blockentities.BlockEntityDataPacket;
 import finalforeach.cosmicreach.ui.GameStyles;
+import finalforeach.cosmicreach.ui.screens.BaseItemScreen;
 import finalforeach.cosmicreach.ui.widgets.ContainerSlotWidget;
 
+import java.lang.reflect.InvocationTargetException;
+
 public class PortalGeneratorScreen extends BaseItemScreen {
+    private final ContainerSlotWidget[] slotWidgets;
     BlockEntityPortalGenerator portalGenerator;
 
     private static BitmapFont font;
@@ -200,7 +207,9 @@ public class PortalGeneratorScreen extends BaseItemScreen {
         stack.add(backgroundTable);
         stack.add(overallTable);
         stack.setBounds(background.getX(), background.getY(), background.getWidth(), background.getHeight());
-        this.slotActor = stack;
+        setSlotWidgets(slotWidgets);
+        this.mainActor = stack;
+//        this.slotActor = stack;
         stack.setHeight(stack.getHeight() + 16.0F);
         this.init();
     }
@@ -242,6 +251,23 @@ public class PortalGeneratorScreen extends BaseItemScreen {
         else this.yellInChat(this.secondaryOffsetYField.getText());
         if (ClientNetworkManager.isConnected()){
             ClientNetworkManager.sendAsClient(new PortalGeneratorUpdatePacket(this.portalGenerator));
+        }
+    }
+
+    @Override
+    public void onShow() {
+        super.onShow();
+        for (ContainerSlotWidget slotWidget : slotWidgets) {
+            try {
+                if (slotWidget instanceof FakeItemSlotWidget slotWidget1) {
+                    ReflectionUtil.getMethod(Actor.class, "setStage", Stage.class)
+                            .invoke(slotWidget1.itemStackWidget, getActor().getStage());
+                }
+                ReflectionUtil.getMethod(Actor.class, "setStage", Stage.class)
+                        .invoke(slotWidget, getActor().getStage());
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

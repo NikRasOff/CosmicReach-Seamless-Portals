@@ -11,8 +11,11 @@
     "icon": "seamlessportals:seamless_portals.png"
   },
   "entrypoints": {
-    "client_init": [
+    "client-init": [
       "com.nikrasoff.seamlessportals.SeamlessPortalsClient"
+    ],
+    "preInit": [
+      "com.nikrasoff.seamlessportals.SeamlessPortals"
     ],
     "init": [
       "com.nikrasoff.seamlessportals.SeamlessPortals"
@@ -33,7 +36,8 @@
   ],
   "depends": {
     "cosmic-reach": ">=${cr_version}",
-    "puzzle-loader": ">=${puzzle_version}"
+    "cosmic-api": ">=${cosmic_api_version}",
+    "puzzle-loader-cosmic": ">=${puzzle_cosmic_version}"
   },
   "accessTransformers": ["seamlessportals.manipulator"],
   "allowedSides": {

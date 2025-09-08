@@ -10,7 +10,8 @@ import com.nikrasoff.seamlessportals.extras.DirectionVector;
 import com.nikrasoff.seamlessportals.extras.PortalEntityTools;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
 import com.nikrasoff.seamlessportals.portals.Portal;
-import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.entities.IDamageSource;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.entities.EntityUniqueId;
@@ -174,7 +175,12 @@ public class DefaultPortalInteractionSolver implements IPortalInteractionSolver 
         if (interactingPortal.zone != zone) return;
         if (interactingPortal.isNotOnSameSideOfPortal(prevPos.cpy().add(portalPosCheckEpsilon), targetPos.cpy().add(portalPosCheckEpsilon)) && Intersector.intersectRayOrientedBounds(posChange, interactingPortal.getMeshBoundingBox(), new Vector3())){
             if (interactingPortal.linkedPortal == null){
-                entity.forceHit(1000000);
+                entity.hit(new IDamageSource() {
+                    @Override
+                    public boolean isEntity() {
+                        return false;
+                    }
+                }, 1000000);
                 stopCheck = true;
                 return;
             }

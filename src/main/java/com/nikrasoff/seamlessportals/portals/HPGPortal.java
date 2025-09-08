@@ -14,7 +14,7 @@ import com.nikrasoff.seamlessportals.extras.IntVector3;
 import com.nikrasoff.seamlessportals.networking.packets.ConvergenceEventPacket;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
 import com.nikrasoff.seamlessportals.networking.packets.UpdatePortalPacket;
-import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.CommonEntityTags;
 import finalforeach.cosmicreach.entities.components.GravityComponent;
@@ -66,8 +66,7 @@ public class HPGPortal extends Portal {
             if (GameSingletons.isHost){
                 //TODO: Fix when more zones get added
                 lPortal = SeamlessPortals.portalManager.getPortalWithGen(portal.linkedPortalID, portal.linkedPortalChunkCoords, zoneId);
-            }
-            else {
+            } else {
                 lPortal = SeamlessPortals.portalManager.getPortal(portal.linkedPortalID);
             }
             if (lPortal != null){

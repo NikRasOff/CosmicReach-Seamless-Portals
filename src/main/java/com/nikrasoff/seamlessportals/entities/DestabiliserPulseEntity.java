@@ -6,7 +6,7 @@ import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.entities.components.PortalCheckComponent;
 import com.nikrasoff.seamlessportals.networking.packets.CreateEffectPacket;
-import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.entities.CommonEntityTags;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.entities.components.GravityComponent;

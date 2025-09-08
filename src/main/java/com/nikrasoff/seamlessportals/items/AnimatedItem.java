@@ -1,5 +1,6 @@
 package com.nikrasoff.seamlessportals.items;
 
+import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.util.Identifier;
 import io.github.puzzle.cosmic.api.entity.IEntity;
 import io.github.puzzle.cosmic.api.item.IItemStack;
@@ -27,7 +28,7 @@ public abstract class AnimatedItem extends AbstractCosmicItem implements ITickin
 
     @Override
     public void tickStack(float fixedUpdateTimeStep, IItemStack itemStack, boolean isBeingHeld) {
-        DataPointManifest tag = (DataPointManifest) DataPointUtil.getManifestFromStack(itemStack);
+        DataPointManifest tag = (DataPointManifest) DataPointUtil.getManifestFromStack((ItemStack) itemStack);
         if (!tag.has("currentEntry")) {
             tag.put("currentEntry", new IntegerDataPoint(0));
         }
@@ -48,7 +49,7 @@ public abstract class AnimatedItem extends AbstractCosmicItem implements ITickin
 
     @Override
     public void tickEntity(IZone zone, double deltaTime, IEntity entity, IItemStack itemStack) {
-        DataPointManifest tag = (DataPointManifest) DataPointUtil.getManifestFromStack(itemStack);
+        DataPointManifest tag = (DataPointManifest) DataPointUtil.getManifestFromStack((ItemStack) itemStack);
         if (!tag.has("currentEntry")) {
             tag.put("currentEntry", new IntegerDataPoint(0));
         }

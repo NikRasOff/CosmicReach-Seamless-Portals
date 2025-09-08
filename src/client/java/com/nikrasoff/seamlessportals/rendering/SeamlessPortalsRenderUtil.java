@@ -40,6 +40,7 @@ public class SeamlessPortalsRenderUtil {
     private static final Color tintColor = new Color();
     private static final BlockPosition tmpBlockPos1 = new BlockPosition(null, 0, 0, 0);
     private static final BlockPosition tmpBlockPos2 = new BlockPosition(null, 0, 0, 0);
+
     public static void initialise(){
         modelMap = new HashMap<>();
         renderContext = new RenderContext(new DefaultTextureBinder(DefaultTextureBinder.LRU));

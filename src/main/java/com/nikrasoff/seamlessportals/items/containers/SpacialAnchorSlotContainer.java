@@ -1,5 +1,6 @@
 package com.nikrasoff.seamlessportals.items.containers;
 
+import com.badlogic.gdx.math.Vector3;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsItems;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
@@ -10,6 +11,7 @@ import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.items.containers.SlotContainer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
+import finalforeach.cosmicreach.world.Zone;
 import io.github.puzzle.cosmic.api.util.DataPointUtil;
 import io.github.puzzle.cosmic.impl.data.point.DataPointManifest;
 
@@ -87,5 +89,14 @@ public class SpacialAnchorSlotContainer extends SlotContainer {
 
     public ItemSlot getInputSlot(){
         return this.getSlot(0);
+    }
+
+    @Override
+    public void dropAllItems(Zone zone, Vector3 position) {
+        super.dropAllItems(zone, position);
+    }
+
+    public void clear() {
+        super.clear();
     }
 }

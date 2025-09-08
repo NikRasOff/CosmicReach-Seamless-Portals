@@ -8,7 +8,7 @@ import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
 import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
 import com.nikrasoff.seamlessportals.entities.components.PortalCheckComponent;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
-import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.blockentities.BlockEntity;
 import finalforeach.cosmicreach.entities.CommonEntityTags;
 import finalforeach.cosmicreach.entities.components.GravityComponent;

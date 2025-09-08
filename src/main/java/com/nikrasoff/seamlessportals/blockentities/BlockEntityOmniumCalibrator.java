@@ -1,7 +1,7 @@
 package com.nikrasoff.seamlessportals.blockentities;
 
 import com.nikrasoff.seamlessportals.items.containers.OmniumCalibratorSlotContainer;
-import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.blockentities.BlockEntity;
 import finalforeach.cosmicreach.blockentities.BlockEntityCreator;
 import finalforeach.cosmicreach.blockentities.IBlockEntityWithContainer;
@@ -38,7 +38,14 @@ public class BlockEntityOmniumCalibrator extends BlockEntity implements IBlockEn
 
     public void onRemove() {
         super.onRemove();
+        setTicking(false);
         this.slotContainer.dropAllItems(this.zone, (float)this.getGlobalX() + 0.5F, (float)this.getGlobalY() + 0.5F, (float)this.getGlobalZ() + 0.5F);
+    }
+
+    @Override
+    public void onCreate(BlockState blockState) {
+        setTicking(true);
+        super.onCreate(blockState);
     }
 
     public void onInteract(Player player, Zone zone) {
@@ -68,15 +75,17 @@ public class BlockEntityOmniumCalibrator extends BlockEntity implements IBlockEn
     }
 
     public void updateBlockState(boolean isWorking){
-        BlockState currentBlockState = this.getBlockState();
-        String facing = currentBlockState.getParam("facing");
-        HashMap<String, String> newParams = new HashMap<>();
-        newParams.put("active", (isWorking ? "true" : "false"));
-        newParams.put("facing", facing);
-        BlockState newBlockState = currentBlockState.getVariantWithParams(newParams);
-        if (newBlockState != currentBlockState){
-            BlockSetter.get().replaceBlock(this.zone, newBlockState, getGlobalX(), getGlobalY(), getGlobalZ());
-        }
+        try {
+            BlockState currentBlockState = this.getBlockState();
+            String facing = currentBlockState.getParam("facing");
+            HashMap<String, String> newParams = new HashMap<>();
+            newParams.put("active", (isWorking ? "true" : "false"));
+            newParams.put("facing", facing);
+            BlockState newBlockState = currentBlockState.getVariantWithParams(newParams);
+            if (newBlockState != currentBlockState){
+                BlockSetter.get().replaceBlock(this.zone, newBlockState, getGlobalX(), getGlobalY(), getGlobalZ());
+            }
+        } catch (Exception ignore) {}
     }
 
     public void onTick() {

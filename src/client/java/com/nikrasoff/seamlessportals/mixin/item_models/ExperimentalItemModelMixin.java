@@ -6,7 +6,10 @@ import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.nikrasoff.seamlessportals.SPClientConstants;
+import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.interfaces.ISliceablePuzzleModel;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.blocks.BlockPosition;
@@ -16,6 +19,7 @@ import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.world.Sky;
 import finalforeach.cosmicreach.world.Zone;
+import io.github.puzzle.cosmic.api.data.point.IDataPointManifest;
 import io.github.puzzle.cosmic.api.item.IItem;
 import io.github.puzzle.cosmic.api.util.DataPointUtil;
 import io.github.puzzle.cosmic.impl.client.item.CosmicItemModel;
@@ -55,13 +59,19 @@ public abstract class ExperimentalItemModelMixin implements ISliceablePuzzleMode
         }
     }
 
+//    @WrapOperation(method = "renderGeneric", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/items/ItemStack;getPointManifest()Lio/github/puzzle/cosmic/api/data/point/IDataPointManifest;"))
+//    private IDataPointManifest fixPuzzleTextureBug(ItemStack instance, Operation<IDataPointManifest> original){
+//        SeamlessPortals.LOGGER.info("Caught issue");
+//        return null;
+//    }
+
     @Override
     public void renderAsSlicedEntity(Vector3 position, ItemStack stack, Camera renderCamera, Matrix4 modelMatrix, Portal portal, boolean isDuplicate) {
         modelMatrix.translate(0.5F, 0.2F, 0.5F);
         modelMatrix.scale(0.7F, 0.7F, 0.7F);
         DataPointManifest stackManifest;
         try {
-            stackManifest = (DataPointManifest) DataPointUtil.getManifestFromStack(stack);
+            stackManifest = (DataPointManifest) stack.getPointManifest();
         } catch (Exception var11) {
             stackManifest = null;
         }

@@ -3,6 +3,7 @@ package com.nikrasoff.seamlessportals.ui.widgets;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import finalforeach.cosmicreach.items.*;
@@ -31,6 +32,7 @@ public class FakeItemSlotWidget extends ContainerSlotWidget {
 
     public FakeItemSlotWidget(int windowId, ISlotContainerParent containerParent, Supplier<ISlotContainer> getSlotContainer, int slotId, boolean isOutput) {
         super(windowId, containerParent, getSlotContainer, slotId, isOutput);
+        this.removeActor(this.itemStackWidget);
         this.itemStackWidget = new FakeItemStackWidget(imageDrawable);
         this.itemStackWidget.addAction(new Action() {
             public boolean act(float delta) {
@@ -39,6 +41,15 @@ public class FakeItemSlotWidget extends ContainerSlotWidget {
                 return false;
             }
         });
+        this.addListener((event) -> {
+            if (event instanceof InputEvent ie) {
+                return this.onInputEvent(ie);
+            } else {
+                return false;
+            }
+        });
+        this.add(this.itemStackWidget);
+        this.setWidth(this.itemStackWidget.getWidth());
     }
 
     public FakeItemSlotWidget(int windowId, ISlotContainerParent containerParent, Supplier<ISlotContainer> getSlotContainer, int slotId, Drawable imageDrawable, Drawable imageHoveredDrawable, Drawable imageSelectedDrawable) {

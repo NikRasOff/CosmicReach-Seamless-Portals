@@ -271,6 +271,6 @@ public abstract class EntityAnimationMixin implements IModEntity {
         TickRunner.INSTANCE.partTickLerp(tmpPos, this.position);
         this.lastRenderPosition.set(tmpPos);
         if (!(this.modelInstance instanceof IModEntityModelInstance)) return;
-        ((IModEntityModelInstance) this.modelInstance).cosmicReach_Seamless_Portals$updateAnimation();
+        ((IModEntityModelInstance) this.modelInstance).cosmicReach_Seamless_Portals$updateAnimation(tmpPos);
     }
 }

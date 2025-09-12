@@ -52,6 +52,7 @@ public class PortalManager {
         if (result != null){
             return result;
         }
+        SeamlessPortals.LOGGER.info("Couldn't get portal with portal id");
         if (GameSingletons.isClient && !GameSingletons.isHost) {
             throw new RuntimeException("Use simple getPortal() on client instead of getPortalWithGen()");
         }

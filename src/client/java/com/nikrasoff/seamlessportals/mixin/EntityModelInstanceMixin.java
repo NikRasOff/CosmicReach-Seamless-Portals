@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.utils.MeshBuilder;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.FloatArray;
@@ -14,22 +15,19 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntityModelInstance;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.gamestates.InGame;
+import finalforeach.cosmicreach.particles.GameParticleSystem;
 import finalforeach.cosmicreach.rendering.GameTexture;
-import finalforeach.cosmicreach.rendering.entities.Bone;
-import finalforeach.cosmicreach.rendering.entities.EntityModel;
-import finalforeach.cosmicreach.rendering.entities.IEntityAnimation;
+import finalforeach.cosmicreach.rendering.entities.*;
 import finalforeach.cosmicreach.rendering.entities.animations.BoneAnimation;
 import finalforeach.cosmicreach.rendering.entities.animations.EntityAnimation;
 import finalforeach.cosmicreach.rendering.entities.animations.TextureAnimation;
 import finalforeach.cosmicreach.rendering.entities.instances.EntityModelInstance;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.gen.Accessor;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.HashMap;
 
@@ -53,6 +51,9 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
 
     @Shadow public HashMap<String, GameTexture> textureMap;
 
+    @Final
+    @Shadow private static Matrix4 scaleMat;
+
     @Shadow
     EntityModel entityModel;
 
@@ -64,9 +65,11 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
 
     @Shadow abstract public void setBonePostTransformOverrides(Entity entity);
 
+    @Final
     @Shadow private static MeshBuilder mb;
 
-    @Shadow abstract void renderBone(Bone bone, Matrix4 modelMat, boolean shouldRender);
+    @Shadow
+    protected abstract void renderBone(Bone bone, Matrix4 modelMat, boolean shouldRender);
 
     @Shadow
     Mesh mesh;
@@ -96,10 +99,7 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
             EntityAnimation currentAnimation = ((EntityAnimation[])curAnimations.items)[i];
             float animTimer = curAnimationTimers.items[i];
 
-            ObjectMap.Values boneName = currentAnimation.getTextureAnimations().iterator();
-
-            while(boneName.hasNext()) {
-                TextureAnimation texAnim = (TextureAnimation)boneName.next();
+            for (TextureAnimation texAnim : currentAnimation.getTextureAnimations()) {
                 this.textureMap.put(texAnim.name, texAnim.getTexture(animTimer));
             }
         }
@@ -130,7 +130,7 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
             bone.calculateLocalTransform();
         }
 
-        Array.ArrayIterator var21 = this.rootBones.iterator();
+        Array.ArrayIterator<Bone> var21 = this.rootBones.iterator();
 
         while(var21.hasNext()) {
             Bone bone = (Bone)var21.next();
@@ -146,7 +146,7 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
 
         while(var21.hasNext()) {
             Bone rootBone = (Bone)var21.next();
-            this.renderBone(rootBone, modelMat, shouldRender);
+            this.cosmicReach_Seamless_Portals$renderBoneNoAnim(rootBone, modelMat, shouldRender);
         }
 
         if (shouldRender) {
@@ -157,7 +157,7 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
             }
         }
 
-        if (shouldRender && this.textureMap.size() > 0) {
+        if (shouldRender && !this.textureMap.isEmpty()) {
             this.shader.bind(worldCamera);
 
             if (cosmicReach_Seamless_Portals$slicingPortal != null){
@@ -188,16 +188,77 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
         }
     }
 
+    @Unique
+    private void cosmicReach_Seamless_Portals$renderBoneNoAnim(Bone bone, Matrix4 modelMat, boolean shouldRender){
+        Matrix4 tempCubeMat = new Matrix4();
+        Matrix4 tempRotMat = new Matrix4();
+        Quaternion tempQuat = new Quaternion();
+
+        if (shouldRender && bone.cubes != null) {
+            for(EntityModelCube c : bone.cubes) {
+                Vector3 size = c.size;
+                float inflate = c.inflate;
+                Vector3 pivot = c.pivot;
+                tempCubeMat.idt();
+                tempCubeMat.translate(c.origin.x, c.origin.y, c.origin.z);
+                tempCubeMat.translate(size.x / 2.0F, size.y / 2.0F, size.z / 2.0F);
+                tempCubeMat.scl(size.x + inflate, size.y + inflate, size.z + inflate);
+                tempRotMat.idt();
+                tempQuat.setEulerAngles(c.rotation.y, c.rotation.x, c.rotation.z);
+                tempRotMat.translate(pivot.x, pivot.y, pivot.z);
+                tempRotMat.rotate(tempQuat);
+                tempRotMat.translate(-pivot.x, -pivot.y, -pivot.z);
+                tempCubeMat.mulLeft(tempRotMat);
+                tempCubeMat.mulLeft(bone.currentTransform);
+                tempCubeMat.mulLeft(scaleMat);
+                if (modelMat != null) {
+                    tempCubeMat.mulLeft(modelMat);
+                }
+
+                EntityShapeBuilder.build(this.entityModel.texWidth, this.entityModel.texHeight, c, mb, tempCubeMat);
+            }
+        }
+
+        Array.ArrayIterator var12 = bone.childBones.iterator();
+
+        while(var12.hasNext()) {
+            Bone childBone = (Bone)var12.next();
+            this.cosmicReach_Seamless_Portals$renderBoneNoAnim(childBone, modelMat, shouldRender);
+        }
+    }
+
+    @Unique
+    private void cosmicReach_Seamless_Portals$updateParticlesForBone(Bone bone, Matrix4 modelMat){
+        Matrix4 tempCubeMat = new Matrix4();
+        if (bone.particleSystems != null) {
+//            SeamlessPortals.LOGGER.info("Tried updating particles");
+            for(GameParticleSystem system : bone.particleSystems) {
+                tempCubeMat.idt();
+                tempCubeMat.mulLeft(bone.currentTransform);
+                tempCubeMat.mulLeft(scaleMat);
+                if (modelMat != null) {
+                    tempCubeMat.mulLeft(modelMat);
+                    tempCubeMat.trn(InGame.IN_GAME.getWorldCamera().position);
+                }
+
+                system.setTransform(tempCubeMat);
+                InGame.IN_GAME.gameParticles.add(system);
+            }
+        }
+
+        for (Bone childBone : bone.childBones) {
+            this.cosmicReach_Seamless_Portals$updateParticlesForBone(childBone, modelMat);
+        }
+    }
+
     @Override
-    public void cosmicReach_Seamless_Portals$updateAnimation() {
+    public void cosmicReach_Seamless_Portals$updateAnimation(Vector3 renderPos) {
         float dt = Gdx.graphics.getDeltaTime();
         this.globalAnimTimer += dt;
         if (!this.animationsShadowed) {
-            Array.ArrayIterator var6 = this.animationsToRemove.iterator();
 
-            while(var6.hasNext()) {
-                EntityAnimation a = (EntityAnimation)var6.next();
-                this.removeAnimation((IEntityAnimation)a);
+            for (EntityAnimation a : this.animationsToRemove) {
+                this.removeAnimation((IEntityAnimation) a);
             }
 
             this.animationsToRemove.clear();
@@ -224,6 +285,16 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
 
                 curAnimationTimers.items[i] = animTimer;
             }
+        }
+
+        Matrix4 tempMat = new Matrix4();
+        tempMat.translate(renderPos);
+        Vector3 tempCamPos = InGame.IN_GAME.getWorldCamera().position.cpy().scl(-1);
+        tempMat.translate(tempCamPos);
+
+        for (Bone bone : this.rootBones) {
+//            bone.calculateLocalTransform();
+            this.cosmicReach_Seamless_Portals$updateParticlesForBone(bone, tempMat);
         }
     }
 

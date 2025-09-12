@@ -15,7 +15,6 @@ import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.animations.*;
 import com.nikrasoff.seamlessportals.extras.ClientPortalEntityTools;
 import com.nikrasoff.seamlessportals.extras.FloatContainer;
-import com.nikrasoff.seamlessportals.extras.interfaces.IPortalGameParticleRenderer;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalZoneRenderer;
 import com.nikrasoff.seamlessportals.portals.HPGPortal;
@@ -23,6 +22,7 @@ import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import com.nikrasoff.seamlessportals.api.IPortalEntityRenderer;
 import com.nikrasoff.seamlessportals.rendering.shaders.PortalShader;
+import finalforeach.cosmicreach.rendering.IRenderable;
 import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.GameState;
@@ -185,6 +185,7 @@ public class PortalModelInstance implements IEntityModelInstance {
                 portalModel.portalFrameBuffer = new FrameBuffer(Pixmap.Format.RGB888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
             }
         }
+        // TODO: figure out how to optimise this
         portalModel.portalFrameBuffer.begin();
         ScreenUtils.clear(Sky.currentSky.currentSkyColor, true);
         Sky.currentSky.drawSky(this.portalCamera);
@@ -192,11 +193,17 @@ public class PortalModelInstance implements IEntityModelInstance {
         else GameSingletons.zoneRenderer.render(portal.zone, this.portalCamera);
         Gdx.gl.glDepthMask(true);
         if (portal.linkedPortal != null){
+            for (IRenderable renderable : portal.linkedPortal.zone.allRenderableBlockEntities){
+                if (renderable != null){
+                    renderable.onRender(portalCamera);
+                }
+            }
+
             portal.linkedPortal.zone.forEachEntity((e) -> {
                 IPortalEntityRenderer r = SPClientConstants.getPortalEntityRenderer(e.getClass());
                 if (r != null){
                     if (r.isCloseToPortal(e, portal)){
-                        if (e != InGame.getLocalPlayer().getEntity() && !portal.linkedPortal.isNotOnSameSideOfPortal(portalCamera.position, portal.linkedPortal.getPortaledPos(e.position))){
+                        if (!(e == InGame.getLocalPlayer().getEntity() && GameSingletons.client().isFirstPerson()) && !portal.linkedPortal.isNotOnSameSideOfPortal(portalCamera.position, portal.linkedPortal.getPortaledPos(e.position))){
                             if (ClientPortalEntityTools.isJustTeleported(e)){
                                 r.renderSliced(e, portalCamera, portal);
                             }
@@ -306,7 +313,7 @@ public class PortalModelInstance implements IEntityModelInstance {
             this.currentAnimation.restart();
         }
         else {
-            SeamlessPortals.LOGGER.warn("Couldn't find portal animation: " + s);
+            SeamlessPortals.LOGGER.warn("Couldn't find portal animation: {}", s);
         }
     }
 

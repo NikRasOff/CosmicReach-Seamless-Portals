@@ -89,6 +89,7 @@ public class ExtraPortalUtils {
     }
 
     public static RaycastOutput raycast(Zone zone, Vector3 origin, Vector3 direction, float length){
+        // I have next to no idea how this works as I simply stole the code from BlockSelection and repurposed it here
         boolean raycastHit = false;
         BlockPosition hitBlockPos = null;
         BlockPosition lastBlockPosAtPoint = null;
@@ -211,7 +212,16 @@ public class ExtraPortalUtils {
 
         return new RaycastOutput(intersection, DirectionVector.getClosestDirection(normal), hitBlockPos);
     }
+
+    private static HPGPortal fixedGetPortal(EntityUniqueId id, Vector3 chunkPos, String zone){
+        if (id.getTime() == -1){
+            return null;
+        }
+        return (HPGPortal) SeamlessPortals.portalManager.getPortalWithGen(id, chunkPos, zone);
+    }
+
     public static void fireHpg(Player player, boolean isSecondPortal, ItemStack hpgItemStack){
+        // ah yes, the CODE MONOLITH, my favorite!
         boolean unstable = hpgItemStack.getItem() instanceof UnstableHandheldPortalGen;
         DataPointManifest hpgManifest = (DataPointManifest) DataPointUtil.getManifestFromStack(hpgItemStack);
 
@@ -266,9 +276,10 @@ public class ExtraPortalUtils {
                 id1.set(primaryPortalIdTime.getValue(), primaryPortalIdRand.getValue(), primaryPortalIdNum.getValue());
                 EntityUniqueId id2 = new EntityUniqueId();
                 id2.set(secondaryPortalIdTime.getValue(), secondaryPortalIdRand.getValue(), secondaryPortalIdNum.getValue());
-                HPGPortal prPortal = (HPGPortal) pm.getPortalWithGen(id1, primaryPortalChunkPos.getValue(), primaryPortalZone.getValue());
-                HPGPortal secPortal = (HPGPortal) pm.getPortalWithGen(id2, secondaryPortalChunkPos.getValue(), secondaryPortalZone.getValue());
+                HPGPortal prPortal = fixedGetPortal(id1, primaryPortalChunkPos.getValue(), primaryPortalZone.getValue());
+                HPGPortal secPortal = fixedGetPortal(id2, secondaryPortalChunkPos.getValue(), secondaryPortalZone.getValue());
                 if (prPortal == null){
+                    SeamlessPortals.LOGGER.info("Generating new portal");
                     Vector3 upDir = getUpVectorForPortals(result.hitNormal(), player);
                     HPGPortal newPortal = HPGPortal.createNewPortal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), false, unstable, player.getZone());
                     if (newPortal == null) return;
@@ -299,6 +310,7 @@ public class ExtraPortalUtils {
                     }
                 }
                 else{
+                    SeamlessPortals.LOGGER.info("Moving existing portal");
                     Vector3 originalPos = prPortal.position.cpy();
                     Vector3 originalDir = prPortal.viewDirection.cpy();
                     Vector3 originalUpVector = prPortal.upVector.cpy();
@@ -338,10 +350,11 @@ public class ExtraPortalUtils {
                 id1.set(primaryPortalIdTime.getValue(), primaryPortalIdRand.getValue(), primaryPortalIdNum.getValue());
                 EntityUniqueId id2 = new EntityUniqueId();
                 id2.set(secondaryPortalIdTime.getValue(), secondaryPortalIdRand.getValue(), secondaryPortalIdNum.getValue());
-                HPGPortal secPortal = (HPGPortal) pm.getPortalWithGen(id2, secondaryPortalChunkPos.getValue(), primaryPortalZone.getValue());
-                HPGPortal prPortal = (HPGPortal) pm.getPortalWithGen(id1, primaryPortalChunkPos.getValue(), secondaryPortalZone.getValue());
+                HPGPortal secPortal = fixedGetPortal(id2, secondaryPortalChunkPos.getValue(), primaryPortalZone.getValue());
+                HPGPortal prPortal = fixedGetPortal(id1, primaryPortalChunkPos.getValue(), secondaryPortalZone.getValue());
 
                 if (secPortal == null){
+                    SeamlessPortals.LOGGER.info("Generating new portal");
                     Vector3 upDir = getUpVectorForPortals(result.hitNormal(), player);
                     HPGPortal newPortal = HPGPortal.createNewPortal(new Vector2(1, 2), result.hitNormal().getVector().cpy(), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), true, unstable, player.getZone());
                     if (newPortal == null) {
@@ -374,6 +387,7 @@ public class ExtraPortalUtils {
                     }
                 }
                 else{
+                    SeamlessPortals.LOGGER.info("Moving existing portal");
                     Vector3 originalPos = secPortal.position.cpy();
                     Vector3 originalDir = secPortal.viewDirection.cpy();
                     Vector3 originalUpVector = secPortal.upVector.cpy();

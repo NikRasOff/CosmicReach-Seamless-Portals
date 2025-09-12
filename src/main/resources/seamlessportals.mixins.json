@@ -6,7 +6,6 @@
   "mixins": [
     "ChunkLoaderMixin",
     "ChunkSaverMixin",
-    "ItemEntityMixin",
     "ItemStackMixin",
     "LangMixin",
     "PlayerMixin",

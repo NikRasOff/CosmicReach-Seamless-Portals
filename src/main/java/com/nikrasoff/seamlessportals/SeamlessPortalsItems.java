@@ -17,8 +17,7 @@ public class SeamlessPortalsItems {
     public static void registerItems(){
         SeamlessPortals.LOGGER.info("Registering items from Seamless Portals!");
         String[] itemIds = {
-                "omnium_crystal",
-                "laser_emitter"
+                "omnium_crystal"
         };
 
         for (String id : itemIds){

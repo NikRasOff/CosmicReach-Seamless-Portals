@@ -89,6 +89,7 @@ public class Portal extends Entity {
         this.addTag(CommonEntityTags.NO_DESPAWN);
         this.addTag(CommonEntityTags.NOCLIP);
         this.addTag(CommonEntityTags.PROJECTILE_IMMUNE);
+        this.addTag(CommonEntityTags.FIRE_IMMUNE);
         this.addTag(CommonEntityTags.NO_ENTITY_PUSH);
         this.addTag(CommonEntityTags.NO_BUOYANCY);
         this.removeUpdatingComponent(GravityComponent.INSTANCE);

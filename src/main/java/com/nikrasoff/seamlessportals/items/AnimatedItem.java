@@ -23,48 +23,37 @@ public abstract class AnimatedItem extends AbstractCosmicItem implements ITickin
             this.addTexture(ItemModelType.ITEM_MODEL_3D, Identifier.of(MOD_ID, texturePrefix + (i + 1) + ".png"));
         }
         this.textureCount = textureCount;
-        this.ticksPerFrame = ticksPerFrame;
+        this.ticksPerFrame = ticksPerFrame * 2;
     }
 
-    @Override
-    public void tickStack(float fixedUpdateTimeStep, IItemStack itemStack, boolean isBeingHeld) {
+    private void advanceTexture(IItemStack itemStack, int byTicks){
         DataPointManifest tag = (DataPointManifest) DataPointUtil.getManifestFromStack((ItemStack) itemStack);
-        if (!tag.has("currentEntry")) {
-            tag.put("currentEntry", new IntegerDataPoint(0));
-        }
         if (!tag.has("tickCount")) {
             tag.put("tickCount", new IntegerDataPoint(0));
         }
 
         Integer tickCount = tag.get("tickCount").cast(Integer.class).getValue();
-        Integer currentEntry = tag.get("currentEntry").cast(Integer.class).getValue();
-        tickCount += 1;
-        if (tickCount >= this.ticksPerFrame * 2){
-            tickCount = 0;
-            currentEntry = (currentEntry + 1) % this.textureCount;
-        }
-        tag.get("currentEntry").cast(Integer.class).setValue(currentEntry);
-        tag.get("tickCount").cast(Integer.class).setValue(tickCount);
-    }
-
-    @Override
-    public void tickEntity(IZone zone, double deltaTime, IEntity entity, IItemStack itemStack) {
-        DataPointManifest tag = (DataPointManifest) DataPointUtil.getManifestFromStack((ItemStack) itemStack);
-        if (!tag.has("currentEntry")) {
-            tag.put("currentEntry", new IntegerDataPoint(0));
-        }
-        if (!tag.has("tickCount")) {
-            tag.put("tickCount", new IntegerDataPoint(0));
-        }
-
-        Integer tickCount = tag.get("tickCount").cast(Integer.class).getValue();
-        Integer currentEntry = tag.get("currentEntry").cast(Integer.class).getValue();
-        tickCount += 1;
+        int currentEntry = getCurrentTexture(itemStack);
+        tickCount += byTicks;
         if (tickCount >= this.ticksPerFrame){
             tickCount = 0;
             currentEntry = (currentEntry + 1) % this.textureCount;
         }
-        tag.get("currentEntry").cast(Integer.class).setValue(currentEntry);
+        setCurrentTexture(itemStack, currentEntry);
         tag.get("tickCount").cast(Integer.class).setValue(tickCount);
+    }
+
+    private void advanceTexture(IItemStack itemStack){
+        this.advanceTexture(itemStack, 1);
+    }
+
+    @Override
+    public void tickStack(float fixedUpdateTimeStep, IItemStack itemStack, boolean isBeingHeld) {
+        this.advanceTexture(itemStack);
+    }
+
+    @Override
+    public void tickEntity(IZone zone, double deltaTime, IEntity entity, IItemStack itemStack) {
+        this.advanceTexture(itemStack, 2);
     }
 }

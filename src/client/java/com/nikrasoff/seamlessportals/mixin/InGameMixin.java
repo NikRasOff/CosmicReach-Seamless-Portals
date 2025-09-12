@@ -18,6 +18,7 @@ import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.entities.PlayerController;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.gamestates.InGame;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -64,8 +65,7 @@ public abstract class InGameMixin implements IPortalIngame {
         for (Entity e : getLocalPlayer().getZone().getAllEntities()){
             IPortalEntityRenderer r = SPClientConstants.getPortalEntityRenderer(e.getClass());
             if (r != null) {
-                for (Map.Entry<EntityUniqueId, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
-                    Portal portal = portalEntry.getValue();
+                for (Portal portal : SeamlessPortals.portalManager.createdPortals.values()){
                     if (portal.linkedPortal == null) continue;
                     if (r.isCloseToPortal(e, portal)){
                         if (ClientPortalEntityTools.isJustTeleported(e)){
@@ -94,7 +94,7 @@ public abstract class InGameMixin implements IPortalIngame {
             original.call(instance, worldCamera);
             return;
         }
-        if (getLocalPlayer() != null && getLocalPlayer().getEntity() == instance){
+        if (getLocalPlayer() != null && getLocalPlayer().getEntity() == instance && GameSingletons.client().isFirstPerson()){
             original.call(instance, worldCamera);
             return;
         }

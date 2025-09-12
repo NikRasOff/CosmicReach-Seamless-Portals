@@ -60,7 +60,7 @@ public abstract class ItemModelThingMixin implements ISliceableItemModel {
             if (isDuplicate){
                 this.program.bindOptionalUniform3f("u_portalOrigin", portal.linkedPortal.position);
                 this.program.bindOptionalUniform3f("u_portalNormal", portal.linkedPortal.viewDirection);
-                this.program.bindOptionalInt("u_invertPortalNormal", Math.max(-portal.getPortalSide(position), 0));
+                this.program.bindOptionalInt("u_invertPortalNormal", Math.max(portal.getPortalSide(position), 0));
             }
             else {
                 this.program.bindOptionalUniform3f("u_portalOrigin", portal.position);

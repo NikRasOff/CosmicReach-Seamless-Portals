@@ -29,22 +29,8 @@ public class PortalGenPortal extends Portal {
             portal.sourceBlock.position.set(deserializer.readInt("sourceBlockX", 0), deserializer.readInt("sourceBlockY", 0), deserializer.readInt("sourceBlockZ", 0));
             portal.sourceBlock.zoneId = deserializer.readString("sourceBlockZone");
             portal.sourceBlock.blockState = deserializer.readString("sourceBlockParams");
-            String zoneId = deserializer.readString("zoneId");
-            if (zoneId == null){
-                zoneId = GameSingletons.world.defaultZoneId;
-            }
             SeamlessPortals.portalManager.addPortal(portal);
-            Portal lPortal;
-            if (GameSingletons.isHost){
-                lPortal = SeamlessPortals.portalManager.getPortalWithGen(portal.linkedPortalID, portal.linkedPortalChunkCoords, zoneId);
-            }
-            else {
-                lPortal = SeamlessPortals.portalManager.getPortal(portal.linkedPortalID);
-            }
-            if (lPortal != null){
-                portal.linkPortal(lPortal);
-                lPortal.linkPortal(portal);
-            }
+            portal.shouldLink = true;
             portal.calculateLocalBB();
             portal.calculateMeshBB();
         }

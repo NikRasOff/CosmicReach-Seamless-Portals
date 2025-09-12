@@ -2,8 +2,10 @@ package com.nikrasoff.seamlessportals.mixin;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Matrix4;
+import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntityModelInstance;
 import com.nikrasoff.seamlessportals.extras.interfaces.ISliceableItemModel;
+import com.nikrasoff.seamlessportals.extras.interfaces.ISpecialItemModel;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import dev.puzzleshq.puzzleloader.loader.util.ReflectionUtil;
 import finalforeach.cosmicreach.entities.Entity;
@@ -19,6 +21,14 @@ public abstract class ItemEntityModelMixin implements IModEntityModelInstance {
     @Shadow private ItemModel model;
 
     @Shadow public abstract void render(Entity entity, Camera worldCamera, Matrix4 modelMat, boolean shouldRender);
+
+    @Override
+    public void cosmicReach_Seamless_Portals$renderNoAnim(Entity entity, Camera worldCamera, Matrix4 modelMat, boolean shouldRender) {
+        if (shouldRender && this.model instanceof ISpecialItemModel specialItemModel){
+            specialItemModel.renderAsItemEntityThroughPortal(entity.position, worldCamera, modelMat);
+        }
+        else this.render(entity, worldCamera, modelMat, shouldRender);
+    }
 
     @Override
     public void cosmicReach_Seamless_Portals$renderSliced(Entity entity, Camera renderCamera, Matrix4 modelMatrix, Portal portal, boolean isDuplicate) {

@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import com.nikrasoff.seamlessportals.extras.interfaces.ISliceableItemModel;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
+import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.items.Item;
 import finalforeach.cosmicreach.rendering.items.HeldItemRenderParams;
 import finalforeach.cosmicreach.rendering.items.ItemModel;

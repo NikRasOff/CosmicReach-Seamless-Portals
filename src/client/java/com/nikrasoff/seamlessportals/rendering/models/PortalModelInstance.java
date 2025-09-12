@@ -15,7 +15,9 @@ import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.animations.*;
 import com.nikrasoff.seamlessportals.extras.ClientPortalEntityTools;
 import com.nikrasoff.seamlessportals.extras.FloatContainer;
+import com.nikrasoff.seamlessportals.extras.interfaces.IPortalGameParticleRenderer;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
+import com.nikrasoff.seamlessportals.extras.interfaces.IPortalZoneRenderer;
 import com.nikrasoff.seamlessportals.portals.HPGPortal;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
@@ -186,7 +188,8 @@ public class PortalModelInstance implements IEntityModelInstance {
         portalModel.portalFrameBuffer.begin();
         ScreenUtils.clear(Sky.currentSky.currentSkyColor, true);
         Sky.currentSky.drawSky(this.portalCamera);
-        GameSingletons.zoneRenderer.render(portal.zone, this.portalCamera);
+        if (GameSingletons.zoneRenderer instanceof IPortalZoneRenderer zr) zr.cosmicReach_Seamless_Portals$renderThroughPortal(portal.zone, this.portalCamera);
+        else GameSingletons.zoneRenderer.render(portal.zone, this.portalCamera);
         Gdx.gl.glDepthMask(true);
         if (portal.linkedPortal != null){
             portal.linkedPortal.zone.forEachEntity((e) -> {
@@ -218,6 +221,7 @@ public class PortalModelInstance implements IEntityModelInstance {
                 }
             });
 
+            GameState.IN_GAME.gameParticles.render(portalCamera, 0);
             portalModel.portalFrameBuffer.end();
         }
 

@@ -11,6 +11,8 @@ import com.nikrasoff.seamlessportals.extras.IntVector3;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
 import com.nikrasoff.seamlessportals.networking.packets.PortalDeletePacket;
+import finalforeach.cosmicreach.Threads;
+import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.CommonEntityTags;
@@ -53,27 +55,14 @@ public class Portal extends Entity {
     public static final Object lock = new Object();
     protected static final Array<BoundingBox> tempBounds = new Array<>(BoundingBox.class);
 
+    protected boolean shouldLink = false; // If true, will try to find its linked portal on next tick update
+
     public static Portal readPortal(CRBinDeserializer deserializer){
-        // It took so much time to make this work... and it finally works!
         Portal portal = new Portal();
         if (deserializer != null) {
             portal.read(deserializer);
-            String zoneId = deserializer.readString("zoneId");
-            if (zoneId == null){
-                zoneId = GameSingletons.world.defaultZoneId;
-            }
             SeamlessPortals.portalManager.addPortal(portal);
-            Portal lPortal;
-            if (GameSingletons.isHost){
-                lPortal = SeamlessPortals.portalManager.getPortalWithGen(portal.linkedPortalID, portal.linkedPortalChunkCoords, zoneId);
-            }
-            else {
-                lPortal = SeamlessPortals.portalManager.getPortal(portal.linkedPortalID);
-            }
-            if (lPortal != null){
-                portal.linkPortal(lPortal);
-                lPortal.linkPortal(portal);
-            }
+            portal.shouldLink = true;
             portal.calculateLocalBB();
             portal.calculateMeshBB();
         }
@@ -104,9 +93,11 @@ public class Portal extends Entity {
         this.addTag(CommonEntityTags.NO_BUOYANCY);
         this.removeUpdatingComponent(GravityComponent.INSTANCE);
         this.removeUpdatingComponent(PortalCheckComponent.INSTANCE);
-        if (GameSingletons.isClient){
-            this.modelInstance = SeamlessPortals.clientConstants.getNewPortalModelInstance();
-        }
+        Threads.runOnMainThread(() -> {
+            if (GameSingletons.isClient){
+                this.modelInstance = SeamlessPortals.clientConstants.getNewPortalModelInstance();
+            }
+        });
     }
 
     public Portal(Vector2 size, Vector3 viewDir, Vector3 upDir, Vector3 portalPos){
@@ -217,6 +208,10 @@ public class Portal extends Entity {
     @Override
     public void hit(IDamageSource damageSource, float amount) {}
 
+    @Override
+    public void onAttackInteraction(Player player, short inventorySlotNum) {
+    }
+
     public static Portal fromBlockInfo(PortalSpawnBlockInfo info, Vector2 size){
         String[] strId = info.blockState.split(",");
         String dirString = "";
@@ -232,6 +227,14 @@ public class Portal extends Entity {
         return new Portal(size, dirString, info.position.toVector3().add(new Vector3(0.5f, 0.5f, 0.5f)));
     }
 
+    protected Vector3 getChunkCoords(){
+        Vector3 res = new Vector3();
+        res.x = Math.floorDiv((int) position.x, 16);
+        res.y = Math.floorDiv((int) position.y, 16);
+        res.z = Math.floorDiv((int) position.z, 16);
+        return res;
+    }
+
     public void linkPortal(Portal to){
         linkedPortal = to;
         pendingLinkedPortal = to;
@@ -239,6 +242,20 @@ public class Portal extends Entity {
         this.linkedPortalChunkCoords.x = Math.floorDiv((int) linkedPortal.position.x, 16);
         this.linkedPortalChunkCoords.y = Math.floorDiv((int) linkedPortal.position.y, 16);
         this.linkedPortalChunkCoords.z = Math.floorDiv((int) linkedPortal.position.z, 16);
+    }
+
+    protected void tryLinking(){
+        Portal lPortal = null;
+        if (GameSingletons.isHost){
+            lPortal = SeamlessPortals.portalManager.getPortalWithGen(this.linkedPortalID, this.linkedPortalChunkCoords, this.zone.zoneId);
+        }
+        else {
+            lPortal = SeamlessPortals.portalManager.getPortal(this.linkedPortalID);
+        }
+        if (lPortal != null){
+            this.linkPortal(lPortal);
+            lPortal.linkPortal(this);
+        }
     }
 
     public OrientedBoundingBox getFatBoundingBox(){
@@ -269,6 +286,9 @@ public class Portal extends Entity {
         return newTransform;
     }
 
+    // What's the difference between this method and the one above?
+    // ...
+    // Good question.
     public Matrix4 getFullyPortaledTransform(Matrix4 transform){
         if (linkedPortal == null) return transform.cpy();
         Vector3 newPos = this.getPortaledPos(transform.getTranslation(new Vector3()));
@@ -356,6 +376,10 @@ public class Portal extends Entity {
     @Override
     public void update(Zone zone, float deltaTime) {
         super.update(zone, deltaTime);
+        if (this.shouldLink){
+            this.shouldLink = false;
+            this.tryLinking();
+        }
         if (this.linkedPortal != null && this.linkedPortal.zone == null){
             EntityRegion.readChunkColumn(GameSingletons.world.getZoneCreateIfNull(this.zone.zoneId), (int) this.linkedPortalChunkCoords.x, (int) this.linkedPortalChunkCoords.z, Math.floorDiv((int) this.linkedPortalChunkCoords.x, 16), Math.floorDiv((int) this.linkedPortalChunkCoords.y, 16), Math.floorDiv((int) this.linkedPortalChunkCoords.z, 16));
         }

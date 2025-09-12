@@ -60,6 +60,7 @@ public abstract class InGameMixin implements IPortalIngame {
 
         SeamlessPortals.effectManager.render(renderFromCamera);
         if (getLocalPlayer() == null) return;
+        // This renders duplicates of entities as they're coming out the other side of the portal
         for (Entity e : getLocalPlayer().getZone().getAllEntities()){
             IPortalEntityRenderer r = SPClientConstants.getPortalEntityRenderer(e.getClass());
             if (r != null) {
@@ -97,6 +98,7 @@ public abstract class InGameMixin implements IPortalIngame {
             original.call(instance, worldCamera);
             return;
         }
+        // This slices entities close to the portal to provide the illusion that they're partially though
         for (Map.Entry<EntityUniqueId, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
             Portal portal = portalEntry.getValue();
             if (r.isCloseToPortal(instance, portal)){

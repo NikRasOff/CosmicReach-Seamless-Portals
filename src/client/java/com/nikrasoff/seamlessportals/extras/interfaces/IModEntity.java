@@ -9,7 +9,7 @@ public interface IModEntity {
     void cosmicReach_Seamless_Portals$renderSliced(Camera playerCamera, Portal portal);
     void cosmicReach_Seamless_Portals$renderNoAnim(Camera renderCamera);
 
-    default void cosmicReach_Seamless_Portals$renderAfterMatrixSetNoAnim(Camera renderCamera, Matrix4 customMatrix){}
+    default void cosmicReach_Seamless_Portals$renderAfterMatrixSetNoAnim(Camera renderCamera, Matrix4 customMatrix, boolean shouldRender){}
     void cosmicReach_Seamless_Portals$advanceAnimations();
     boolean cosmicReach_Seamless_Portals$checkIfHasBeenRendered();
     void cosmicReach_Seamless_Portals$resetRender();

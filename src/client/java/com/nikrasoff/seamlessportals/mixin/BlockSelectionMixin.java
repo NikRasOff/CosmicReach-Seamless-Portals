@@ -69,6 +69,14 @@ public abstract class BlockSelectionMixin {
             if (heldItemStack != null && heldItemStack.getItem() != null && (heldItemStack.getItem().getID().equals(HandheldPortalGen.hpgID) || heldItemStack.getItem().getID().equals(UnstableHandheldPortalGen.hpgID))){
                 enabled = false;
                 if (!UI.isInventoryOpen()){
+                    if (UI.renderDebugInfo){
+                        if (cosmicReach_Seamless_Portals$portalRaycastOriginDebug == null){
+                            // No idea why this would be null but sometimes for some reason it just is
+                            cosmicReach_Seamless_Portals$portalRaycastHitDebug = new Vector3();
+                            cosmicReach_Seamless_Portals$portalRaycastOriginDebug = new Vector3();
+                            cosmicReach_Seamless_Portals$portalRaycastNormalDebug = new Vector3();
+                        }
+                    }
                     if (Controls.attackBreakJustPressed()){
                         if (ClientNetworkManager.isConnected()){
                             ClientNetworkManager.sendAsClient(new HpgFiredPacket(false, UI.hotbar.getSelectedSlotNum()));

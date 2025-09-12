@@ -21,7 +21,7 @@ uniform vec3 skyAmbientColor;
 
 uniform vec3 u_portalNormal;
 uniform vec3 u_portalOrigin;
-uniform int u_turnOnSlicing;
+uniform bool u_turnOnSlicing = false;
 uniform int u_invertPortalNormal;
 
 out vec4 outColor;
@@ -30,7 +30,7 @@ out vec4 outColor;
 
 void main()
 {
-    if (u_turnOnSlicing == 1){
+    if (u_turnOnSlicing){
         vec3 portalCheckVec = worldPos - u_portalOrigin;
         if (dot(portalCheckVec, ((u_invertPortalNormal == 1) ? -u_portalNormal : u_portalNormal)) < 0){
             discard;

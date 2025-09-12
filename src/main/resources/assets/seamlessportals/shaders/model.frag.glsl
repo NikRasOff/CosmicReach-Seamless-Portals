@@ -13,7 +13,7 @@ uniform vec4 u_ambientLight;
 
 uniform vec3 u_portalNormal;
 uniform vec3 u_portalOrigin;
-uniform int u_turnOnSlicing;
+uniform bool u_turnOnSlicing = false;
 uniform int u_invertPortalNormal;
 
 in vec2 v_texCoord0;
@@ -67,7 +67,7 @@ vec3 getFogColor(vec3 fogBaseColor, vec3 blocklight, float fogDensity, vec3 worl
 
 void main() {
     // Portal slicing
-    if (u_turnOnSlicing == 1){
+    if (u_turnOnSlicing){
         vec3 portalCheckVec = v_worldPos - u_portalOrigin;
         if (dot(portalCheckVec, ((u_invertPortalNormal == 1) ? -u_portalNormal : u_portalNormal)) < 0){
             discard;

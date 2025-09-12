@@ -57,22 +57,8 @@ public class HPGPortal extends Portal {
         HPGPortal portal = new HPGPortal();
         if (deserializer != null) {
             portal.read(deserializer);
-            String zoneId = deserializer.readString("zoneId");
-            if (zoneId == null){
-                zoneId = GameSingletons.world.defaultZoneId;
-            }
             SeamlessPortals.portalManager.addPortal(portal);
-            Portal lPortal;
-            if (GameSingletons.isHost){
-                //TODO: Fix when more zones get added
-                lPortal = SeamlessPortals.portalManager.getPortalWithGen(portal.linkedPortalID, portal.linkedPortalChunkCoords, zoneId);
-            } else {
-                lPortal = SeamlessPortals.portalManager.getPortal(portal.linkedPortalID);
-            }
-            if (lPortal != null){
-                portal.linkPortal(lPortal);
-                lPortal.linkPortal(portal);
-            }
+            portal.shouldLink = true;
             portal.calculateLocalBB();
             portal.calculateMeshBB();
         }

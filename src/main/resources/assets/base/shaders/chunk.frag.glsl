@@ -20,7 +20,7 @@ uniform vec3 u_sunDirection;
 
 uniform vec3 u_portalNormal;
 uniform vec3 u_portalOrigin;
-uniform int u_turnOnSlicing;
+uniform bool u_turnOnSlicing = false;
 uniform int u_invertPortalNormal;
 
 out vec4 outColor;
@@ -31,7 +31,7 @@ uniform float u_fogDensity;
 void main()
 {
     // Portal slicing
-    if (u_turnOnSlicing == 1){
+    if (u_turnOnSlicing){
         vec3 portalCheckVec = worldPos - u_portalOrigin;
         if (dot(portalCheckVec, ((u_invertPortalNormal == 1) ? -u_portalNormal : u_portalNormal)) < 0){
             discard;
@@ -50,7 +50,10 @@ void main()
         discard;
     }
 
-    vec3 blockAmbientColor = skyAmbientColor * max(dot(u_sunDirection, faceNormal), 0.5);
+    float noonDot = dot(u_sunDirection, faceNormal);
+    //noonDot = 1;
+    noonDot = sign(noonDot) * sqrt(abs(noonDot));
+    vec3 blockAmbientColor = skyAmbientColor * max(noonDot, 0.5);
 
     // https://www.desmos.com/calculator
     // y\ =\ \frac{30}{1+e^{-15\left(\frac{x}{25}\right)^{2}}}-15

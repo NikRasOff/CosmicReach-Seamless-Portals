@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.nikrasoff.seamlessportals.portals.Portal;
+import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.items.ItemStack;
 
 public interface ISliceableItemModel {

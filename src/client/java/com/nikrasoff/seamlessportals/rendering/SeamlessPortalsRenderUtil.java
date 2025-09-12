@@ -65,6 +65,7 @@ public class SeamlessPortalsRenderUtil {
                 tmpVec3[1] = portal.linkedPortal.viewDirection.y;
                 tmpVec3[2] = portal.linkedPortal.viewDirection.z;
                 shader.program.setUniform3fv("u_portalNormal", tmpVec3, 0, 3);
+                shader.program.setUniformi("u_invertPortalNormal", Math.max(portal.getPortalSide(worldPos), 0));
             }
             else {
                 tmpVec3[0] = portal.position.x;
@@ -75,8 +76,8 @@ public class SeamlessPortalsRenderUtil {
                 tmpVec3[1] = portal.viewDirection.y;
                 tmpVec3[2] = portal.viewDirection.z;
                 shader.program.setUniform3fv("u_portalNormal", tmpVec3, 0, 3);
+                shader.program.setUniformi("u_invertPortalNormal", Math.max(-portal.getPortalSide(worldPos), 0));
             }
-            shader.program.setUniformi("u_invertPortalNormal", Math.max(portal.getPortalSide(worldPos), 0));
         }
         renderModel(instance, camera, worldPos, true, true);
         shader.program.setUniformi("u_turnOnSlicing", 0);

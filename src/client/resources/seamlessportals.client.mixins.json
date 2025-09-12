@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.nikrasoff.seamlessportals.mixin",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_24",
   "client": [
     "BlockSelectionMixin",
     "EntityAnimationMixin",
@@ -15,7 +15,12 @@
     "item_models.ItemModelBlockMixin",
     "item_models.ItemModelThingMixin",
     "item_models.ExperimentalItemModelMixin",
-    "item_models.PuzzleModelWrapperMixin"
+    "item_models.PuzzleModelWrapperMixin",
+    "BatchedZoneRendererMixin",
+    "ChunkBatchMixin",
+    "PlayerEntityAnimationMixin",
+    "FallingBlockEntityAnimationMixin",
+    "JetpackComponentMixin"
   ],
   "injectors": {
     "defaultRequire": 1

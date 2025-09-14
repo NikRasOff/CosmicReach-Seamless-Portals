@@ -159,7 +159,7 @@ public class SeamlessPortals implements PreModInit, ModInit, PostModInit {
         BlockEntityOmniumCalibrator.registerBlockEntityCreator();
         BlockEntitySpacialAnchor.registerBlockEntityCreator();
         BlockEntityPortalGenerator.registerBlockEntityCreator();
-        oreOmnium = (new Ore(Block.getById(Identifier.of(SeamlessPortalsConstants.MOD_ID, "ore_omnium")).getDefaultBlockState(), GameTag.get("replaceable"))).setMaxElevation(-32).setMaxOresPerCluster(5).setAttemptsPerColumn(2);
+        oreOmnium = (new Ore(Block.getById(Identifier.of(SeamlessPortalsConstants.MOD_ID, "ore_omnium")).getDefaultBlockState(), GameTag.get("ore_replaceable"))).setMaxElevation(-32).setMaxOresPerCluster(5).setAttemptsPerColumn(3);
         PuzzleEntrypointUtil.invoke("portalInteractionSolver", IPortalSolverInitialiser.class, IPortalSolverInitialiser::initPortalInteractionSolvers);
     }
 

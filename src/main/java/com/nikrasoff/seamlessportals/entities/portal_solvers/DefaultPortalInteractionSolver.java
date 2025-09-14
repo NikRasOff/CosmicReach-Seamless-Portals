@@ -236,8 +236,9 @@ public class DefaultPortalInteractionSolver implements IPortalInteractionSolver 
 
         this.posChange = new Ray(prevPos.cpy().add(portalPosCheckEpsilon), targetPos.cpy().add(portalPosCheckEpsilon).sub(prevPos));
 
-        for (Map.Entry<EntityUniqueId, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
-            this.solveForPortal(zone, entity, deltaTime, portalEntry.getValue());
+        Portal[] portals = SeamlessPortals.portalManager.getPortalArray();
+        for (Portal portal : portals){
+            this.solveForPortal(zone, entity, deltaTime, portal);
             if (stopCheck){
                 stopCheck = false;
                 break;

@@ -11,7 +11,8 @@
     "PlayerMixin",
     "PortalableEntityMixin",
     "PortalDespawnMixin",
-    "ZoneLoaderMixin"
+    "ZoneLoaderMixin",
+    "ZoneMixin"
   ],
   "injectors": {
     "defaultRequire": 1

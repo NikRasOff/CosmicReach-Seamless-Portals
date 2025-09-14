@@ -19,6 +19,8 @@ import finalforeach.cosmicreach.world.EntityRegion;
 import finalforeach.cosmicreach.world.Zone;
 
 import java.util.HashMap;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 public class PortalManager {
     public PortalSpawnBlockInfo portalGenInfo;
@@ -57,8 +59,12 @@ public class PortalManager {
             throw new RuntimeException("Use simple getPortal() on client instead of getPortalWithGen()");
         }
 
-        EntityRegion.readChunkColumn(GameSingletons.world.getZoneCreateIfNull(zoneID), (int) chunkCoords.x, (int) chunkCoords.z, Math.floorDiv((int) chunkCoords.x, 16), Math.floorDiv((int) chunkCoords.y, 16), Math.floorDiv((int) chunkCoords.z, 16));
+        Zone zone = GameSingletons.world.getZoneCreateIfNull(zoneID);
+
+        EntityRegion.readChunkColumn(zone, (int) chunkCoords.x, (int) chunkCoords.z, Math.floorDiv((int) chunkCoords.x, 16), Math.floorDiv((int) chunkCoords.y, 16), Math.floorDiv((int) chunkCoords.z, 16));
         result = getPortal(portalID);
+        if (result == null) SeamlessPortals.LOGGER.info("Couldn't get portal even with gen");
+        else if (!zone.getAllEntities().contains(result, true)) SeamlessPortals.LOGGER.info("The portal is there in spirit!");
         return result;
     }
 
@@ -84,6 +90,17 @@ public class PortalManager {
         Zone zone2 = GameSingletons.world.getZoneCreateIfNull(gen2.zoneId);
         zone1.addEntity(portal1);
         zone2.addEntity(portal2);
+    }
+
+    public Portal[] getPortalArray() {
+        return createdPortals.values().toArray(new Portal[0]);
+    }
+
+    public void forEachPortal(Consumer<Portal> consumer){
+        Portal[] portals = getPortalArray();
+        for (Portal portal : portals){
+            consumer.accept(portal);
+        }
     }
 
     public boolean createPortalPairFromGenAndAnchor(PortalSpawnBlockInfo gen, PortalSpawnBlockInfo anchor){

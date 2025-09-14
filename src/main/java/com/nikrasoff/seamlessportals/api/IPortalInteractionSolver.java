@@ -16,13 +16,12 @@ public interface IPortalInteractionSolver {
     default void solveForAllPortals(Zone zone, Entity entity, float deltaTime){
         if (SeamlessPortals.portalManager.createdPortals.isEmpty()) return;
 
-        for (Map.Entry<EntityUniqueId, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
-            Portal portal = portalEntry.getValue();
+        SeamlessPortals.portalManager.forEachPortal((Portal portal) -> {
             if (portal.isPortalDestroyed) {
-                continue;
+                return;
             }
-            if (portal.zone != zone) continue;
+            if (portal.zone != zone) return;
             solveForPortal(zone, entity, deltaTime, portal);
-        }
+        });
     }
 }

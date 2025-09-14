@@ -108,8 +108,9 @@ public abstract class PortalableEntityMixin implements IPortalableEntity{
             this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox.getCenter(checkCenter);
             Vector3 portalCollisionCheckPos = this.cosmicReach_Seamless_Portals$isJustTeleported() ? this.cosmicReach_Seamless_Portals$tmpPortalNextPosition : this.position.cpy();
             Ray ray = new Ray(portalCollisionCheckPos, checkCenter.cpy().sub(portalCollisionCheckPos));
-            for (Map.Entry<EntityUniqueId, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
-                Portal portal = portalEntry.getValue();
+
+            Portal[] portals = SeamlessPortals.portalManager.getPortalArray();
+            for (Portal portal : portals){
                 if (portal.zone == this.zone && portal.isNotOnSameSideOfPortal(portalCollisionCheckPos, checkCenter) && Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3())){
                     if (!portal.getMeshBoundingBox().intersects(this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox)){
                         return null;

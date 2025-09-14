@@ -65,7 +65,8 @@ public abstract class InGameMixin implements IPortalIngame {
         for (Entity e : getLocalPlayer().getZone().getAllEntities()){
             IPortalEntityRenderer r = SPClientConstants.getPortalEntityRenderer(e.getClass());
             if (r != null) {
-                for (Portal portal : SeamlessPortals.portalManager.createdPortals.values()){
+                Portal[] portals = SeamlessPortals.portalManager.getPortalArray();
+                for (Portal portal : portals){
                     if (portal.linkedPortal == null) continue;
                     if (r.isCloseToPortal(e, portal)){
                         if (ClientPortalEntityTools.isJustTeleported(e)){
@@ -99,8 +100,8 @@ public abstract class InGameMixin implements IPortalIngame {
             return;
         }
         // This slices entities close to the portal to provide the illusion that they're partially though
-        for (Map.Entry<EntityUniqueId, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
-            Portal portal = portalEntry.getValue();
+        Portal[] portals = SeamlessPortals.portalManager.getPortalArray();
+        for (Portal portal : portals){
             if (r.isCloseToPortal(instance, portal)){
                 if (ClientPortalEntityTools.isJustTeleported(instance)){
                     r.renderDuplicate(instance, worldCamera, portal);

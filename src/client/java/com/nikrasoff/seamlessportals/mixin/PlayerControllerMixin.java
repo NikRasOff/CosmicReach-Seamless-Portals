@@ -24,6 +24,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Map;
+import java.util.function.IntFunction;
 
 @Mixin(PlayerController.class)
 public abstract class PlayerControllerMixin implements IPortalablePlayerController {
@@ -87,8 +88,9 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
         }
 
         Ray ray = new Ray(checkEntityPos, checkCamPos.cpy().sub(checkEntityPos));
-        for (Map.Entry<EntityUniqueId, Portal> portalEntry : SeamlessPortals.portalManager.createdPortals.entrySet()){
-            Portal portal = portalEntry.getValue();
+
+        Portal[] portals = SeamlessPortals.portalManager.getPortalArray();
+        for (Portal portal : portals){
             if (portal.linkedPortal != null && portal.isNotOnSameSideOfPortal(checkEntityPos, checkCamPos) && (Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3()))){
                 playerCamera.position.set(portal.getPortaledPos(playerCamera.position));
                 playerCamera.direction.set(portal.getPortaledVector(playerCamera.direction));

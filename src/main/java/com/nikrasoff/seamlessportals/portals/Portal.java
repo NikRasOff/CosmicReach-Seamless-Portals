@@ -42,6 +42,8 @@ public class Portal extends Entity {
     @CRBSerialized
     EntityUniqueId linkedPortalID = new EntityUniqueId();
     @CRBSerialized
+    boolean hasLinkedPortal = false;
+    @CRBSerialized
     public Vector3 portalSize = new Vector3();
     @CRBSerialized
     public Vector3 upVector = new Vector3(0, 1,0 );
@@ -240,12 +242,14 @@ public class Portal extends Entity {
         linkedPortal = to;
         pendingLinkedPortal = to;
         this.linkedPortalID = to.uniqueId;
+        this.hasLinkedPortal = true;
         this.linkedPortalChunkCoords.x = Math.floorDiv((int) linkedPortal.position.x, 16);
         this.linkedPortalChunkCoords.y = Math.floorDiv((int) linkedPortal.position.y, 16);
         this.linkedPortalChunkCoords.z = Math.floorDiv((int) linkedPortal.position.z, 16);
     }
 
     protected void tryLinking(){
+        SeamlessPortals.LOGGER.info("Trying to link portal {}", uniqueId);
         Portal lPortal = null;
         if (GameSingletons.isHost){
             lPortal = SeamlessPortals.portalManager.getPortalWithGen(this.linkedPortalID, this.linkedPortalChunkCoords, this.zone.zoneId);
@@ -256,6 +260,9 @@ public class Portal extends Entity {
         if (lPortal != null){
             this.linkPortal(lPortal);
             lPortal.linkPortal(this);
+        }
+        else {
+            this.hasLinkedPortal = false;
         }
     }
 
@@ -377,12 +384,9 @@ public class Portal extends Entity {
     @Override
     public void update(Zone zone, float deltaTime) {
         super.update(zone, deltaTime);
-        if (this.shouldLink){
+        if (this.shouldLink && this.zone != null){
             this.shouldLink = false;
             this.tryLinking();
-        }
-        if (this.linkedPortal != null && this.linkedPortal.zone == null){
-            EntityRegion.readChunkColumn(GameSingletons.world.getZoneCreateIfNull(this.zone.zoneId), (int) this.linkedPortalChunkCoords.x, (int) this.linkedPortalChunkCoords.z, Math.floorDiv((int) this.linkedPortalChunkCoords.x, 16), Math.floorDiv((int) this.linkedPortalChunkCoords.y, 16), Math.floorDiv((int) this.linkedPortalChunkCoords.z, 16));
         }
         if (isEndAnimationPlaying){
             this.endAnimationTimer += deltaTime;
@@ -424,16 +428,18 @@ public class Portal extends Entity {
         if (GameSingletons.isHost && ServerSingletons.SERVER != null){
             ServerSingletons.SERVER.broadcast(this.zone, new PortalDeletePacket(this.uniqueId));
         }
+        if (this.linkedPortal != null && !this.linkedPortal.isEndAnimationPlaying) this.linkedPortal.hasLinkedPortal = false;
         SeamlessPortals.portalManager.removePortal(this);
         super.onDeath();
     }
 
     public boolean isPortalInRange(boolean byProxy, int renderDistance){
         if (this.isEndAnimationPlaying) return true;
-        if (!ArrayUtils.any(GameSingletons.world.players, (p) -> this.position.dst2(p.getPosition()) >= renderDistance * renderDistance * 256)){
-            return false;
+        if (ArrayUtils.any(GameSingletons.world.players, (p) -> this.position.dst2(p.getPosition()) <= renderDistance * renderDistance * 256)){
+            return true;
         }
-        if (byProxy && this.linkedPortal != null){
+        if (this.hasLinkedPortal && this.shouldLink) return true;
+        if (byProxy && (this.linkedPortal != null)){
             return this.linkedPortal.isPortalInRange(false, renderDistance);
         }
         return false;

@@ -274,7 +274,7 @@ public class PortalModelInstance implements IEntityModelInstance {
         Matrix4 renderMatrix = matrix4.cpy();
 
         PortalShader currentShader;
-        if (((Portal) entity).linkedPortal == null){
+        if (((Portal) entity).linkedPortal == null || ((Portal) entity).linkedPortal.zone == null){
             if (entity instanceof HPGPortal) currentShader = PortalModel.hpgNullPortalShader;
             else currentShader = PortalModel.nullPortalShader;
         }

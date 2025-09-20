@@ -6,6 +6,9 @@ import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.entities.player.Player;
+import finalforeach.cosmicreach.entities.player.PlayerEntity;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 
 public class PortalEntityTools {
     public static void setTmpNextPosition(Entity entity, Vector3 pos){

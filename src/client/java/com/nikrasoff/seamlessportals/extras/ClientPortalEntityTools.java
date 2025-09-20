@@ -7,6 +7,7 @@ import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.entities.Entity;
 
 public class ClientPortalEntityTools {
+    // Tools specifically for interacting with mixins
     public static void renderWithoutAnimation(Entity entity, Camera camera){
         IModEntity portalableEntity = (IModEntity) entity;
         portalableEntity.cosmicReach_Seamless_Portals$renderNoAnim(camera);
@@ -30,6 +31,11 @@ public class ClientPortalEntityTools {
     public static void renderSliced(Entity entity, Camera renderCamera, Portal portal){
         IModEntity e = (IModEntity) entity;
         e.cosmicReach_Seamless_Portals$renderSliced(renderCamera, portal);
+    }
+
+    public static void renderDuplicateSliced(Entity entity, Camera renderCamera, Portal portal){
+        IModEntity e = (IModEntity) entity;
+        e.cosmicReach_Seamless_Portals$renderDuplicateSliced(renderCamera, portal);
     }
 
     public static boolean isJustTeleported(Entity entity){

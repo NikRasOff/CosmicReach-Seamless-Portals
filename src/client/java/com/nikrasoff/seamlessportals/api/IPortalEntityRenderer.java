@@ -12,11 +12,16 @@ public interface IPortalEntityRenderer {
     BoundingBox tmpBB1 = new BoundingBox();
     BoundingBox tmpBB2 = new BoundingBox();
     void render(Entity entity, Camera renderCamera);
+
     // This renders the duplicate of the entity when going through a portal
     void renderDuplicate(Entity entity, Camera renderCamera, Portal portal);
+
     // This renders the entity when close to a portal and slices its model
-    // Basically the same as the above but doesn't transport the model to the other side of the portal
     void renderSliced(Entity entity, Camera renderCamera, Portal portal);
+
+    // This renders the duplicate of the entity when going through a portal and slices it
+    void renderDuplicateSliced(Entity entity, Camera renderCamera, Portal portal);
+
     // Determines if above two functions should be called instead of the default render
     default boolean isCloseToPortal(Entity entity, Portal portal){
         if (entity.zone != portal.zone){

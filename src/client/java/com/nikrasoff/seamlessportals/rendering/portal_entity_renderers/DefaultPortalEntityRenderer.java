@@ -24,6 +24,11 @@ public class DefaultPortalEntityRenderer implements IPortalEntityRenderer {
     }
 
     @Override
+    public void renderDuplicateSliced(Entity entity, Camera renderCamera, Portal portal) {
+        ClientPortalEntityTools.renderDuplicateSliced(entity, renderCamera, portal);
+    }
+
+    @Override
     public void advanceAnimations(Entity entity) {
         if (!ClientPortalEntityTools.hasBeenRenderedThisFrame(entity)){
             ClientPortalEntityTools.advanceAnimations(entity);

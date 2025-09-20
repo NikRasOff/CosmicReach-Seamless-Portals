@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.nikrasoff.seamlessportals.extras.ClientPortalExtras;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntityModelInstance;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.entities.Entity;
@@ -90,6 +91,20 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
 
     @Shadow abstract public void removeAnimation(IEntityAnimation animation);
 
+    @Shadow
+    protected Bone rootBone;
+
+    @Shadow
+    public abstract void setBoneToDirection(Bone bone, Vector3 direction);
+
+    @Shadow
+    protected Bone headBone;
+
+    @Unique
+    protected void cosmicReach_Seamless_Portals$customBoneTransformOverrides(Entity entity){
+        this.setBoneTransformOverrides(entity);
+    }
+
     @Override
     public void cosmicReach_Seamless_Portals$renderNoAnim(Entity entity, Camera worldCamera, Matrix4 modelMat, boolean shouldRender){
         Array<EntityAnimation> curAnimations = this.currentAnimations;
@@ -123,7 +138,7 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
             }
         }
 
-        this.setBoneTransformOverrides(entity);
+        this.cosmicReach_Seamless_Portals$customBoneTransformOverrides(entity);
 
         for(String boneName : this.entityModel.boneNames) {
             Bone bone = (Bone)this.boneMap.get(boneName);
@@ -163,12 +178,12 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
             if (cosmicReach_Seamless_Portals$slicingPortal != null){
                 this.shader.bindOptionalBool("u_turnOnSlicing", true);
                 if (cosmicReach_Seamless_Portals$isEntityDuplicate){
-                    this.shader.bindOptionalUniform3f("u_portalOrigin", this.cosmicReach_Seamless_Portals$slicingPortal.linkedPortal.position);
+                    this.shader.bindOptionalUniform3f("u_portalOrigin", ClientPortalExtras.getOriginPosForSlicing(this.cosmicReach_Seamless_Portals$slicingPortal, worldCamera, entity.position, false));
                     this.shader.bindOptionalUniform3f("u_portalNormal", this.cosmicReach_Seamless_Portals$slicingPortal.linkedPortal.viewDirection);
                     this.shader.bindOptionalInt("u_invertPortalNormal", Math.max(cosmicReach_Seamless_Portals$slicingPortal.getPortalSide(entity.position), 0));
                 }
                 else {
-                    this.shader.bindOptionalUniform3f("u_portalOrigin", this.cosmicReach_Seamless_Portals$slicingPortal.position);
+                    this.shader.bindOptionalUniform3f("u_portalOrigin", ClientPortalExtras.getOriginPosForSlicing(this.cosmicReach_Seamless_Portals$slicingPortal, worldCamera, entity.position, false));
                     this.shader.bindOptionalUniform3f("u_portalNormal", this.cosmicReach_Seamless_Portals$slicingPortal.viewDirection);
                     this.shader.bindOptionalInt("u_invertPortalNormal", Math.max(-cosmicReach_Seamless_Portals$slicingPortal.getPortalSide(entity.position), 0));
                 }
@@ -252,7 +267,7 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
     }
 
     @Override
-    public void cosmicReach_Seamless_Portals$updateAnimation(Vector3 renderPos) {
+    public void cosmicReach_Seamless_Portals$updateAnimation(Entity entity, Vector3 renderPos) {
         float dt = Gdx.graphics.getDeltaTime();
         this.globalAnimTimer += dt;
         if (!this.animationsShadowed) {

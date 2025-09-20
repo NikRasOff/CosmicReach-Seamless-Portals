@@ -51,7 +51,7 @@ public class PortalGeneratorScreen extends BaseItemScreen {
     public PortalGeneratorScreen(int windowId, BlockEntityPortalGenerator portalGenerator) {
         super(windowId, portalGenerator);
         if (fieldStyle == null) {
-            fieldStyle = new TextField.TextFieldStyle(font, Color.WHITE, new TextureRegionDrawable(SPClientConstants.UI_TEXT_CURSOR), null, new NinePatchDrawable(GameStyles.containerBackground9Patch));
+            fieldStyle = new TextField.TextFieldStyle(font, Color.WHITE, new TextureRegionDrawable(SPClientConstants.UI_TEXT_CURSOR.get()), null, new NinePatchDrawable(GameStyles.containerBackground9Patch));
         }
         if (buttonStyle == null) {
             buttonStyle = new TextButton.TextButtonStyle(new NinePatchDrawable(GameStyles.container9Patch), new NinePatchDrawable(GameStyles.container9PatchHovered), new NinePatchDrawable(GameStyles.containerSelected9Patch), font);
@@ -162,7 +162,7 @@ public class PortalGeneratorScreen extends BaseItemScreen {
         lowerTable.add().height(10);
         lowerTable.row();
 
-        lowerTable.add(new Image(SPClientConstants.UI_PORTAL_GEN_ICON));
+        lowerTable.add(new Image(SPClientConstants.UI_PORTAL_GEN_ICON.get()));
         TextButton openPortalButton = new TextButton( portalGenerator.isPortalActive() ? Lang.get("seamlessportals:close_portal") : Lang.get("seamlessportals:open_portal"), buttonStyle);
         openPortalButton.addAction(new Action() {
             @Override
@@ -197,7 +197,7 @@ public class PortalGeneratorScreen extends BaseItemScreen {
             }
         });
         lowerTable.add(openPortalButton);
-        lowerTable.add(new Image(SPClientConstants.UI_SPACIAL_ANCHOR_ICON));
+        lowerTable.add(new Image(SPClientConstants.UI_SPACIAL_ANCHOR_ICON.get()));
         overallTable.add(lowerTable);
         overallTable.row();
 

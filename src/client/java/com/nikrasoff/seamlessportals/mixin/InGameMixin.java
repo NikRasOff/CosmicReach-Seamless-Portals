@@ -7,6 +7,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.nikrasoff.seamlessportals.SPClientConstants;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.ClientPortalEntityTools;
+import com.nikrasoff.seamlessportals.extras.ClientPortalExtras;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalablePlayerController;
 import com.nikrasoff.seamlessportals.portals.Portal;
@@ -66,15 +67,14 @@ public abstract class InGameMixin implements IPortalIngame {
             IPortalEntityRenderer r = SPClientConstants.getPortalEntityRenderer(e.getClass());
             if (r != null) {
                 Portal[] portals = SeamlessPortals.portalManager.getPortalArray();
+                if (ClientPortalExtras.isEntityJustTeleportedPlayer(e) && GameSingletons.client().isFirstPerson()) {
+                    r.advanceAnimations(e);
+                    continue;
+                }
                 for (Portal portal : portals){
                     if (portal.linkedPortal == null) continue;
                     if (r.isCloseToPortal(e, portal)){
-                        if (ClientPortalEntityTools.isJustTeleported(e)){
-                            r.renderSliced(e, renderFromCamera, portal);
-                        }
-                        else {
-                            r.renderDuplicate(e, renderFromCamera, portal);
-                        }
+                        r.renderDuplicateSliced(e, renderFromCamera, portal);
                     }
                 }
                 r.advanceAnimations(e);
@@ -95,20 +95,15 @@ public abstract class InGameMixin implements IPortalIngame {
             original.call(instance, worldCamera);
             return;
         }
-        if (getLocalPlayer() != null && getLocalPlayer().getEntity() == instance && GameSingletons.client().isFirstPerson()){
+        if (getLocalPlayer() != null && getLocalPlayer().getEntity() == instance && GameSingletons.client().isFirstPerson() && !ClientPortalExtras.isPlayerCameraTeleported()){
             original.call(instance, worldCamera);
             return;
         }
-        // This slices entities close to the portal to provide the illusion that they're partially though
+        // This slices entities close to the portal to provide the illusion that they're partially through
         Portal[] portals = SeamlessPortals.portalManager.getPortalArray();
         for (Portal portal : portals){
             if (r.isCloseToPortal(instance, portal)){
-                if (ClientPortalEntityTools.isJustTeleported(instance)){
-                    r.renderDuplicate(instance, worldCamera, portal);
-                }
-                else {
-                    r.renderSliced(instance, worldCamera, portal);
-                }
+                r.renderSliced(instance, worldCamera, portal);
                 return;
             }
         }

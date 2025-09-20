@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.nikrasoff.seamlessportals.SPClientConstants;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.animations.*;
-import com.nikrasoff.seamlessportals.extras.ClientPortalEntityTools;
+import com.nikrasoff.seamlessportals.extras.ClientPortalExtras;
 import com.nikrasoff.seamlessportals.extras.FloatContainer;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalZoneRenderer;
@@ -41,7 +41,6 @@ public class PortalModelInstance implements IEntityModelInstance {
     HashMap<String, ISPAnimation> allAnimations = new HashMap<>();
     ISPAnimation currentAnimation;
 
-    public boolean isPortalMeshGenerated = false;
     public Vector3 portalMeshScale = new Vector3();
     private Vector3 portalMeshLocalOffset = new Vector3(0, 0, 0);
     private final FloatContainer animModelScale = new FloatContainer(1);
@@ -49,9 +48,6 @@ public class PortalModelInstance implements IEntityModelInstance {
     private final PerspectiveCamera portalCamera;
     public Texture portalTexture;
     private boolean portalCloseToCamera = false;
-
-    private static final float[] tmpVec2 = new float[2];
-    private static final float[] tmpVec4 = new float[4];
 
     protected PortalModelInstance(PortalModel m){
         this.portalModel = m;
@@ -90,7 +86,6 @@ public class PortalModelInstance implements IEntityModelInstance {
     }
 
     public void updatePortalMeshScale(PerspectiveCamera playerCamera, Portal portal){
-        this.isPortalMeshGenerated = true;
         float halfHeight = (float) (playerCamera.near * Math.tan(Math.toRadians(playerCamera.fieldOfView * 0.5)));
         float halfWidth = halfHeight * (playerCamera.viewportWidth / playerCamera.viewportHeight);
 
@@ -188,7 +183,18 @@ public class PortalModelInstance implements IEntityModelInstance {
         // TODO: figure out how to optimise this
         portalModel.portalFrameBuffer.begin();
         ScreenUtils.clear(Sky.currentSky.currentSkyColor, true);
+
+        // I have no idea why this is needed.
+        // Without this the sky is too dark???????
+        // What the fuck
+        // Why does the sky need to be rendered twice?
+        // And more so, why is it normal without portals?
+        boolean needsToDrawStars = Sky.currentSky.shouldDrawStars;
         Sky.currentSky.drawSky(this.portalCamera);
+        Sky.currentSky.shouldDrawStars = false;
+        Sky.currentSky.drawSky(this.portalCamera);
+        Sky.currentSky.shouldDrawStars = needsToDrawStars;
+
         if (GameSingletons.zoneRenderer instanceof IPortalZoneRenderer zr) zr.cosmicReach_Seamless_Portals$renderThroughPortal(portal.zone, this.portalCamera);
         else GameSingletons.zoneRenderer.render(portal.zone, this.portalCamera);
         Gdx.gl.glDepthMask(true);
@@ -202,27 +208,10 @@ public class PortalModelInstance implements IEntityModelInstance {
             portal.linkedPortal.zone.forEachEntity((e) -> {
                 IPortalEntityRenderer r = SPClientConstants.getPortalEntityRenderer(e.getClass());
                 if (r != null){
-                    if (r.isCloseToPortal(e, portal)){
-                        if (!(e == InGame.getLocalPlayer().getEntity() && GameSingletons.client().isFirstPerson()) && !portal.linkedPortal.isNotOnSameSideOfPortal(portalCamera.position, portal.linkedPortal.getPortaledPos(e.position))){
-                            if (ClientPortalEntityTools.isJustTeleported(e)){
-                                r.renderSliced(e, portalCamera, portal);
-                            }
-                            else {
-                                r.renderDuplicate(e, portalCamera, portal);
-                            }
-                        }
+                    if (!(e == InGame.getLocalPlayer().getEntity() && GameSingletons.client().isFirstPerson() && !ClientPortalExtras.isPlayerCameraTeleported()) && !portal.linkedPortal.isNotOnSameSideOfPortal(portalCamera.position, portal.getPortaledPos(e.position))){
+                        r.renderDuplicate(e, portalCamera, portal);
                     }
-                    if (r.isCloseToPortal(e, portal.linkedPortal)){
-                        if (portal.linkedPortal.isNotOnSameSideOfPortal(portalCamera.position, e.position)){
-                            if (ClientPortalEntityTools.isJustTeleported(e)){
-                                r.renderDuplicate(e, portalCamera, portal.linkedPortal);
-                            }
-                            else {
-                                r.renderSliced(e, portalCamera, portal.linkedPortal);
-                            }
-                        }
-                    }
-                    else {
+                    if (portal.linkedPortal.isNotOnSameSideOfPortal(portalCamera.position, e.position) && !(ClientPortalExtras.isEntityJustTeleportedPlayer(e) && GameSingletons.client().isFirstPerson())){
                         r.render(e, portalCamera);
                     }
                 }
@@ -247,15 +236,8 @@ public class PortalModelInstance implements IEntityModelInstance {
         return new OrientedBoundingBox(meshBB, transformMatrix.cpy().inv());
     }
 
-    public boolean isAnimationOver(){
-        return currentAnimation.isFinished();
-    }
-
     @Override
     public void render(Entity entity, Camera camera, Matrix4 matrix4, boolean shouldRender) {
-        if (!this.isPortalMeshGenerated){
-            this.updatePortalMeshScale((PerspectiveCamera) camera, (Portal) entity);
-        }
         portalModel.renderDebug((Portal) entity, camera);
         if (((Portal) entity).isPortalDestroyed){
             return;
@@ -263,6 +245,9 @@ public class PortalModelInstance implements IEntityModelInstance {
         if (this.currentAnimation != null){
             this.currentAnimation.update(Gdx.graphics.getDeltaTime());
         }
+
+        this.updatePortalMeshScale((PerspectiveCamera) camera, (Portal) entity);
+
         if (!shouldRender) return;
         if (entity.zone != GameSingletons.client().getLocalPlayer().getZone() || ((Portal) entity).isPortalDestroyed || (entity).position.dst(camera.position) > 50){
             return;
@@ -284,18 +269,20 @@ public class PortalModelInstance implements IEntityModelInstance {
 
             portalTexture = this.createPortalTexture(camera, (Portal) entity);
         }
-        this.updatePortalMeshScale((PerspectiveCamera) camera, (Portal) entity);
 
         currentShader.begin(camera, SeamlessPortalsRenderUtil.renderContext);
 
         currentShader.setUniforms(this, (Portal) entity);
 
         PortalModel.renderable.worldTransform.set(renderMatrix).inv().translate(this.portalMeshLocalOffset).scale(this.portalMeshScale.x, this.portalMeshScale.y, this.portalMeshScale.z);
-        if (portalCloseToCamera){
-            Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
-        }
         currentShader.render(PortalModel.renderable);
         if (portalCloseToCamera){
+            // At this point the worst part is done,
+            // there's not much harm in rendering it twice.
+            //
+            // And it deals nicely with walls behind the portal
+            Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+            currentShader.render(PortalModel.renderable);
             Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
         }
         currentShader.end();

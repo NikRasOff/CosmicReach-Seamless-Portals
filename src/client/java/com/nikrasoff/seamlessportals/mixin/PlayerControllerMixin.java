@@ -10,10 +10,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.animations.*;
-import com.nikrasoff.seamlessportals.extras.interfaces.IPortalableEntity;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalablePlayerController;
 import com.nikrasoff.seamlessportals.portals.Portal;
-import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.entities.PlayerController;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,9 +20,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.Map;
-import java.util.function.IntFunction;
 
 @Mixin(PlayerController.class)
 public abstract class PlayerControllerMixin implements IPortalablePlayerController {
@@ -43,23 +38,38 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
     public transient ISPAnimation cosmicReach_Seamless_Portals$cameraRotationAnimation;
 
     @Unique
-    private transient boolean cosmicReach_Seamless_Portals$alreadyTPdCamera = false;
+    public boolean cosmicReach_Seamless_Portals$shouldTeleportCamera = false;
+
+    @Unique
+    private Portal cosmicReach_Seamless_Portals$teleportingPortal;
+
+    @Unique
+    public boolean cosmicReach_Seamless_Portals$cameraTeleported = false;
+
+    @Unique
+    public Portal cosmicReach_Seamless_Portals$cameraTeleportingPortal;
 
     @Unique
     private transient Vector3 cosmicReach_Seamless_Portals$preSavedCameraUp = new Vector3();
 
     @Inject(method = "updateCamera", at = @At("HEAD"))
     private void preUpdateCamera(PerspectiveCamera playerCamera, CallbackInfo ci){
-        IPortalableEntity playerEntity = (IPortalableEntity) this.player.getEntity();
-        if (playerEntity.cosmicReach_Seamless_Portals$isJustTeleported()){
-            if (this.cosmicReach_Seamless_Portals$alreadyTPdCamera){
-                return;
-            }
-            this.cosmicReach_Seamless_Portals$alreadyTPdCamera = true;
-            this.lastCamPosition.set(playerEntity.cosmicReach_Seamless_Portals$getTeleportingPortal().getPortaledPos(this.lastCamPosition));
+        if (cosmicReach_Seamless_Portals$shouldTeleportCamera){
+            this.cosmicReach_Seamless_Portals$shouldTeleportCamera = false;
+            this.lastCamPosition.set(cosmicReach_Seamless_Portals$teleportingPortal.getPortaledPos(this.lastCamPosition));
+            Portal portal = this.cosmicReach_Seamless_Portals$teleportingPortal;
+            playerCamera.position.set(portal.getPortaledPos(playerCamera.position));
+            playerCamera.direction.set(portal.getPortaledVector(playerCamera.direction));
+            playerCamera.up.set(portal.getPortaledVector(playerCamera.up));
+            playerCamera.update();
         }
-        else{
-            this.cosmicReach_Seamless_Portals$alreadyTPdCamera = false;
+        if (cosmicReach_Seamless_Portals$cameraTeleported && cosmicReach_Seamless_Portals$cameraTeleportingPortal != null){
+            cosmicReach_Seamless_Portals$cameraTeleported = false;
+            Portal portal = this.cosmicReach_Seamless_Portals$cameraTeleportingPortal.linkedPortal;
+            playerCamera.position.set(portal.getPortaledPos(playerCamera.position));
+            playerCamera.direction.set(portal.getPortaledVector(playerCamera.direction));
+            playerCamera.up.set(portal.getPortaledVector(playerCamera.up));
+            playerCamera.update();
         }
     }
 
@@ -78,14 +88,8 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
         playerCamera.up.mul(this.cosmicReach_Seamless_Portals$upVectorRotation);
         playerCamera.position.set(curPlayerPos.add(playerCameraOffset));
 
-        IPortalableEntity portalableEntity = (IPortalableEntity) this.player.getEntity();
-
         Vector3 checkCamPos = playerCamera.position;
-        Vector3 checkEntityPos = checkCamPos.cpy().sub(playerCameraOffset);
-
-        if (portalableEntity.cosmicReach_Seamless_Portals$isJustTeleported()){
-            checkEntityPos = this.player.getEntity().position.cpy().add(0, 0.05f, 0);
-        }
+        Vector3 checkEntityPos = this.player.getEntity().position.cpy().add(0, 0.05f, 0);
 
         Ray ray = new Ray(checkEntityPos, checkCamPos.cpy().sub(checkEntityPos));
 
@@ -96,6 +100,8 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
                 playerCamera.direction.set(portal.getPortaledVector(playerCamera.direction));
                 playerCamera.up.set(portal.getPortaledVector(playerCamera.up));
                 playerCamera.update();
+                this.cosmicReach_Seamless_Portals$cameraTeleported = true;
+                this.cosmicReach_Seamless_Portals$cameraTeleportingPortal = portal;
                 return;
             }
         }
@@ -104,6 +110,17 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
     @Override
     public void cosmicReach_Seamless_Portals$resetPlayerCameraUp(){
         playerCam.up.set(this.cosmicReach_Seamless_Portals$preSavedCameraUp);
+    }
+
+    @Override
+    public boolean cosmicReach_Seamless_Portals$hasCameraBeenTeleported() {
+        return this.cosmicReach_Seamless_Portals$cameraTeleported || this.cosmicReach_Seamless_Portals$shouldTeleportCamera;
+    }
+
+    @Override
+    public void cosmicReach_Seamless_Portals$flagForCameraTeleport(Portal portal){
+        this.cosmicReach_Seamless_Portals$teleportingPortal = portal;
+        this.cosmicReach_Seamless_Portals$shouldTeleportCamera = true;
     }
 
     @Override

@@ -279,7 +279,6 @@ public class ExtraPortalUtils {
                 HPGPortal prPortal = fixedGetPortal(id1, primaryPortalChunkPos.getValue(), primaryPortalZone.getValue());
                 HPGPortal secPortal = fixedGetPortal(id2, secondaryPortalChunkPos.getValue(), secondaryPortalZone.getValue());
                 if (prPortal == null){
-                    SeamlessPortals.LOGGER.info("Generating new portal");
                     Vector3 upDir = getUpVectorForPortals(result.hitNormal(), player);
                     HPGPortal newPortal = HPGPortal.createNewPortal(new Vector2(1, 2), result.hitNormal().getVector().cpy().scl(-1), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), false, unstable, player.getZone());
                     if (newPortal == null) return;
@@ -310,7 +309,6 @@ public class ExtraPortalUtils {
                     }
                 }
                 else{
-                    SeamlessPortals.LOGGER.info("Moving existing portal");
                     Vector3 originalPos = prPortal.position.cpy();
                     Vector3 originalDir = prPortal.viewDirection.cpy();
                     Vector3 originalUpVector = prPortal.upVector.cpy();
@@ -354,7 +352,6 @@ public class ExtraPortalUtils {
                 HPGPortal prPortal = fixedGetPortal(id1, primaryPortalChunkPos.getValue(), secondaryPortalZone.getValue());
 
                 if (secPortal == null){
-                    SeamlessPortals.LOGGER.info("Generating new portal");
                     Vector3 upDir = getUpVectorForPortals(result.hitNormal(), player);
                     HPGPortal newPortal = HPGPortal.createNewPortal(new Vector2(1, 2), result.hitNormal().getVector().cpy(), upDir, getPositionForPortals(result.hitPos(), result.hitNormal()), true, unstable, player.getZone());
                     if (newPortal == null) {
@@ -387,7 +384,6 @@ public class ExtraPortalUtils {
                     }
                 }
                 else{
-                    SeamlessPortals.LOGGER.info("Moving existing portal");
                     Vector3 originalPos = secPortal.position.cpy();
                     Vector3 originalDir = secPortal.viewDirection.cpy();
                     Vector3 originalUpVector = secPortal.upVector.cpy();

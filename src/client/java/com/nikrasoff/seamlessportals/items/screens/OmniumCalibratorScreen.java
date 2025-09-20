@@ -66,7 +66,7 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
         this.slotWidgets[2] = w2;
 
         functionalTable.add(this.slotWidgets[1]);
-        final DoubleProgressTexture progressArrow = new DoubleProgressTexture(SPClientConstants.UI_LASER_WHOLE_OFF, SPClientConstants.UI_LASER_WHOLE_ON, DoubleProgressTexture.Orientation.HORIZONTAL);
+        final DoubleProgressTexture progressArrow = new DoubleProgressTexture(SPClientConstants.UI_LASER_WHOLE_OFF.get(), SPClientConstants.UI_LASER_WHOLE_ON.get(), DoubleProgressTexture.Orientation.HORIZONTAL);
         progressArrow.addAction(new Action() {
             public boolean act(float delta) {
                 progressArrow.setProgress(omniumCalibrator.getProgressRatio());
@@ -87,7 +87,7 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
 
         Table decorationTable = new Table();
 
-        TextureSwitchWidget laserRight = new TextureSwitchWidget(SPClientConstants.UI_LASER_RIGHT_OFF, SPClientConstants.UI_LASER_RIGHT_ON);
+        TextureSwitchWidget laserRight = new TextureSwitchWidget(SPClientConstants.UI_LASER_RIGHT_OFF.get(), SPClientConstants.UI_LASER_RIGHT_ON.get());
         laserRight.addAction(new Action() {
             @Override
             public boolean act(float v) {
@@ -99,7 +99,7 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
         decorationTable.add(laserRight).width(32);
         decorationTable.add().width(160).height(32);
 
-        TextureSwitchWidget laserLeft = new TextureSwitchWidget(SPClientConstants.UI_LASER_LEFT_OFF, SPClientConstants.UI_LASER_LEFT_ON);
+        TextureSwitchWidget laserLeft = new TextureSwitchWidget(SPClientConstants.UI_LASER_LEFT_OFF.get(), SPClientConstants.UI_LASER_LEFT_ON.get());
         laserLeft.addAction(new Action() {
             @Override
             public boolean act(float v) {
@@ -111,7 +111,7 @@ public class OmniumCalibratorScreen extends BaseItemScreen {
         decorationTable.add(laserLeft).width(32);
         decorationTable.row();
         decorationTable.add().height(32);
-        decorationTable.add(new Image(SPClientConstants.UI_ARROW_OMNIUM_CALIBRATOR));
+        decorationTable.add(new Image(SPClientConstants.UI_ARROW_OMNIUM_CALIBRATOR.get()));
         decorationTable.row();
         decorationTable.add().height(32);
 

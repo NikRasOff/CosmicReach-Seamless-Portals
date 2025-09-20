@@ -54,7 +54,6 @@ public class PortalManager {
         if (result != null){
             return result;
         }
-        SeamlessPortals.LOGGER.info("Couldn't get portal with portal id");
         if (GameSingletons.isClient && !GameSingletons.isHost) {
             throw new RuntimeException("Use simple getPortal() on client instead of getPortalWithGen()");
         }
@@ -63,8 +62,6 @@ public class PortalManager {
 
         EntityRegion.readChunkColumn(zone, (int) chunkCoords.x, (int) chunkCoords.z, Math.floorDiv((int) chunkCoords.x, 16), Math.floorDiv((int) chunkCoords.y, 16), Math.floorDiv((int) chunkCoords.z, 16));
         result = getPortal(portalID);
-        if (result == null) SeamlessPortals.LOGGER.info("Couldn't get portal even with gen");
-        else if (!zone.getAllEntities().contains(result, true)) SeamlessPortals.LOGGER.info("The portal is there in spirit!");
         return result;
     }
 

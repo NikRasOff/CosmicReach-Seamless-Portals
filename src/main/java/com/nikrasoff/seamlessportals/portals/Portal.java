@@ -249,7 +249,6 @@ public class Portal extends Entity {
     }
 
     protected void tryLinking(){
-        SeamlessPortals.LOGGER.info("Trying to link portal {}", uniqueId);
         Portal lPortal = null;
         if (GameSingletons.isHost){
             lPortal = SeamlessPortals.portalManager.getPortalWithGen(this.linkedPortalID, this.linkedPortalChunkCoords, this.zone.zoneId);
@@ -400,6 +399,7 @@ public class Portal extends Entity {
     public void render(Camera worldCamera) {
         if (this.linkedPortal != this.pendingLinkedPortal) this.linkedPortal = this.pendingLinkedPortal;
         if (this.modelInstance != null) {
+            if (!worldCamera.frustum.boundsInFrustum(getMeshBoundingBox())) return;
             tmpModelMatrix.setToLookAt(this.position, this.position.cpy().add(this.viewDirection), this.upVector);
             this.renderModelAfterMatrixSet(worldCamera, true);
         }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
+import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntity;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntityModelInstance;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalRenderEntityComponent;
@@ -15,6 +16,7 @@ import finalforeach.cosmicreach.TickRunner;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.entities.EntityUtils;
+import finalforeach.cosmicreach.entities.ItemEntity;
 import finalforeach.cosmicreach.entities.components.IRenderEntityComponent;
 import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.rendering.entities.IEntityModelInstance;
@@ -62,6 +64,8 @@ public abstract class EntityAnimationMixin implements IModEntity {
 
     @Shadow public Vector3 velocity;
     @Shadow public Vector3 lastPosition;
+
+    // This mixin is a fucking travesty
 
     @Override
     public void cosmicReach_Seamless_Portals$renderNoAnim(Camera renderCamera) {
@@ -156,7 +160,7 @@ public abstract class EntityAnimationMixin implements IModEntity {
     }
 
     @Override
-    public void cosmicReach_Seamless_Portals$renderDuplicate(Camera playerCamera, Portal portal){
+    public void cosmicReach_Seamless_Portals$renderDuplicateSliced(Camera playerCamera, Portal portal) {
         if (this.modelInstance != null) {
             BlockPosition tbp1 = new BlockPosition(null, 0, 0, 0);
             BlockPosition tbp2 = new BlockPosition(null, 0, 0, 0);
@@ -200,6 +204,55 @@ public abstract class EntityAnimationMixin implements IModEntity {
                             else{
                                 c.render((Entity)(Object)this, playerCamera, tempRenderPosSP, tempRenderMatrixSP, renderThisFrame);
                             }
+                        }
+                    }
+                }
+            }
+
+            this.renderedLastFrame = renderThisFrame || this.renderedLastFrame && !this.position.epsilonEquals(this.lastRenderPosition);
+        }
+    }
+
+    @Override
+    public void cosmicReach_Seamless_Portals$renderDuplicate(Camera playerCamera, Portal portal){
+        if (this.modelInstance != null) {
+            BlockPosition tbp1 = new BlockPosition(null, 0, 0, 0);
+            BlockPosition tbp2 = new BlockPosition(null, 0, 0, 0);
+
+            Vector3 tempRenderPosSP = new Vector3();
+
+            Matrix4 tempRenderMatrixSP = new Matrix4();
+
+            if (this.currentChunk != null) {
+                Chunk blockChunk = this.zone.getChunkAtPosition(this.position);
+                EntityUtils.setLightingColor(blockChunk, this.position, this.modelInstance.getCurrentAmbientColor(), this.modelLightColor, tbp1, tbp2);
+            } else {
+                this.modelLightColor.set(Color.WHITE);
+            }
+
+            tempRenderPosSP.set(this.lastRenderPosition);
+            TickRunner.INSTANCE.partTickLerp(tempRenderPosSP, this.position);
+            this.getBoundingBox(this.globalBoundingBox);
+
+            BoundingBox tmpBB1 = new BoundingBox(this.globalBoundingBox);
+            Vector3 addition = portal.getPortaledPos(this.position).sub(this.position);
+            tmpBB1.min.add(addition);
+            tmpBB1.max.add(addition);
+            tmpBB1.update();
+
+            boolean renderThisFrame = playerCamera.frustum.boundsInFrustum(tmpBB1);
+            if (renderThisFrame || this.renderedLastFrame) {
+                tempRenderMatrixSP.idt();
+                tempRenderMatrixSP.translate(tempRenderPosSP);
+                tempRenderMatrixSP = portal.getFullyPortaledTransform(tempRenderMatrixSP);
+                this.cosmicReach_Seamless_Portals$renderAfterMatrixSetNoAnim(playerCamera, tempRenderMatrixSP, renderThisFrame);
+                if (this.renderingComponents != null) {
+                    int s = this.renderingComponents.size;
+
+                    for(int i = 0; i < s; ++i) {
+                        IRenderEntityComponent c = (IRenderEntityComponent)this.renderingComponents.get(i);
+                        if (c != null) {
+                                c.render((Entity)(Object)this, playerCamera, tempRenderPosSP, tempRenderMatrixSP, renderThisFrame);
                         }
                     }
                 }
@@ -271,6 +324,6 @@ public abstract class EntityAnimationMixin implements IModEntity {
         TickRunner.INSTANCE.partTickLerp(tmpPos, this.position);
         this.lastRenderPosition.set(tmpPos);
         if (!(this.modelInstance instanceof IModEntityModelInstance)) return;
-        ((IModEntityModelInstance) this.modelInstance).cosmicReach_Seamless_Portals$updateAnimation(tmpPos);
+        ((IModEntityModelInstance) this.modelInstance).cosmicReach_Seamless_Portals$updateAnimation((Entity) (Object) this, tmpPos);
     }
 }

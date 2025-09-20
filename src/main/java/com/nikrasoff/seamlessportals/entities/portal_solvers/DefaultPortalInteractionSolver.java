@@ -62,8 +62,11 @@ public class DefaultPortalInteractionSolver implements IPortalInteractionSolver 
         this.snapOnGoThroughPortal(zone, entity, portal);
 
         // Animating camera turning
-        if (GameSingletons.isClient && entity instanceof PlayerEntity pe && pe.getPlayer() == GameSingletons.client().getLocalPlayer()){
-            SeamlessPortals.clientConstants.animateCameraTurning(originalPos, entity.position, portal);
+        if (GameSingletons.isClient){
+            if (entity instanceof PlayerEntity pe && pe.getPlayer() == GameSingletons.client().getLocalPlayer()){
+                SeamlessPortals.clientConstants.animateCameraTurning(originalPos, entity.position, portal);
+            }
+            SeamlessPortals.clientConstants.flagEntityModelInstanceForTeleporting(entity, portal);
         }
 
         PortalEntityTools.setJustTeleported(entity, true);

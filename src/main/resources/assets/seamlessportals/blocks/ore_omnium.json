@@ -8,7 +8,8 @@
             "blockEventsId": "seamlessportals:block_events_ore_omnium",
             "tags": [
                 "tool_pickaxe_effective"
-            ]
+            ],
+            "hardness": 5
         }
     }
 }

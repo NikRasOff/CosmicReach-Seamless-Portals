@@ -20,7 +20,8 @@
     "ChunkBatchMixin",
     "PlayerEntityAnimationMixin",
     "FallingBlockEntityAnimationMixin",
-    "JetpackComponentMixin"
+    "JetpackComponentMixin",
+    "EntityModelInstancePlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

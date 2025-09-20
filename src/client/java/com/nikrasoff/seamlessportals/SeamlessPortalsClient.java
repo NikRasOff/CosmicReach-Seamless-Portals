@@ -16,16 +16,16 @@ import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import com.nikrasoff.seamlessportals.rendering.models.ObjItemModel;
 import com.nikrasoff.seamlessportals.rendering.models.PortalModel;
 import com.nikrasoff.seamlessportals.api.IPortalEntityRendererInitialiser;
-import dev.puzzleshq.puzzleloader.cosmic.core.modInitialises.ClientModInit;
+import dev.puzzleshq.puzzleloader.loader.mod.entrypoint.client.ClientModInit;
+import dev.puzzleshq.puzzleloader.loader.mod.entrypoint.client.ClientPostModInit;
 import dev.puzzleshq.puzzleloader.loader.util.PuzzleEntrypointUtil;
-import finalforeach.cosmicreach.ClientSingletons;
 import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.Threads;
 import finalforeach.cosmicreach.rendering.items.ItemRenderer;
 import finalforeach.cosmicreach.ui.UI;
 import finalforeach.cosmicreach.util.Identifier;
 
-public class SeamlessPortalsClient implements ClientModInit {
+public class SeamlessPortalsClient implements ClientModInit, ClientPostModInit {
     @Override
     public void onClientInit() {
         SeamlessPortals.effectManager = new EffectManager();
@@ -116,5 +116,13 @@ public class SeamlessPortalsClient implements ClientModInit {
             newModel.onGroundModelMatrix.translate(0.25f, 0.1f, 0.25f);
             return newModel;
         });
+    }
+
+    @Override
+    public void onClientPostInit() {
+        // Added this to shut up Puzzle
+        //
+        // For some reason it decided that this class HAD to be
+        // ClientPostModInit, so here we are
     }
 }

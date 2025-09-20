@@ -11,7 +11,7 @@
                 "localNegY": {"uv": [ 0, 0, 16, 16 ], "uvRotation": 270, "ambientocclusion": true, "cullFace": true, "texture": "bottom"},
                 "localPosY": {"uv": [ 0, 0, 16, 16 ], "uvRotation": 270, "ambientocclusion": true, "cullFace": true, "texture": "top"},
 
-                "localNegZ": {"uv": [ 16, 0, 0, 16 ], "uvRotation": 270, "ambientocclusion": true, "cullFace": true, "texture": "side"},
+                "localNegZ": {"uv": [ 0, 0, 16, 16 ], "uvRotation": 90, "ambientocclusion": true, "cullFace": true, "texture": "side"},
                 "localPosZ": {"uv": [ 16, 0, 0, 16 ], "uvRotation": 270, "ambientocclusion": true, "cullFace": true, "texture": "side"}
             }
         }

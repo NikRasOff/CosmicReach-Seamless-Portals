@@ -85,6 +85,26 @@ public abstract class PlayerEntityAnimationMixin extends EntityAnimationMixin im
     }
 
     @Override
+    public void cosmicReach_Seamless_Portals$renderDuplicateSliced(Camera playerCamera, Portal portal) {
+        if (this.modelInstance != null) {
+            boolean isSelf = this.isLocalPlayer();
+            if (this.playerSkin == null || this.playerSkin.isUpdated()) {
+                this.updateSkin();
+            }
+
+            this.nameTagComponent.setVisible(true);
+            String name = this.player.getAccount().getDisplayName();
+            this.nameTagComponent.setName(name);
+            super.cosmicReach_Seamless_Portals$renderDuplicateSliced(playerCamera, portal);
+
+            if (isSelf) {
+                boolean isFirstPerson = GameSingletons.client().isFirstPerson();
+                this.nameTagComponent.setVisible(!isFirstPerson);
+            }
+        }
+    }
+
+    @Override
     public void cosmicReach_Seamless_Portals$advanceAnimations() {
         if (this.modelInstance == null) return;
 

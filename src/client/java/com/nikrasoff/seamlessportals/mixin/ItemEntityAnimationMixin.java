@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntity;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.singletons.GameSingletons;
@@ -56,18 +57,10 @@ public abstract class ItemEntityAnimationMixin extends EntityAnimationMixin impl
                 float spin = a * 60.0F;
                 tempRenderMatrixPortal.translate(tempRenderPosPortal);
                 tempRenderMatrixPortal.scl(this.renderSize);
-//                tempRenderMatrixPortal.scl(new Vector3(100, 100, 100));
                 tempRenderMatrixPortal.rotate(Vector3.Y, spin);
                 tempRenderMatrixPortal.translate(-0.5F, -0.5F, -0.5F);
                 tempRenderMatrixPortal.translate(0.0F, this.renderSize / 2.0F + this.renderSize * hover / 2.0F, 0.0F);
-//                float cx = renderCamera.position.x;
-//                float cy = renderCamera.position.y;
-//                float cz = renderCamera.position.z;
-//                renderCamera.position.sub(tempRenderPosPortal);
-//                renderCamera.update();
                 this.cosmicReach_Seamless_Portals$renderAfterMatrixSetNoAnim(renderCamera, tempRenderMatrixPortal,true);
-//                renderCamera.position.set(cx, cy, cz);
-//                renderCamera.update();
             }
 
         }
@@ -128,12 +121,45 @@ public abstract class ItemEntityAnimationMixin extends EntityAnimationMixin impl
                 tmpMatrix.translate(-0.5f, -0.5f, -0.5f);
                 tmpMatrix.translate(0.0F, this.renderSize / 2.0F + this.renderSize * hover / 2.0F, 0.0F);
                 tmpMatrix = portal.getFullyPortaledTransform(tmpMatrix);
+                this.cosmicReach_Seamless_Portals$renderAfterMatrixSetNoAnim(playerCamera, tmpMatrix, true);
+            }
+        }
+    }
+
+    @Override
+    public void cosmicReach_Seamless_Portals$renderDuplicateSliced(Camera playerCamera, Portal portal) {
+        BoundingBox tmpBB1 = new BoundingBox(this.globalBoundingBox);
+        Vector3 addition = portal.getPortaledPos(this.position).sub(this.position);
+        tmpBB1.min.add(addition);
+        tmpBB1.max.add(addition);
+        tmpBB1.update();
+        if (playerCamera.frustum.boundsInFrustum(tmpBB1)) {
+            if (this.modelInstance == null && this.itemStack != null) {
+                this.modelInstance = GameSingletons.itemEntityModelLoader.load(this.itemStack);
+            }
+
+            if (this.modelInstance != null) {
+                Matrix4 tmpMatrix = new Matrix4();
+                Vector3 tmpPos = new Vector3();
+                tmpMatrix.idt();
+                tmpPos.set(this.lastRenderPosition);
+                TickRunner.INSTANCE.partTickSlerp(tmpPos, this.position);
+                tmpMatrix.translate(tmpPos);
+                float partTick = TickRunner.INSTANCE.getPartTick();
+                float a = this.age + partTick * 0.05F + this.randomHoverOffsetTime;
+                float hover = MathUtils.sin(a);
+                float spin = a * 60.0F;
+                tmpMatrix.scl(this.renderSize);
+                tmpMatrix.rotate(Vector3.Y, spin);
+                tmpMatrix.translate(-0.5f, -0.5f, -0.5f);
+                tmpMatrix.translate(0.0F, this.renderSize / 2.0F + this.renderSize * hover / 2.0F, 0.0F);
+                tmpMatrix = portal.getFullyPortaledTransform(tmpMatrix);
                 this.cosmicReach_Seamless_Portals$renderSlicedAfterMatrixSet(playerCamera, tmpMatrix, portal, true);
             }
         }
     }
 
-    @Inject(method = "render", at = @At("HEAD"))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/entities/ItemEntity;renderModelAfterMatrixSet(Lcom/badlogic/gdx/graphics/Camera;Z)V"))
     public void checkIfRendered(Camera worldCamera, CallbackInfo ci){
         this.cosmicReach_Seamless_Portals$hasBeenRendered = true;
     }

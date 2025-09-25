@@ -85,7 +85,7 @@ public abstract class InGameMixin implements IPortalIngame {
     @Inject(method = "render", at = @At("RETURN"))
     private void resetPlayerCamera(CallbackInfo ci){
         SeamlessPortalsRenderUtil.renderContext.end();
-        ((IPortalablePlayerController) playerController).cosmicReach_Seamless_Portals$resetPlayerCameraUp();
+//        ((IPortalablePlayerController) playerController).cosmicReach_Seamless_Portals$resetPlayerCameraUp();
     }
 
     @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/entities/Entity;render(Lcom/badlogic/gdx/graphics/Camera;)V"))

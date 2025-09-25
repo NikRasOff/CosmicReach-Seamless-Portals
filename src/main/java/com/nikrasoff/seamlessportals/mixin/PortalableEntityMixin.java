@@ -65,11 +65,8 @@ public abstract class PortalableEntityMixin implements IPortalableEntity{
         this.addUpdatingComponent(PortalCheckComponent.INSTANCE);
     }
 
-    @Inject(method = "updatePositions", at = @At("HEAD"))
-    private void onEntityUpdate(Zone zone, float deltaTime, CallbackInfo ci) {
-        if (this.velocity.cpy().len() > cosmicReach_Seamless_Portals$terminalVelocity){
-            this.velocity.clamp(0, cosmicReach_Seamless_Portals$terminalVelocity);
-        }
+    @Inject(method = "update", at = @At("HEAD"))
+    private void onProperUpdate(Zone zone, float deltaTime, CallbackInfo ci){
         this.cosmicReach_Seamless_Portals$tmpNonCollideBlocks.clear();
         this.cosmicReach_Seamless_Portals$tmpNonCollideBlocks.addAll(this.cosmicReach_Seamless_Portals$tmpCollidedBlocks);
         this.cosmicReach_Seamless_Portals$tmpCollidedBlocks.clear();
@@ -80,6 +77,13 @@ public abstract class PortalableEntityMixin implements IPortalableEntity{
         this.cosmicReach_Seamless_Portals$teleportPortal = null;
     }
 
+    @Inject(method = "updatePositions", at = @At("HEAD"))
+    private void onEntityUpdate(Zone zone, float deltaTime, CallbackInfo ci) {
+        if (this.velocity.cpy().len() > cosmicReach_Seamless_Portals$terminalVelocity){
+            this.velocity.clamp(0, cosmicReach_Seamless_Portals$terminalVelocity);
+        }
+    }
+
     @WrapOperation(method = "updateConstraints", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/world/Zone;getBlockState(III)Lfinalforeach/cosmicreach/blocks/BlockState;"))
     private BlockState updateConstraintsMixin(Zone instance, int x, int y, int z, Operation<BlockState> original){
         return this.cosmicReach_Seamless_Portals$checkIfShouldCollidePortal(instance, x, y, z, original);
@@ -88,7 +92,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity{
     public BlockState cosmicReach_Seamless_Portals$checkIfShouldCollidePortal(Zone instance, int x, int y, int z, Operation<BlockState> original){
         // Refer to the comment in teleportThroughPortal for an explanation
         BlockState orBlockState = original.call(instance, x, y, z);
-        if (this.updatingComponents.contains(PortalCheckComponent.INSTANCE, true)){
+        if (!this.updatingComponents.contains(PortalCheckComponent.INSTANCE, true)){
             return orBlockState;
         }
 

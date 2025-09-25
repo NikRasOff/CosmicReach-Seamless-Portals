@@ -10,6 +10,8 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.nikrasoff.seamlessportals.SPClientConstants;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
+import com.nikrasoff.seamlessportals.extras.ClientPortalExtras;
 import com.nikrasoff.seamlessportals.extras.interfaces.ISliceablePuzzleModel;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.blocks.BlockPosition;
@@ -101,14 +103,14 @@ public abstract class ExperimentalItemModelMixin implements ISliceablePuzzleMode
         if (portal != null && position != null){
             this.program.shader.setUniformi("u_turnOnSlicing", 1);
             if (isDuplicate){
-                this.program.bindOptionalUniform3f("u_portalOrigin", portal.linkedPortal.position);
+                this.program.bindOptionalUniform3f("u_portalOrigin", ClientPortalExtras.getOriginPosForSlicing(portal, renderCamera, position, true));
                 this.program.bindOptionalUniform3f("u_portalNormal", portal.linkedPortal.viewDirection);
-                this.program.bindOptionalInt("u_invertPortalNormal", Math.max(portal.getPortalSide(position), 0));
+                this.program.bindOptionalBool("u_invertPortalNormal", ClientPortalExtras.shouldInvertNormal(portal, position, true));
             }
             else {
-                this.program.bindOptionalUniform3f("u_portalOrigin", portal.position);
+                this.program.bindOptionalUniform3f("u_portalOrigin", ClientPortalExtras.getOriginPosForSlicing(portal, renderCamera, position, false));
                 this.program.bindOptionalUniform3f("u_portalNormal", portal.viewDirection);
-                this.program.bindOptionalInt("u_invertPortalNormal", Math.max(-portal.getPortalSide(position), 0));
+                this.program.bindOptionalBool("u_invertPortalNormal", ClientPortalExtras.shouldInvertNormal(portal, position, false));
             }
         }
         if (this.getMeshFromIndex(currentEntry) != null) {

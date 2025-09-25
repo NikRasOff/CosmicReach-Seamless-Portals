@@ -12,9 +12,11 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.nikrasoff.seamlessportals.SPClientConstants;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.animations.*;
 import com.nikrasoff.seamlessportals.extras.ClientPortalExtras;
 import com.nikrasoff.seamlessportals.extras.FloatContainer;
+import com.nikrasoff.seamlessportals.extras.interfaces.IPortalBlockSelection;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalZoneRenderer;
 import com.nikrasoff.seamlessportals.portals.HPGPortal;
@@ -48,6 +50,9 @@ public class PortalModelInstance implements IEntityModelInstance {
     private final PerspectiveCamera portalCamera;
     public Texture portalTexture;
     private boolean portalCloseToCamera = false;
+
+    private static final Vector3 tempVector = new Vector3();
+    private static final Vector3 tempVector2 = new Vector3();
 
     protected PortalModelInstance(PortalModel m){
         this.portalModel = m;
@@ -161,9 +166,23 @@ public class PortalModelInstance implements IEntityModelInstance {
         this.portalCamera.far = playerCamera.far;
 
         this.portalCamera.position.set(portal.getPortaledPos(playerCamera.position));
-        this.portalCamera.position.add(portal.viewPositionOffset);
         this.portalCamera.direction.set(portal.getPortaledVector(playerCamera.direction));
-        this.portalCamera.up.set(portal.getPortaledVector(playerCamera.up));
+
+        // Frankly this might be overkill
+        // But if it works it works
+        tempVector.set(playerCamera.up);
+        float ang = (float) Math.acos(tempVector.dot(playerCamera.direction));
+        if (ang < Math.PI * 0.25 || ang > Math.PI * 0.75) {
+            tempVector.set(playerCamera.direction);
+            float c = tempVector.dot(playerCamera.up);
+            float nx = c * playerCamera.up.x;
+            float ny = c * playerCamera.up.y;
+            float nz = c * playerCamera.up.z;
+            tempVector.sub(nx, ny, nz).nor();
+            if (ang < Math.PI * 0.5) tempVector.scl(-1);
+        }
+
+        this.portalCamera.up.set(portal.getPortaledVector(tempVector));
         this.portalCamera.update();
 
         if (portal.getDistanceToPortalPlane(playerCamera.position) > 0.02F) setCameraNearClipPlane(playerCamera, portal);
@@ -208,15 +227,16 @@ public class PortalModelInstance implements IEntityModelInstance {
             portal.linkedPortal.zone.forEachEntity((e) -> {
                 IPortalEntityRenderer r = SPClientConstants.getPortalEntityRenderer(e.getClass());
                 if (r != null){
-                    if (!(e == InGame.getLocalPlayer().getEntity() && GameSingletons.client().isFirstPerson() && !ClientPortalExtras.isPlayerCameraTeleported()) && !portal.linkedPortal.isNotOnSameSideOfPortal(portalCamera.position, portal.getPortaledPos(e.position))){
+                    if (!(e == InGame.getLocalPlayer().getEntity() && GameSingletons.client().isFirstPerson() && !ClientPortalExtras.isPlayerCameraTeleported()) && !portal.linkedPortal.isNotOnSameSideOfPortal(portalCamera.position, portal.getPortaledPos(tempVector.set(e.position).add(SeamlessPortalsConstants.portalCheckEpsilon)))){
                         r.renderDuplicate(e, portalCamera, portal);
                     }
-                    if (portal.linkedPortal.isNotOnSameSideOfPortal(portalCamera.position, e.position) && !(ClientPortalExtras.isEntityJustTeleportedPlayer(e) && GameSingletons.client().isFirstPerson())){
+                    if (portal.linkedPortal.isNotOnSameSideOfPortal(portalCamera.position, tempVector.set(e.position).add(SeamlessPortalsConstants.portalCheckEpsilon)) && !(ClientPortalExtras.isEntityJustTeleportedPlayer(e) && GameSingletons.client().isFirstPerson())){
                         r.render(e, portalCamera);
                     }
                 }
             });
 
+            ((IPortalBlockSelection)GameState.IN_GAME.blockSelection).cosmicReach_Seamless_Portals$renderThroughPortal(portalCamera);
             GameState.IN_GAME.gameParticles.render(portalCamera, 0);
             portalModel.portalFrameBuffer.end();
         }
@@ -249,7 +269,7 @@ public class PortalModelInstance implements IEntityModelInstance {
         this.updatePortalMeshScale((PerspectiveCamera) camera, (Portal) entity);
 
         if (!shouldRender) return;
-        if (entity.zone != GameSingletons.client().getLocalPlayer().getZone() || ((Portal) entity).isPortalDestroyed || (entity).position.dst(camera.position) > 50){
+        if (entity.zone != GameSingletons.client().getLocalPlayer().getZone() || ((Portal) entity).isPortalDestroyed){
             return;
         }
         if (!camera.frustum.boundsInFrustum(this.getMeshBoundingBox(matrix4)) && ((Portal) entity).getDistanceToPortalPlane(camera.position) > camera.near){
@@ -259,7 +279,7 @@ public class PortalModelInstance implements IEntityModelInstance {
         Matrix4 renderMatrix = matrix4.cpy();
 
         PortalShader currentShader;
-        if (((Portal) entity).linkedPortal == null || ((Portal) entity).linkedPortal.zone == null){
+        if (((Portal) entity).linkedPortal == null || ((Portal) entity).linkedPortal.zone == null || (entity).position.dst(camera.position) > 50){
             if (entity instanceof HPGPortal) currentShader = PortalModel.hpgNullPortalShader;
             else currentShader = PortalModel.nullPortalShader;
         }

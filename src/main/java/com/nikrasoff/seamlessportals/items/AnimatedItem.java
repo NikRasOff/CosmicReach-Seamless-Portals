@@ -23,7 +23,7 @@ public abstract class AnimatedItem extends AbstractCosmicItem implements ITickin
             this.addTexture(ItemModelType.ITEM_MODEL_3D, Identifier.of(MOD_ID, texturePrefix + (i + 1) + ".png"));
         }
         this.textureCount = textureCount;
-        this.ticksPerFrame = ticksPerFrame * 2;
+        this.ticksPerFrame = ticksPerFrame;
     }
 
     private void advanceTexture(IItemStack itemStack, int byTicks){
@@ -54,6 +54,6 @@ public abstract class AnimatedItem extends AbstractCosmicItem implements ITickin
 
     @Override
     public void tickEntity(IZone zone, double deltaTime, IEntity entity, IItemStack itemStack) {
-        this.advanceTexture(itemStack, 2);
+        this.advanceTexture(itemStack);
     }
 }

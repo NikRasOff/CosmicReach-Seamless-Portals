@@ -14,7 +14,6 @@ public abstract class ZoneMixin {
     @Inject(method = "removeEntity(Lfinalforeach/cosmicreach/entities/Entity;)V", at = @At("HEAD"))
     void portalDespawnMixin(Entity entity, CallbackInfo ci){
         if (entity instanceof Portal portal){
-            SeamlessPortals.LOGGER.info("Despawning a portal! {}", portal.uniqueId);
             SeamlessPortals.portalManager.removePortal(portal);
         }
     }
@@ -23,7 +22,6 @@ public abstract class ZoneMixin {
     void portalRespawnMixin(Entity entity, CallbackInfo ci){
         if (entity instanceof Portal portal){
             if (SeamlessPortals.portalManager.getPortal(portal.uniqueId) == null){
-                SeamlessPortals.LOGGER.info("Readding a portal into the world! {}", portal.uniqueId);
                 SeamlessPortals.portalManager.addPortal(portal);
             }
         }

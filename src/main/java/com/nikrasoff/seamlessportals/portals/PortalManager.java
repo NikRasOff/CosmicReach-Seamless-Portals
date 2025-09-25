@@ -90,7 +90,12 @@ public class PortalManager {
     }
 
     public Portal[] getPortalArray() {
-        return createdPortals.values().toArray(new Portal[0]);
+        try {
+            return createdPortals.values().toArray(new Portal[0]);
+        } catch (Exception e) {
+            SeamlessPortals.LOGGER.error("Encountered error when trying to get portal array: {}", String.valueOf(e));
+            return new Portal[0];
+        }
     }
 
     public void forEachPortal(Consumer<Portal> consumer){

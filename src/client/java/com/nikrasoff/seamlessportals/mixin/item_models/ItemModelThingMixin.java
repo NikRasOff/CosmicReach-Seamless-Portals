@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
+import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
+import com.nikrasoff.seamlessportals.extras.ClientPortalExtras;
 import com.nikrasoff.seamlessportals.extras.interfaces.ISliceableItemModel;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.blocks.BlockPosition;
@@ -58,14 +60,14 @@ public abstract class ItemModelThingMixin implements ISliceableItemModel {
         if (portal != null && position != null){
             this.program.shader.setUniformi("u_turnOnSlicing", 1);
             if (isDuplicate){
-                this.program.bindOptionalUniform3f("u_portalOrigin", portal.linkedPortal.position);
+                this.program.bindOptionalUniform3f("u_portalOrigin", ClientPortalExtras.getOriginPosForSlicing(portal, renderCamera, position, true));
                 this.program.bindOptionalUniform3f("u_portalNormal", portal.linkedPortal.viewDirection);
-                this.program.bindOptionalInt("u_invertPortalNormal", Math.max(portal.getPortalSide(position), 0));
+                this.program.bindOptionalBool("u_invertPortalNormal", ClientPortalExtras.shouldInvertNormal(portal, position, true));
             }
             else {
-                this.program.bindOptionalUniform3f("u_portalOrigin", portal.position);
+                this.program.bindOptionalUniform3f("u_portalOrigin", ClientPortalExtras.getOriginPosForSlicing(portal, renderCamera, position, false));
                 this.program.bindOptionalUniform3f("u_portalNormal", portal.viewDirection);
-                this.program.bindOptionalInt("u_invertPortalNormal", Math.max(-portal.getPortalSide(position), 0));
+                this.program.bindOptionalBool("u_invertPortalNormal", ClientPortalExtras.shouldInvertNormal(portal, position, false));
             }
         }
         this.mesh.render(this.program.shader, 4);

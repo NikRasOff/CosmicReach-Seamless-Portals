@@ -98,7 +98,12 @@ public abstract class EntityModelInstancePlayerMixin extends EntityModelInstance
         // Was supposed to just set a flag
         // But then I decided that this is just better
         this.lastUsedDir.set(portal.getPortaledVector(this.lastUsedDir));
+        this.lastUsedDir.y = 0;
+        this.lastUsedDir.nor();
         this.lastViewDir.set(portal.getPortaledVector(this.lastViewDir));
         this.tmpVec2.set(portal.getPortaledVector(this.tmpVec2));
+        this.tmpVec2.y = 0;
+        this.tmpVec2.nor();
+        if (this.tmpVec2.isZero()) this.tmpVec2.set(this.lastUsedDir);
     }
 }

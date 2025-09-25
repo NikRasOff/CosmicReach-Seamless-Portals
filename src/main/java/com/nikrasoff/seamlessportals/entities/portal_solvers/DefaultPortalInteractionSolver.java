@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.api.IPortalInteractionSolver;
 import com.nikrasoff.seamlessportals.extras.DirectionVector;
 import com.nikrasoff.seamlessportals.extras.PortalEntityTools;
@@ -14,21 +15,18 @@ import finalforeach.cosmicreach.entities.IDamageSource;
 import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
-import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.entities.player.PlayerEntity;
 import finalforeach.cosmicreach.world.Zone;
 
-import java.util.Map;
-
 public class DefaultPortalInteractionSolver implements IPortalInteractionSolver {
     // This is used when no other solver is registered for the entity or the
     // entity's parent classes
-    private static final Vector3 portalPosCheckEpsilon = new Vector3(0f, 0.05f, 0f);
     private final Vector3 prevPos = new Vector3();
     private final Vector3 targetPos = new Vector3();
     private Ray posChange;
     private boolean stopCheck = false;
+    private Vector3 posDiff = new Vector3();
 
     private static final BoundingBox testBox = new BoundingBox();
     private static final BoundingBox testBox2 = new BoundingBox();
@@ -176,8 +174,11 @@ public class DefaultPortalInteractionSolver implements IPortalInteractionSolver 
     public void solveForPortal(Zone zone, Entity entity, float deltaTime, Portal interactingPortal) {
         if (interactingPortal.isPortalDestroyed) return;
         if (interactingPortal.zone != zone) return;
-        if (interactingPortal.isNotOnSameSideOfPortal(prevPos.cpy().add(portalPosCheckEpsilon), targetPos.cpy().add(portalPosCheckEpsilon)) && Intersector.intersectRayOrientedBounds(posChange, interactingPortal.getMeshBoundingBox(), new Vector3())){
+        if (interactingPortal.isNotOnSameSideOfPortal(prevPos.cpy(), targetPos.cpy()) && Intersector.intersectRayOrientedBounds(posChange, interactingPortal.getMeshBoundingBox(), new Vector3())){
             if (interactingPortal.linkedPortal == null){
+                // Canonically, passing through a null portal
+                // scatters your atoms all across the universe,
+                // most likely killing you
                 entity.hit(new IDamageSource() {
                     @Override
                     public boolean isEntity() {
@@ -212,11 +213,25 @@ public class DefaultPortalInteractionSolver implements IPortalInteractionSolver 
         }
     }
 
+    private void checkForPosSet(Zone zone, Entity entity, float deltaTime){
+        if (this.posChange == null) this.posChange = new Ray();
+        this.posChange.set(prevPos.cpy(), posDiff);
+
+        Portal[] portals = SeamlessPortals.portalManager.getPortalArray();
+        for (Portal portal : portals){
+            this.solveForPortal(zone, entity, deltaTime, portal);
+            if (stopCheck){
+                break;
+            }
+        }
+    }
+
     @Override
     public void solveForAllPortals(Zone zone, Entity entity, float deltaTime) {
         if (SeamlessPortals.portalManager.createdPortals.isEmpty()) return;
+        stopCheck = false;
 
-        prevPos.set(entity.position);
+        prevPos.set(entity.position).add(SeamlessPortalsConstants.portalCheckEpsilon);
         float ax = entity.acceleration.x * deltaTime;
         float ay = entity.acceleration.y * deltaTime;
         float az = entity.acceleration.z * deltaTime;
@@ -233,19 +248,27 @@ public class DefaultPortalInteractionSolver implements IPortalInteractionSolver 
         float vx = testVelocity.x * deltaTime;
         float vy = testVelocity.y * deltaTime;
         float vz = testVelocity.z * deltaTime;
-        Vector3 posDiff = new Vector3(vx, vy, vz);
-        targetPos.set(entity.position).add(posDiff);
-        ((IPortalableEntity) entity).cosmicReach_Seamless_Portals$setTmpNextPosition(targetPos);
+        posDiff.set(vx, vy, vz);
 
-        this.posChange = new Ray(prevPos.cpy().add(portalPosCheckEpsilon), targetPos.cpy().add(portalPosCheckEpsilon).sub(prevPos));
+        if (entity.isOnGround && (testVelocity.y < 0)) {
+            // If on ground, checking without downwards velocity.
 
-        Portal[] portals = SeamlessPortals.portalManager.getPortalArray();
-        for (Portal portal : portals){
-            this.solveForPortal(zone, entity, deltaTime, portal);
-            if (stopCheck){
-                stopCheck = false;
-                break;
-            }
+            // This wouldn't be needed if the check was performed from the center
+            // of the hitbox. But here the entity position is checked,
+            // which is at the feet, so no luck.
+
+            posDiff.y = 0;
+            targetPos.set(prevPos).add(posDiff);
+            ((IPortalableEntity) entity).cosmicReach_Seamless_Portals$setTmpNextPosition(targetPos);
+
+            this.checkForPosSet(zone, entity, deltaTime);
+            posDiff.y = vy;
         }
+
+        if (stopCheck) return;
+
+        targetPos.set(prevPos).add(posDiff);
+        ((IPortalableEntity) entity).cosmicReach_Seamless_Portals$setTmpNextPosition(targetPos);
+        this.checkForPosSet(zone, entity, deltaTime);
     }
 }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.extras.ClientPortalExtras;
 import com.nikrasoff.seamlessportals.extras.interfaces.ISliceableItemModel;
 import com.nikrasoff.seamlessportals.extras.interfaces.ISpecialItemModel;
@@ -96,12 +97,12 @@ public abstract class ItemModelBlockMixin implements ISliceableItemModel, ISpeci
                 if (isDuplicate){
                     this.shader.bindOptionalUniform3f("u_portalOrigin", ClientPortalExtras.getOriginPosForSlicing(portal, renderCamera, position, true));
                     this.shader.bindOptionalUniform3f("u_portalNormal", portal.linkedPortal.viewDirection);
-                    this.shader.bindOptionalInt("u_invertPortalNormal", Math.max(portal.getPortalSide(position), 0));
+                    this.shader.bindOptionalBool("u_invertPortalNormal", ClientPortalExtras.shouldInvertNormal(portal, position, true));
                 }
                 else {
                     this.shader.bindOptionalUniform3f("u_portalOrigin", ClientPortalExtras.getOriginPosForSlicing(portal, renderCamera, position, false));
                     this.shader.bindOptionalUniform3f("u_portalNormal", portal.viewDirection);
-                    this.shader.bindOptionalInt("u_invertPortalNormal", Math.max(-portal.getPortalSide(position), 0));
+                    this.shader.bindOptionalBool("u_invertPortalNormal", ClientPortalExtras.shouldInvertNormal(portal, position, false));
                 }
             }
 

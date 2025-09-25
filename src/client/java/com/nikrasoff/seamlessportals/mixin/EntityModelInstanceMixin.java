@@ -12,6 +12,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.FloatArray;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.extras.ClientPortalExtras;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntityModelInstance;
 import com.nikrasoff.seamlessportals.portals.Portal;
@@ -178,14 +180,14 @@ public abstract class EntityModelInstanceMixin implements IModEntityModelInstanc
             if (cosmicReach_Seamless_Portals$slicingPortal != null){
                 this.shader.bindOptionalBool("u_turnOnSlicing", true);
                 if (cosmicReach_Seamless_Portals$isEntityDuplicate){
-                    this.shader.bindOptionalUniform3f("u_portalOrigin", ClientPortalExtras.getOriginPosForSlicing(this.cosmicReach_Seamless_Portals$slicingPortal, worldCamera, entity.position, false));
+                    this.shader.bindOptionalUniform3f("u_portalOrigin", ClientPortalExtras.getOriginPosForSlicing(this.cosmicReach_Seamless_Portals$slicingPortal, worldCamera, entity.position, true));
                     this.shader.bindOptionalUniform3f("u_portalNormal", this.cosmicReach_Seamless_Portals$slicingPortal.linkedPortal.viewDirection);
-                    this.shader.bindOptionalInt("u_invertPortalNormal", Math.max(cosmicReach_Seamless_Portals$slicingPortal.getPortalSide(entity.position), 0));
+                    this.shader.bindOptionalBool("u_invertPortalNormal", ClientPortalExtras.shouldInvertNormal(this.cosmicReach_Seamless_Portals$slicingPortal, entity.position, true));
                 }
                 else {
                     this.shader.bindOptionalUniform3f("u_portalOrigin", ClientPortalExtras.getOriginPosForSlicing(this.cosmicReach_Seamless_Portals$slicingPortal, worldCamera, entity.position, false));
                     this.shader.bindOptionalUniform3f("u_portalNormal", this.cosmicReach_Seamless_Portals$slicingPortal.viewDirection);
-                    this.shader.bindOptionalInt("u_invertPortalNormal", Math.max(-cosmicReach_Seamless_Portals$slicingPortal.getPortalSide(entity.position), 0));
+                    this.shader.bindOptionalBool("u_invertPortalNormal", ClientPortalExtras.shouldInvertNormal(this.cosmicReach_Seamless_Portals$slicingPortal, entity.position, false));
                 }
             }
 

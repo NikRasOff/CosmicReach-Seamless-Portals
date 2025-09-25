@@ -2,11 +2,11 @@ package com.nikrasoff.seamlessportals.extras;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector3;
+import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalablePlayerController;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.entities.player.PlayerEntity;
-import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.singletons.GameSingletons;
 
@@ -14,15 +14,21 @@ public class ClientPortalExtras {
     // Random useful stuff
     public static final float SLICING_RENDER_OFFSET = 0.005f;
 
+    private static final Vector3 tempVector = new Vector3();
+
+    public static boolean shouldInvertNormal(Portal portal, Vector3 entityPos, boolean isDuplicate){
+        return isDuplicate ? portal.getPortalSide(tempVector.set(entityPos).add(SeamlessPortalsConstants.portalCheckEpsilon)) == 1 : portal.getPortalSide(tempVector.set(entityPos).add(SeamlessPortalsConstants.portalCheckEpsilon)) == -1;
+    }
+
     public static Vector3 getOriginPosForSlicing(Portal portal, Camera camera, Vector3 entityPos, boolean isDuplicate){
         Vector3 res = isDuplicate ? portal.linkedPortal.position.cpy() : portal.position.cpy();
         Vector3 normal = isDuplicate ? portal.linkedPortal.viewDirection.cpy() : portal.viewDirection.cpy();
-        int invertNormal = isDuplicate ? Math.max(portal.getPortalSide(entityPos), 0) : Math.max(-portal.getPortalSide(entityPos), 0);
-        if (invertNormal == 1){
+        boolean invertNormal = shouldInvertNormal(portal, entityPos, isDuplicate);
+        if (invertNormal){
             normal.scl(-1);
         }
-        Vector3 dirFromCamera = res.cpy().sub(camera.position).nor();
-        if (dirFromCamera.dot(normal) > 0){
+        tempVector.set(res).sub(camera.position).nor();
+        if (tempVector.dot(normal) > 0){
             res.add(normal.scl(SLICING_RENDER_OFFSET));
         }
         else{
@@ -44,6 +50,5 @@ public class ClientPortalExtras {
 
     public static boolean isEntityJustTeleportedPlayer(Entity entity){
         return isEntityLocalPlayer(entity) && isPlayerCameraTeleported();
-//        return false;
     }
 }

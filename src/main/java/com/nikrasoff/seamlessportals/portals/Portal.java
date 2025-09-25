@@ -12,6 +12,7 @@ import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
 import com.nikrasoff.seamlessportals.networking.packets.PortalDeletePacket;
 import finalforeach.cosmicreach.Threads;
+import finalforeach.cosmicreach.entities.components.LavaDamageComponent;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.blocks.BlockState;
@@ -230,14 +231,6 @@ public class Portal extends Entity {
         return new Portal(size, dirString, info.position.toVector3().add(new Vector3(0.5f, 0.5f, 0.5f)));
     }
 
-    protected Vector3 getChunkCoords(){
-        Vector3 res = new Vector3();
-        res.x = Math.floorDiv((int) position.x, 16);
-        res.y = Math.floorDiv((int) position.y, 16);
-        res.z = Math.floorDiv((int) position.z, 16);
-        return res;
-    }
-
     public void linkPortal(Portal to){
         linkedPortal = to;
         pendingLinkedPortal = to;
@@ -280,34 +273,27 @@ public class Portal extends Entity {
         return new OrientedBoundingBox(meshBB, pm.inv());
     }
 
-    public Matrix4 getPortaledTransform(Matrix4 transform){
+    public Matrix4 getRotatedTransform(Matrix4 transform){
         if (linkedPortal == null) return transform.cpy();
         Matrix4 newTransform = transform.cpy();
         Matrix4 thisPort = this.getPortalMatrix();
         Matrix4 linkedPort = this.linkedPortal.getPortalMatrix();
         thisPort.setTranslation(0, 0, 0);
         linkedPort.setTranslation(0, 0, 0);
-        thisPort.inv();
-        newTransform.mul(thisPort);
-        newTransform.mul(linkedPort);
+        linkedPort.inv();
+        newTransform.mulLeft(thisPort);
+        newTransform.mulLeft(linkedPort);
         return newTransform;
     }
 
-    // What's the difference between this method and the one above?
-    // ...
-    // Good question.
     public Matrix4 getFullyPortaledTransform(Matrix4 transform){
         if (linkedPortal == null) return transform.cpy();
-        Vector3 newPos = this.getPortaledPos(transform.getTranslation(new Vector3()));
         Matrix4 newTransform = transform.cpy();
         Matrix4 thisPort = this.getPortalMatrix();
         Matrix4 linkedPort = this.linkedPortal.getPortalMatrix();
-        thisPort.setTranslation(0, 0, 0);
-        linkedPort.setTranslation(0, 0, 0);
-        thisPort.inv();
-        newTransform.mul(thisPort);
-        newTransform.mul(linkedPort);
-        newTransform.setTranslation(newPos);
+        linkedPort.inv();
+        newTransform.mulLeft(thisPort);
+        newTransform.mulLeft(linkedPort);
         return newTransform;
     }
 
@@ -399,7 +385,6 @@ public class Portal extends Entity {
     public void render(Camera worldCamera) {
         if (this.linkedPortal != this.pendingLinkedPortal) this.linkedPortal = this.pendingLinkedPortal;
         if (this.modelInstance != null) {
-            if (!worldCamera.frustum.boundsInFrustum(getMeshBoundingBox())) return;
             tmpModelMatrix.setToLookAt(this.position, this.position.cpy().add(this.viewDirection), this.upVector);
             this.renderModelAfterMatrixSet(worldCamera, true);
         }

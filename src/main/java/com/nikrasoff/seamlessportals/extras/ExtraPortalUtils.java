@@ -267,8 +267,23 @@ public class ExtraPortalUtils {
         IntegerDataPoint secondaryPortalIdNum = (IntegerDataPoint) hpgManifest.get("portal2IdNum");
         StringDataPoint secondaryPortalZone = (StringDataPoint) hpgManifest.get("portal2Zone");
 
-        PortalManager pm = SeamlessPortals.portalManager;
         workingPos.set(player.getPosition()).add(player.getEntity().viewPositionOffset);
+        ray.set(player.getPosition(), player.getEntity().viewPositionOffset);
+
+        // |  Fun idea,
+        // |  Completely broken in practice
+        // \/ Turn on and try for yourself
+
+//        Vector3 workingView = player.getEntity().viewDirection.cpy();
+//        Portal[] portals = SeamlessPortals.portalManager.getPortalArray();
+//        for (Portal portal : portals){
+//            if (Intersector.intersectRayOrientedBounds(ray, portal.getMeshBoundingBox(), new Vector3())){
+//                workingPos.set(portal.getPortaledPos(workingPos));
+//                workingView.set(portal.getPortaledVector(workingView));
+//                break;
+//            }
+//        }
+
         RaycastOutput result = raycast(player.getZone(), workingPos, player.getEntity().viewDirection, 1000F);
         if (!isSecondPortal){
             if (result != null){

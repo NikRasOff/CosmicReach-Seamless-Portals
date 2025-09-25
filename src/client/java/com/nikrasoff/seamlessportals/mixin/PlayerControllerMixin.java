@@ -65,7 +65,7 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
             playerCamera.up.set(portal.getPortaledVector(playerCamera.up));
             playerCamera.update();
         }
-        if (cosmicReach_Seamless_Portals$cameraTeleported && cosmicReach_Seamless_Portals$cameraTeleportingPortal != null){
+        if (cosmicReach_Seamless_Portals$cameraTeleported && cosmicReach_Seamless_Portals$cameraTeleportingPortal != null && cosmicReach_Seamless_Portals$cameraTeleportingPortal.linkedPortal != null){
             cosmicReach_Seamless_Portals$cameraTeleported = false;
             Portal portal = this.cosmicReach_Seamless_Portals$cameraTeleportingPortal.linkedPortal;
             playerCamera.position.set(portal.getPortaledPos(playerCamera.position));
@@ -85,7 +85,6 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
 
         if (this.cosmicReach_Seamless_Portals$cameraRotationAnimation != null && !this.cosmicReach_Seamless_Portals$cameraRotationAnimation.isFinished()){
             this.cosmicReach_Seamless_Portals$cameraRotationAnimation.update(Gdx.graphics.getDeltaTime());
-//            SeamlessPortals.LOGGER.info(this.cosmicReach_Seamless_Portals$upVectorRotation);
         }
 
         playerCameraOffset.mul(this.cosmicReach_Seamless_Portals$upVectorRotation);

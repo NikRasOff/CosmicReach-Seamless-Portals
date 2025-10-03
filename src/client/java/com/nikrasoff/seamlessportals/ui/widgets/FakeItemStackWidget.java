@@ -2,18 +2,23 @@ package com.nikrasoff.seamlessportals.ui.widgets;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import finalforeach.cosmicreach.items.Item;
 import finalforeach.cosmicreach.items.ItemStack;
+import finalforeach.cosmicreach.rendering.items.ItemModel;
 import finalforeach.cosmicreach.rendering.items.ItemRenderer;
 import finalforeach.cosmicreach.ui.widgets.ItemStackWidget;
+import io.github.puzzle.cosmic.impl.client.item.CosmicItemModelWrapper;
 
 public class FakeItemStackWidget extends ItemStackWidget {
 
     public static Vector2 tmpVec = new Vector2();
+    private static final Matrix4 identMat = new Matrix4();
 
     public FakeItemStackWidget(Drawable imageDrawable) {
         super(imageDrawable);
@@ -50,7 +55,12 @@ public class FakeItemStackWidget extends ItemStackWidget {
             Camera itemCam = ItemRenderer.getItemSlotCamera(drawnItem);
             itemViewport.setCamera(itemCam);
             itemViewport.apply();
-            ItemRenderer.drawItem(itemCam, drawnItem);
+            ItemModel model = ItemRenderer.getModel(drawnItem, true);
+            if (this.itemStack != null && model instanceof CosmicItemModelWrapper itemModel) {
+                itemModel.renderInSlot(null, this.itemStack, itemCam, identMat, false);
+            } else {
+                model.render(null, itemCam, identMat, false, false);
+            }
         }
     }
 }

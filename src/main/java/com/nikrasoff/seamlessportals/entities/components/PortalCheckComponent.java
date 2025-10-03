@@ -1,11 +1,9 @@
 package com.nikrasoff.seamlessportals.entities.components;
 
-import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.api.IPortalInteractionSolver;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.entities.components.IUpdateEntityComponent;
-import finalforeach.cosmicreach.entities.player.PlayerEntity;
 import finalforeach.cosmicreach.world.Zone;
 
 public class PortalCheckComponent implements IUpdateEntityComponent {

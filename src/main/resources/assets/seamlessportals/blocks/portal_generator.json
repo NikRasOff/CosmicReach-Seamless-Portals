@@ -1,33 +1,157 @@
 {
-    "stringId": "seamlessportals:portal_generator",
-    "blockEntityId": "seamlessportals:portal_generator",
-    "defaultParams":
-    {
-        "active": "false"
+  "stringId": "seamlessportals:portal_generator",
+  "blockEntityId": "seamlessportals:portal_generator",
+  "defaultParams":
+  {
+    "active": "false",
+    "vertical": "false",
+    "direction": "PosZ"
+  },
+  "defaultProperties":
+  {
+    "modelName": "seamlessportals:models/blocks/model_portal_generator_off.json",
+    "tags": [
+      "tool_pickaxe_effective"
+    ],
+    "dropParams": {
+      "active": "false",
+      "vertical": "false",
+      "direction": "PosZ"
     },
+    "placementRules": "portal_gen",
+    "allowSwapping": false,
+    "catalogHidden": true
+  },
     "blockStates":
     {
-        "active=false":
-        {
-            "modelName": "seamlessportals:models/blocks/model_portal_generator_off.json",
-            "blockEventsId": "seamlessportals:block_events_portal_generator_off",
-            "dropId": "seamlessportals:portal_generator[active=false]",
-            "stateGenerators": ["seamlessportals:directional_blocks"],
-            "tags": [
-                "tool_pickaxe_effective"
-            ]
-        },
-        "active=true": {
-            "modelName": "seamlessportals:models/blocks/model_portal_generator_on.json",
-            "blockEventsId": "seamlessportals:block_events_portal_generator_on",
-            "catalogHidden": true,
-            "lightLevelGreen": 8,
-            "lightLevelBlue": 8,
-            "dropId": "seamlessportals:portal_generator[active=false]",
-            "stateGenerators": ["seamlessportals:directional_blocks"],
-            "tags": [
-                "tool_pickaxe_effective"
-            ]
-        }
+      "active=false,vertical=false,direction=PosZ":
+      {
+        "rotation": [0,0,0],
+        "catalogHidden": false
+      },
+      "active=false,vertical=false,direction=NegX":
+      {
+        "rotation": [0,90,0]
+      },
+      "active=false,vertical=false,direction=NegZ":
+      {
+        "rotation": [0,180,0]
+      },
+      "active=false,vertical=false,direction=PosX":
+      {
+        "rotation": [0,270,0]
+      },
+      "active=true,vertical=false,direction=PosZ": {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_on.json",
+        "lightLevelGreen": 8,
+        "lightLevelBlue": 8,
+        "rotation": [0,0,0]
+      },
+      "active=true,vertical=false,direction=NegX": {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_on.json",
+        "lightLevelGreen": 8,
+        "lightLevelBlue": 8,
+        "rotation": [0,90,0]
+      },
+      "active=true,vertical=false,direction=NegZ": {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_on.json",
+        "lightLevelGreen": 8,
+        "lightLevelBlue": 8,
+        "rotation": [0,180,0]
+      },
+      "active=true,vertical=false,direction=PosX": {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_on.json",
+        "lightLevelGreen": 8,
+        "lightLevelBlue": 8,
+        "rotation": [0,270,0]
+      },
+      "active=false,vertical=up,direction=PosZ":
+      {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_off_up.json",
+        "rotation": [0,0,0]
+      },
+      "active=false,vertical=up,direction=NegX":
+      {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_off_up.json",
+        "rotation": [0,90,0]
+      },
+      "active=false,vertical=up,direction=NegZ":
+      {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_off_up.json",
+        "rotation": [0,180,0]
+      },
+      "active=false,vertical=up,direction=PosX":
+      {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_off_up.json",
+        "rotation": [0,270,0]
+      },
+      "active=true,vertical=up,direction=PosZ": {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_on_up.json",
+        "lightLevelGreen": 8,
+        "lightLevelBlue": 8,
+        "rotation": [0,0,0]
+      },
+      "active=true,vertical=up,direction=NegX": {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_on_up.json",
+        "lightLevelGreen": 8,
+        "lightLevelBlue": 8,
+        "rotation": [0,90,0]
+      },
+      "active=true,vertical=up,direction=NegZ": {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_on_up.json",
+        "lightLevelGreen": 8,
+        "lightLevelBlue": 8,
+        "rotation": [0,180,0]
+      },
+      "active=true,vertical=up,direction=PosX": {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_on_up.json",
+        "lightLevelGreen": 8,
+        "lightLevelBlue": 8,
+        "rotation": [0,270,0]
+      },
+      "active=false,vertical=down,direction=PosZ":
+      {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_off_down.json",
+        "rotation": [0,0,0]
+      },
+      "active=false,vertical=down,direction=NegX":
+      {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_off_down.json",
+        "rotation": [0,90,0]
+      },
+      "active=false,vertical=down,direction=NegZ":
+      {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_off_down.json",
+        "rotation": [0,180,0]
+      },
+      "active=false,vertical=down,direction=PosX":
+      {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_off_down.json",
+        "rotation": [0,270,0]
+      },
+      "active=true,vertical=down,direction=PosZ": {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_on_down.json",
+        "lightLevelGreen": 8,
+        "lightLevelBlue": 8,
+        "rotation": [0,0,0]
+      },
+      "active=true,vertical=down,direction=NegX": {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_on_down.json",
+        "lightLevelGreen": 8,
+        "lightLevelBlue": 8,
+        "rotation": [0,90,0]
+      },
+      "active=true,vertical=down,direction=NegZ": {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_on_down.json",
+        "lightLevelGreen": 8,
+        "lightLevelBlue": 8,
+        "rotation": [0,180,0]
+      },
+      "active=true,vertical=down,direction=PosX": {
+        "modelName": "seamlessportals:models/blocks/model_portal_generator_on_down.json",
+        "lightLevelGreen": 8,
+        "lightLevelBlue": 8,
+        "rotation": [0,270,0]
+      }
     }
 }

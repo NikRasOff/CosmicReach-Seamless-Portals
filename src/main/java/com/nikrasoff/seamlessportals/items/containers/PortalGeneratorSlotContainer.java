@@ -2,7 +2,7 @@ package com.nikrasoff.seamlessportals.items.containers;
 
 import com.badlogic.gdx.math.Vector3;
 import com.nikrasoff.seamlessportals.SeamlessPortalsItems;
-import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
+import com.nikrasoff.seamlessportals.blocks.blockentities.BlockEntityPortalGenerator;
 import finalforeach.cosmicreach.items.ItemSlot;
 import finalforeach.cosmicreach.items.containers.SlotContainer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;

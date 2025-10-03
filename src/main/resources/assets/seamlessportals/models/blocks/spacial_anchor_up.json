@@ -1,0 +1,20 @@
+{
+    "parent": "seamlessportals:models/blocks/directional_cube_vertical.json",
+
+    "textures":
+    {
+        "front":
+        {
+            "fileName": "seamlessportals:textures/blocks/spacial_anchor_front_vert.png"
+        },
+        "back":
+        {
+            "fileName": "seamlessportals:textures/blocks/spacial_anchor_back_vert.png"
+        },
+        "side":
+        {
+            "fileName": "seamlessportals:textures/blocks/spacial_anchor_side.png"
+        }
+    }
+    
+}

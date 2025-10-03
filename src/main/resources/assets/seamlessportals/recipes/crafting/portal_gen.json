@@ -13,7 +13,7 @@
         ],
         "output":
         {
-            "item": "seamlessportals:portal_generator[active=false]",
+            "item": "seamlessportals:portal_generator",
             "amount": 1
         }
     }

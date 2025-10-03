@@ -8,6 +8,7 @@ public class TopCommand extends Command {
 
     ListAnchorsCommand anchorsCommand = new ListAnchorsCommand();
     ClearAnchorsCommand clearAnchorsCommand = new ClearAnchorsCommand();
+    ClearPortalsCommand clearPortalsCommand = new ClearPortalsCommand();
 
     public static void register() {
         Command.registerCommand(TopCommand::new, "portal");
@@ -19,6 +20,7 @@ public class TopCommand extends Command {
 
         anchorsCommand.setup(account, args);
         clearAnchorsCommand.setup(account, args);
+        clearPortalsCommand.setup(account, args);
     }
 
     @Override
@@ -30,6 +32,7 @@ public class TopCommand extends Command {
         switch (command) {
             case "anchorClear" -> clearAnchorsCommand.run(chat);
             case "anchorList" -> anchorsCommand.run(chat);
+            case "portalClear" -> clearPortalsCommand.run(chat);
             default -> chat.addMessage(null, "unknown command: portal " + command);
         }
     }

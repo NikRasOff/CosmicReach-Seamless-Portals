@@ -26,7 +26,7 @@ public class DefaultPortalInteractionSolver implements IPortalInteractionSolver 
     private final Vector3 targetPos = new Vector3();
     private Ray posChange;
     private boolean stopCheck = false;
-    private Vector3 posDiff = new Vector3();
+    private final Vector3 posDiff = new Vector3();
 
     private static final BoundingBox testBox = new BoundingBox();
     private static final BoundingBox testBox2 = new BoundingBox();
@@ -71,6 +71,7 @@ public class DefaultPortalInteractionSolver implements IPortalInteractionSolver 
         PortalEntityTools.setTeleportingPortal(entity, portal);
         Vector3 orPos = new Vector3(entity.position);
         PortalEntityTools.getTmpTransformMatrix(entity).setToLookAt(orPos, orPos.cpy().add(portal.linkedPortal.getPortaledVector(new Vector3(0, 0, 1))), portal.linkedPortal.getPortaledVector(new Vector3(0, 1, 0))).inv();
+
         PortalEntityTools.getPortaledBoundingBox(entity).setTransform(PortalEntityTools.getTmpTransformMatrix(entity));
     }
 
@@ -175,7 +176,7 @@ public class DefaultPortalInteractionSolver implements IPortalInteractionSolver 
         if (interactingPortal.isPortalDestroyed) return;
         if (interactingPortal.zone != zone) return;
         if (interactingPortal.isNotOnSameSideOfPortal(prevPos.cpy(), targetPos.cpy()) && Intersector.intersectRayOrientedBounds(posChange, interactingPortal.getMeshBoundingBox(), new Vector3())){
-            if (interactingPortal.linkedPortal == null){
+            if (interactingPortal.linkedPortal == null || interactingPortal.linkedPortal.zone == null){
                 // Canonically, passing through a null portal
                 // scatters your atoms all across the universe,
                 // most likely killing you

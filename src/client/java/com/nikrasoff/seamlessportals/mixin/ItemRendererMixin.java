@@ -26,22 +26,18 @@ public abstract class ItemRendererMixin{
     private static boolean cosmicReach_Seamless_Portals$isHpgEquipped = false;
     @Unique
     private static boolean cosmicReach_Seamless_Portals$isUnstableHpgEquipped = false;
-    @Unique
-    private static boolean isHpgJustEquipped = false;
 
     @Inject(method = "renderHeldItem(Lcom/badlogic/gdx/math/Vector3;Lfinalforeach/cosmicreach/items/Item;Lcom/badlogic/gdx/graphics/PerspectiveCamera;)V", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/rendering/items/ItemRenderer;popUpHeldItem()V"))
     private static void detectHpg(Vector3 worldPosition, Item heldItem, PerspectiveCamera worldCamera, CallbackInfo ci){
         if (heldItem.getID().equals(HandheldPortalGen.hpgID)){
             cosmicReach_Seamless_Portals$isHpgEquipped = true;
             cosmicReach_Seamless_Portals$isUnstableHpgEquipped = false;
-            isHpgJustEquipped = true;
         } else if (heldItem.getID().equals(UnstableHandheldPortalGen.hpgID)) {
             cosmicReach_Seamless_Portals$isHpgEquipped = false;
             cosmicReach_Seamless_Portals$isUnstableHpgEquipped = true;
         } else{
             cosmicReach_Seamless_Portals$isHpgEquipped = false;
             cosmicReach_Seamless_Portals$isUnstableHpgEquipped = false;
-            isHpgJustEquipped = false;
         }
     }
 

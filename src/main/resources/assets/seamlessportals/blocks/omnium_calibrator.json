@@ -3,30 +3,62 @@
     "blockEntityId": "seamlessportals:omnium_calibrator",
     "defaultParams":
     {
-        "active": "false"
+        "active": "false",
+        "direction": "PosZ"
     },
+  "defaultProperties":
+  {
+    "modelName": "seamlessportals:models/blocks/omnium_calibrator_off.json",
+    "tags": [
+      "tool_pickaxe_effective"
+    ],
+    "dropParams": {
+      "active": "false",
+      "direction": "PosZ"
+    },
+    "placementRules": "directional_towards",
+    "allowSwapping": false,
+    "catalogHidden": true
+  },
     "blockStates":
     {
-        "active=false":
-        {
-            "modelName": "seamlessportals:models/blocks/omnium_calibrator_off.json",
-            "blockEventsId": "seamlessportals:block_events_omnium_calibrator_off",
-            "dropId": "seamlessportals:omnium_calibrator[active=false]",
-            "stateGenerators": ["seamlessportals:directional_blocks_horizontal"],
-            "tags": [
-                "tool_pickaxe_effective"
-            ]
-        },
-        "active=true": {
-            "modelName": "seamlessportals:models/blocks/omnium_calibrator_on.json",
-            "blockEventsId": "seamlessportals:block_events_omnium_calibrator_on",
-            "catalogHidden": true,
-            "lightLevelBlue": 8,
-            "dropId": "seamlessportals:omnium_calibrator[active=false]",
-            "stateGenerators": ["seamlessportals:directional_blocks_horizontal"],
-            "tags": [
-                "tool_pickaxe_effective"
-            ]
-        }
+      "active=false,direction=PosZ":
+      {
+        "rotation": [0,0,0],
+        "catalogHidden": false,
+        "allowSwapping": true
+      },
+      "active=false,direction=NegX":
+      {
+        "rotation": [0,90,0]
+      },
+      "active=false,direction=NegZ":
+      {
+        "rotation": [0,180,0]
+      },
+      "active=false,direction=PosX":
+      {
+        "rotation": [0,270,0]
+      },
+      "active=true,direction=PosZ": {
+        "modelName": "seamlessportals:models/blocks/omnium_calibrator_on.json",
+        "lightLevelBlue": 8,
+        "rotation": [0,0,0]
+      },
+      "active=true,direction=NegX": {
+        "modelName": "seamlessportals:models/blocks/omnium_calibrator_on.json",
+        "lightLevelBlue": 8,
+        "rotation": [0,90,0]
+      },
+      "active=true,direction=NegZ": {
+        "modelName": "seamlessportals:models/blocks/omnium_calibrator_on.json",
+        "lightLevelBlue": 8,
+        "rotation": [0,180,0]
+      },
+      "active=true,direction=PosX": {
+        "modelName": "seamlessportals:models/blocks/omnium_calibrator_on.json",
+        "lightLevelBlue": 8,
+        "rotation": [0,270,0]
+      }
     }
 }

@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
+import com.nikrasoff.seamlessportals.blocks.blockentities.BlockEntitySpacialAnchor;
 import com.nikrasoff.seamlessportals.items.containers.SpacialAnchorSlotContainer;
 import com.nikrasoff.seamlessportals.ui.widgets.FakeItemSlotWidget;
 import dev.puzzleshq.puzzleloader.loader.util.ReflectionUtil;

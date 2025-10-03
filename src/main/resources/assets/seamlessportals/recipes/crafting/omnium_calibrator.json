@@ -16,7 +16,7 @@
         ],
         "output":
         {
-            "item": "seamlessportals:omnium_calibrator[active=false]",
+            "item": "seamlessportals:omnium_calibrator[active=false,direction=PosZ]",
             "amount": 1
         }
     }

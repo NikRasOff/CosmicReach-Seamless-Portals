@@ -63,6 +63,7 @@ public abstract class ZoneLoaderMixin{
 
         Portal[] portals = SeamlessPortals.portalManager.getPortalArray();
         for (Portal portal : portals) {
+            if (portal == null) continue;
             if (!portal.isPortalInRange(true, chunkRadius)){
                 continue;
             }
@@ -85,6 +86,7 @@ public abstract class ZoneLoaderMixin{
         boolean tooFarVertically = true;
         Portal[] portals = SeamlessPortals.portalManager.getPortalArray();
         for (Portal portal : portals) {
+            if (portal == null) continue;
             if (!portal.isPortalInRange(true, chunkRadius)){
                 continue;
             }

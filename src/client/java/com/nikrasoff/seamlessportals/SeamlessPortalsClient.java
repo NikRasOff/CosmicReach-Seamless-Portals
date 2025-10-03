@@ -2,9 +2,9 @@ package com.nikrasoff.seamlessportals;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
-import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
-import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
-import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
+import com.nikrasoff.seamlessportals.blocks.blockentities.BlockEntityOmniumCalibrator;
+import com.nikrasoff.seamlessportals.blocks.blockentities.BlockEntityPortalGenerator;
+import com.nikrasoff.seamlessportals.blocks.blockentities.BlockEntitySpacialAnchor;
 import com.nikrasoff.seamlessportals.effects.EffectManager;
 import com.nikrasoff.seamlessportals.effects.PulseEffect;
 import com.nikrasoff.seamlessportals.items.HandheldPortalGen;

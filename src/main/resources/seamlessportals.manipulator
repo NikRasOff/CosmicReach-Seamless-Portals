@@ -6,6 +6,6 @@ public class finalforeach/cosmicreach/rendering/entities/EntityAnimation
 
 
 public field finalforeach/cosmicreach/gamestates/InGame playerController
-public field finalforeach/cosmicreach/blockentities/BlockEntity zone
+public field finalforeach/cosmicreach/blocks/blockentities/BlockEntity zone
 public field finalforeach/cosmicreach/entities/Entity acceleration
 public field finalforeach/cosmicreach/entities/Entity floorFriction

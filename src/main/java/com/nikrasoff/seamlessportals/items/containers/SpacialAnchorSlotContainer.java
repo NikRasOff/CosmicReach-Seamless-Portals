@@ -3,7 +3,7 @@ package com.nikrasoff.seamlessportals.items.containers;
 import com.badlogic.gdx.math.Vector3;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.SeamlessPortalsItems;
-import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
+import com.nikrasoff.seamlessportals.blocks.blockentities.BlockEntitySpacialAnchor;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
 import finalforeach.cosmicreach.items.ItemSlot;

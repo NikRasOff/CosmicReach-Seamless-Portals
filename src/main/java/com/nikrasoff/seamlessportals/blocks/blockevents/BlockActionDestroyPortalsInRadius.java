@@ -1,15 +1,13 @@
-package com.nikrasoff.seamlessportals.blockevents;
+package com.nikrasoff.seamlessportals.blocks.blockevents;
 
 import com.badlogic.gdx.math.Vector3;
 import com.nikrasoff.seamlessportals.entities.DestabiliserPulseEntity;
-import finalforeach.cosmicreach.blockevents.BlockEventArgs;
-import finalforeach.cosmicreach.blockevents.actions.ActionId;
-import finalforeach.cosmicreach.blockevents.actions.IBlockAction;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.entities.EntityCreator;
+import finalforeach.cosmicreach.gameevents.ActionId;
+import finalforeach.cosmicreach.gameevents.blockevents.BlockEventArgs;
+import finalforeach.cosmicreach.gameevents.blockevents.actions.IBlockAction;
 import finalforeach.cosmicreach.world.Zone;
-
-import java.util.Map;
 
 @ActionId(
         id = "seamlessportals:destroy_portals_in_radius"

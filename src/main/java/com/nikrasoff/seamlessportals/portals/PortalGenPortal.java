@@ -4,18 +4,20 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
-import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
-import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
+import com.nikrasoff.seamlessportals.blocks.blockentities.BlockEntityPortalGenerator;
+import com.nikrasoff.seamlessportals.blocks.blockentities.BlockEntitySpacialAnchor;
 import com.nikrasoff.seamlessportals.entities.components.PortalCheckComponent;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
+import finalforeach.cosmicreach.Threads;
+import finalforeach.cosmicreach.blocks.blockentities.BlockEntity;
 import finalforeach.cosmicreach.singletons.GameSingletons;
-import finalforeach.cosmicreach.blockentities.BlockEntity;
 import finalforeach.cosmicreach.entities.CommonEntityTags;
 import finalforeach.cosmicreach.entities.components.GravityComponent;
 import finalforeach.cosmicreach.savelib.crbin.CRBSerialized;
 import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
 import finalforeach.cosmicreach.world.Zone;
+import org.jetbrains.annotations.NotNull;
 
 public class PortalGenPortal extends Portal {
     private PortalSpawnBlockInfo sourceBlock = new PortalSpawnBlockInfo();
@@ -26,6 +28,7 @@ public class PortalGenPortal extends Portal {
         PortalGenPortal portal = new PortalGenPortal();
         if (deserializer != null) {
             portal.read(deserializer);
+//            SeamlessPortals.LOGGER.info("Loading portal {}", portal.uniqueId);
             portal.sourceBlock.position.set(deserializer.readInt("sourceBlockX", 0), deserializer.readInt("sourceBlockY", 0), deserializer.readInt("sourceBlockZ", 0));
             portal.sourceBlock.zoneId = deserializer.readString("sourceBlockZone");
             portal.sourceBlock.blockState = deserializer.readString("sourceBlockParams");
@@ -42,13 +45,16 @@ public class PortalGenPortal extends Portal {
         this.addTag(CommonEntityTags.NO_DESPAWN);
         this.addTag(CommonEntityTags.NOCLIP);
         this.addTag(CommonEntityTags.PROJECTILE_IMMUNE);
+        this.addTag(CommonEntityTags.FIRE_IMMUNE);
         this.addTag(CommonEntityTags.NO_ENTITY_PUSH);
         this.addTag(CommonEntityTags.NO_BUOYANCY);
         this.removeUpdatingComponent(GravityComponent.INSTANCE);
         this.removeUpdatingComponent(PortalCheckComponent.INSTANCE);
-        if (GameSingletons.isClient){
-            this.modelInstance = SeamlessPortals.clientConstants.getNewPortalModelInstance();
-        }
+        Threads.runOnMainThread(() -> {
+            if (GameSingletons.isClient){
+                this.modelInstance = SeamlessPortals.clientConstants.getNewPortalModelInstance();
+            }
+        });
     }
 
     private PortalGenPortal(Vector2 size, String viewDir, Vector3 portalPos){
@@ -57,17 +63,8 @@ public class PortalGenPortal extends Portal {
     }
 
     public static PortalGenPortal fromBlockInfo(PortalSpawnBlockInfo info, BlockEntityPortalGenerator gen, boolean isSecondP){
-        String[] strId = info.blockState.split(",");
-        String dirString = "";
-        for (String id : strId){
-            String[] i = id.split("=");
-            if (i.length > 1){
-                if (i[0].equals("facing")){
-                    dirString = i[1];
-                }
-            }
-        }
-        PortalGenPortal newPortal = new PortalGenPortal(gen.portalSize, dirString, info.position.toVector3().add(new Vector3(0.5f, 0.5f, 0.5f)));
+        StringBuilder dirString = getDirString(info);
+        PortalGenPortal newPortal = new PortalGenPortal(gen.portalSize, dirString.toString(), info.position.toVector3().add(new Vector3(0.5f, 0.5f, 0.5f)));
         newPortal.sourceBlock = info;
 
         Vector2 offset = isSecondP ? gen.exitPortalOffset : gen.entrancePortalOffset;
@@ -86,6 +83,26 @@ public class PortalGenPortal extends Portal {
         }
 
         return newPortal;
+    }
+
+    private static @NotNull StringBuilder getDirString(PortalSpawnBlockInfo info) {
+        String[] strId = info.blockState.split(",");
+        StringBuilder dirString = new StringBuilder();
+        for (String id : strId){
+            String[] i = id.split("=");
+            if (i.length > 1){
+                if (i[0].equals("vertical")){
+                    switch (i[1]){
+                        case "up" -> dirString.append("PosY");
+                        case "down" -> dirString.append("NegY");
+                    }
+                }
+                if (i[0].equals("direction")){
+                    dirString.append(i[1]);
+                }
+            }
+        }
+        return dirString;
     }
 
     @Override

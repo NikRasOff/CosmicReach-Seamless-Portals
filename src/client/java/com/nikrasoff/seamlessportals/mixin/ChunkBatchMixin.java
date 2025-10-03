@@ -11,17 +11,22 @@ import finalforeach.cosmicreach.rendering.meshes.IGameMesh;
 import finalforeach.cosmicreach.rendering.meshes.MeshData;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
 import finalforeach.cosmicreach.world.Zone;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(ChunkBatch.class)
 public abstract class ChunkBatchMixin implements IPortalChunkBatch {
     @Shadow long seenCount;
-    @Shadow private static long seenStep;
+    @Shadow
+    static long seenStep;
     @Shadow boolean needToRebuild;
-    @Shadow private static MeshData combined;
+    @Final
+    @Shadow
+    static MeshData combined;
     @Shadow IGameMesh mesh;
-    @Shadow private static GameShader lastBoundShader;
+    @Shadow
+    public static GameShader lastBoundShader;
     @Shadow GameShader shader;
     @Shadow private static int uniformLocationBatchPosition;
     @Shadow BoundingBox boundingBox;

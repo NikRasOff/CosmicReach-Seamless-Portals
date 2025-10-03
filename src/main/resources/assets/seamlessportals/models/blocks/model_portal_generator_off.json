@@ -22,14 +22,6 @@
         "top":
         {
             "fileName": "seamlessportals:textures/blocks/portal_generator_side_off.png"
-        },
-        "front_vertical":
-        {
-            "fileName": "seamlessportals:textures/blocks/portal_gen_front_vertical_off.png"
-        },
-        "back_vertical":
-        {
-            "fileName": "seamlessportals:textures/blocks/portal_gen_back_vertical_off.png"
         }
     }
     

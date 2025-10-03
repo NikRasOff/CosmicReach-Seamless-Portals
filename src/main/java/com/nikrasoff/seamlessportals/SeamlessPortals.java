@@ -4,11 +4,10 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.nikrasoff.seamlessportals.api.IPortalSolverInitialiser;
-import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
-import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
-import com.nikrasoff.seamlessportals.blockentities.BlockEntitySpacialAnchor;
-import com.nikrasoff.seamlessportals.commands.ClearAnchorsCommand;
-import com.nikrasoff.seamlessportals.commands.ListAnchorsCommand;
+import com.nikrasoff.seamlessportals.blocks.blockentities.BlockEntityOmniumCalibrator;
+import com.nikrasoff.seamlessportals.blocks.blockentities.BlockEntityPortalGenerator;
+import com.nikrasoff.seamlessportals.blocks.blockentities.BlockEntitySpacialAnchor;
+import com.nikrasoff.seamlessportals.blocks.placement_rules.CustomPlacementRules;
 import com.nikrasoff.seamlessportals.commands.TopCommand;
 import com.nikrasoff.seamlessportals.effects.IEffectManager;
 import com.nikrasoff.seamlessportals.entities.DestabiliserPulseEntity;
@@ -17,17 +16,15 @@ import com.nikrasoff.seamlessportals.portals.HPGPortal;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.portals.PortalGenPortal;
 import com.nikrasoff.seamlessportals.portals.PortalManager;
-import dev.puzzleshq.puzzleloader.cosmic.game.GameRegistries;
 import dev.puzzleshq.puzzleloader.loader.mod.entrypoint.common.ModInit;
 import dev.puzzleshq.puzzleloader.loader.mod.entrypoint.common.PostModInit;
 import dev.puzzleshq.puzzleloader.loader.mod.entrypoint.common.PreModInit;
 import dev.puzzleshq.puzzleloader.loader.util.PuzzleEntrypointUtil;
 import finalforeach.cosmicreach.GameAssetLoader;
+import finalforeach.cosmicreach.blocks.blockentities.BlockEntity;
+import finalforeach.cosmicreach.gameevents.blockevents.BlockEvents;
 import finalforeach.cosmicreach.singletons.GameSingletons;
-import finalforeach.cosmicreach.blockentities.BlockEntity;
-import finalforeach.cosmicreach.blockevents.BlockEvents;
 import finalforeach.cosmicreach.blocks.Block;
-import finalforeach.cosmicreach.blocks.BlockStateGenerator;
 import finalforeach.cosmicreach.entities.EntityCreator;
 import finalforeach.cosmicreach.items.loot.Loot;
 import finalforeach.cosmicreach.items.recipes.CraftingRecipes;
@@ -75,11 +72,6 @@ public class SeamlessPortals implements PreModInit, ModInit, PostModInit {
     static String[] blockEventIds = {
             "block_events_portal_destabiliser_off",
             "block_events_portal_destabiliser_on",
-            "block_events_portal_generator_off",
-            "block_events_portal_generator_on",
-            "omnium_calibrator_on",
-            "omnium_calibrator_off",
-            "spacial_anchor",
             "block_events_ore_omnium"
     };
 
@@ -127,6 +119,8 @@ public class SeamlessPortals implements PreModInit, ModInit, PostModInit {
 
     @Override
     public void onPostInit() {
+        CustomPlacementRules.registerAllCustomPlacementRules();
+
         EntityCreator.registerEntityCreator("seamlessportals:entity_portal", Portal::readPortal);
         EntityCreator.registerEntityCreator("seamlessportals:entity_portal_gen_portal", PortalGenPortal::readPortal);
         EntityCreator.registerEntityCreator("seamlessportals:entity_hpg_portal", HPGPortal::readPortal);
@@ -144,10 +138,9 @@ public class SeamlessPortals implements PreModInit, ModInit, PostModInit {
             }
         });
         for (String id: blockEventIds){
-            BlockEvents.loadBlockEventsFromAsset(json, GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "block_events/" + id + ".json")));
+            BlockEvents.loadGameEventsFromAsset(BlockEvents.class, GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "block_events/" + id + ".json")));
         }
 
-        BlockStateGenerator.loadGeneratorsFromFile(GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "block_state_generators/directional_blocks.json")));
         for (String id: blockIds){
             Block.loadBlock(GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "blocks/" + id + ".json")));
         }

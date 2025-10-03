@@ -52,7 +52,6 @@ public class PortalModelInstance implements IEntityModelInstance {
     private boolean portalCloseToCamera = false;
 
     private static final Vector3 tempVector = new Vector3();
-    private static final Vector3 tempVector2 = new Vector3();
 
     protected PortalModelInstance(PortalModel m){
         this.portalModel = m;

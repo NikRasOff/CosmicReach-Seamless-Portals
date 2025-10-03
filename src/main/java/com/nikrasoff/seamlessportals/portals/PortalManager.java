@@ -5,21 +5,18 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
-import com.nikrasoff.seamlessportals.blockentities.BlockEntityPortalGenerator;
+import com.nikrasoff.seamlessportals.blocks.blockentities.BlockEntityPortalGenerator;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
-import dev.puzzleshq.annotation.documentation.Note;
+import finalforeach.cosmicreach.blocks.blockentities.BlockEntity;
 import finalforeach.cosmicreach.singletons.GameSingletons;
-import finalforeach.cosmicreach.blockentities.BlockEntity;
 import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
-import finalforeach.cosmicreach.util.ArrayUtils;
 import finalforeach.cosmicreach.world.EntityRegion;
 import finalforeach.cosmicreach.world.Zone;
 
 import java.util.HashMap;
-import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
 public class PortalManager {
@@ -50,18 +47,27 @@ public class PortalManager {
     }
 
     public Portal getPortalWithGen(EntityUniqueId portalID, Vector3 chunkCoords, String zoneID){
+//        SeamlessPortals.LOGGER.info("Trying to find portal {}", portalID);
         Portal result = getPortal(portalID);
         if (result != null){
+//            SeamlessPortals.LOGGER.info("Successfully found portal {}", portalID);
             return result;
         }
         if (GameSingletons.isClient && !GameSingletons.isHost) {
             throw new RuntimeException("Use simple getPortal() on client instead of getPortalWithGen()");
         }
+//        SeamlessPortals.LOGGER.info("Couldn't find portal {}, now trying to generate terrain at chunk coords: {}", portalID, chunkCoords);
 
         Zone zone = GameSingletons.world.getZoneCreateIfNull(zoneID);
 
         EntityRegion.readChunkColumn(zone, (int) chunkCoords.x, (int) chunkCoords.z, Math.floorDiv((int) chunkCoords.x, 16), Math.floorDiv((int) chunkCoords.y, 16), Math.floorDiv((int) chunkCoords.z, 16));
         result = getPortal(portalID);
+//        if (result == null){
+//            SeamlessPortals.LOGGER.info("Couldn't find portal {} at chunk coords {}", portalID, chunkCoords);
+//        }
+//        else {
+//            SeamlessPortals.LOGGER.info("Successfully found portal {} at chunk coords {}", portalID, chunkCoords);
+//        }
         return result;
     }
 

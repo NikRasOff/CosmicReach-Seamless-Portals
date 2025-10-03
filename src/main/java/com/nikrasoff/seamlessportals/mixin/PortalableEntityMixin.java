@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.nikrasoff.seamlessportals.entities.components.PortalCheckComponent;
+import com.nikrasoff.seamlessportals.extras.ExtraPortalUtils;
 import com.nikrasoff.seamlessportals.extras.interfaces.*;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
@@ -71,8 +72,10 @@ public abstract class PortalableEntityMixin implements IPortalableEntity{
         this.cosmicReach_Seamless_Portals$tmpNonCollideBlocks.addAll(this.cosmicReach_Seamless_Portals$tmpCollidedBlocks);
         this.cosmicReach_Seamless_Portals$tmpCollidedBlocks.clear();
         this.cosmicReach_Seamless_Portals$tmpPortaledBoundingBox.setBounds(this.localBoundingBox);
-        this.cosmicReach_Seamless_Portals$tmpPortaledBoundingBox.getBounds().min.add(new Vector3(-0.01F, -0.01F, -0.01F));
+        this.cosmicReach_Seamless_Portals$tmpPortaledBoundingBox.getBounds().min.add(new Vector3(-0.01F, -0.05F, -0.01F));
         this.cosmicReach_Seamless_Portals$tmpPortaledBoundingBox.getBounds().max.add(new Vector3(0.01F, 0.01F, 0.01F));
+        this.cosmicReach_Seamless_Portals$tmpPortaledBoundingBox.getBounds().update();
+        this.cosmicReach_Seamless_Portals$tmpPortaledBoundingBox.setBounds(this.cosmicReach_Seamless_Portals$tmpPortaledBoundingBox.getBounds());
         this.cosmicReach_Seamless_Portals$justTeleported = false;
         this.cosmicReach_Seamless_Portals$teleportPortal = null;
     }
@@ -123,7 +126,7 @@ public abstract class PortalableEntityMixin implements IPortalableEntity{
             }
 
             if (this.cosmicReach_Seamless_Portals$isJustTeleported()){
-                if (!this.cosmicReach_Seamless_Portals$tmpPortaledBoundingBox.intersects(this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox) && this.tmpEntityBoundingBox.intersects(this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox)){
+                if (!ExtraPortalUtils.intersectOrientedBounds(this.cosmicReach_Seamless_Portals$tmpPortaledBoundingBox, this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox) && this.tmpEntityBoundingBox.intersects(this.cosmicReach_Seamless_Portals$tmpPortalCheckBlockBoundingBox)){
                     this.cosmicReach_Seamless_Portals$tmpNonCollideBlocks.add(curBlockPos);
                     this.cosmicReach_Seamless_Portals$tmpCollidedBlocks.add(curBlockPos);
                     return null;

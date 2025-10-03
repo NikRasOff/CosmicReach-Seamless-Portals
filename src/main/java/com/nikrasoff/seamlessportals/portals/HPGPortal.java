@@ -220,7 +220,7 @@ public class HPGPortal extends Portal {
                         checkBlock.getBoundingBox(tBB, bx, by, bz);
                         if (bb.intersects(tBB)){
                             if (this.isUnstable){
-                                return checkBlock.hasTag(SeamlessPortalsConstants.PORTAL_WHITELISTED);
+                                if (!checkBlock.hasTag(SeamlessPortalsConstants.PORTAL_WHITELISTED)) return false;
                             }
                             else{
                                 if (Arrays.asList(defaultBlacklist).contains(checkBlock.getBlockId())){

@@ -61,6 +61,7 @@ public class PortalSaveSystem {
                 try {
                     Json json = new Json();
                     json.setIgnoreUnknownFields(true);
+//                    SeamlessPortals.portalManager.createdPortals.clear();
                     SeamlessPortals.portalManager = json.fromJson(PortalManager.class, fis);
                 } catch (Throwable var7) {
                     try {

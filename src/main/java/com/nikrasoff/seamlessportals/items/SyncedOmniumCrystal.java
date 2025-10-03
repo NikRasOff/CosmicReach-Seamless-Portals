@@ -1,7 +1,5 @@
 package com.nikrasoff.seamlessportals.items;
 
-import com.nikrasoff.seamlessportals.SPMainT;
-import dev.puzzleshq.puzzleloader.loader.util.ModFinder;
 import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.lang.Lang;
 import finalforeach.cosmicreach.util.Identifier;
@@ -24,16 +22,6 @@ public class SyncedOmniumCrystal extends AnimatedItem {
     }
 
     public String getName(ItemStack stack){
-        if (ModFinder.isModLoaded("cosmic_tooltips")){
-            if (SPMainT.areAdvancedTooltipsOn()){
-                return this.getName();
-            }
-            DataPointManifest manifest = (DataPointManifest) DataPointUtil.getManifestFromStack(stack);
-            if (manifest.has("frequency")) {
-                return  Lang.get(CALIBRATED_OMNIUM_ID.toString()) + "\n" + Lang.get("seamlessportals:calibrated_omnium_crystal.frequency") + manifest.get("frequency").getValue();
-            }
-            return this.getName();
-        }
         DataPointManifest manifest = (DataPointManifest) DataPointUtil.getManifestFromStack(stack);
         if (manifest.has("frequency")) {
             return Lang.get("seamlessportals:calibrated_omnium_crystal.frequency") + manifest.get("frequency").getValue() + "\n" + Lang.get(CALIBRATED_OMNIUM_ID.toString());

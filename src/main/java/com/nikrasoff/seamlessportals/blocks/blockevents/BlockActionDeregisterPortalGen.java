@@ -1,17 +1,11 @@
-package com.nikrasoff.seamlessportals.blockevents;
+package com.nikrasoff.seamlessportals.blocks.blockevents;
 
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
-import finalforeach.cosmicreach.singletons.GameSingletons;
-import finalforeach.cosmicreach.blockevents.BlockEventArgs;
-import finalforeach.cosmicreach.blockevents.actions.ActionId;
-import finalforeach.cosmicreach.blockevents.actions.IBlockAction;
 import finalforeach.cosmicreach.blocks.BlockPosition;
-import finalforeach.cosmicreach.blockevents.BlockEventTrigger;
-import finalforeach.cosmicreach.blocks.BlockState;
-import finalforeach.cosmicreach.world.Zone;
-
-import java.util.Map;
+import finalforeach.cosmicreach.gameevents.ActionId;
+import finalforeach.cosmicreach.gameevents.blockevents.BlockEventArgs;
+import finalforeach.cosmicreach.gameevents.blockevents.actions.IBlockAction;
 
 @ActionId(
         id = "seamlessportals:deregister_portal_gen"

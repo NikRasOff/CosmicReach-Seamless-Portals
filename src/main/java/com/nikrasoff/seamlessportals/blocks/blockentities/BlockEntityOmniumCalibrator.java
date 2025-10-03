@@ -1,10 +1,10 @@
-package com.nikrasoff.seamlessportals.blockentities;
+package com.nikrasoff.seamlessportals.blocks.blockentities;
 
 import com.nikrasoff.seamlessportals.items.containers.OmniumCalibratorSlotContainer;
+import finalforeach.cosmicreach.blocks.blockentities.BlockEntity;
+import finalforeach.cosmicreach.blocks.blockentities.BlockEntityCreator;
+import finalforeach.cosmicreach.blocks.blockentities.IBlockEntityWithContainer;
 import finalforeach.cosmicreach.singletons.GameSingletons;
-import finalforeach.cosmicreach.blockentities.BlockEntity;
-import finalforeach.cosmicreach.blockentities.BlockEntityCreator;
-import finalforeach.cosmicreach.blockentities.IBlockEntityWithContainer;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.player.Player;
@@ -18,7 +18,6 @@ import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
 import finalforeach.cosmicreach.world.BlockSetter;
 import finalforeach.cosmicreach.world.Zone;
 
-import java.util.HashMap;
 import java.util.function.Predicate;
 
 public class BlockEntityOmniumCalibrator extends BlockEntity implements IBlockEntityWithContainer {
@@ -44,8 +43,8 @@ public class BlockEntityOmniumCalibrator extends BlockEntity implements IBlockEn
 
     @Override
     public void onCreate(BlockState blockState) {
-        setTicking(true);
         super.onCreate(blockState);
+        setTicking(true);
     }
 
     public void onInteract(Player player, Zone zone) {
@@ -77,11 +76,7 @@ public class BlockEntityOmniumCalibrator extends BlockEntity implements IBlockEn
     public void updateBlockState(boolean isWorking){
         try {
             BlockState currentBlockState = this.getBlockState();
-            String facing = currentBlockState.getParam("facing");
-            HashMap<String, String> newParams = new HashMap<>();
-            newParams.put("active", (isWorking ? "true" : "false"));
-            newParams.put("facing", facing);
-            BlockState newBlockState = currentBlockState.getVariantWithParams(newParams);
+            BlockState newBlockState = currentBlockState.getVariantWithParam("active", isWorking ? "true" : "false");
             if (newBlockState != currentBlockState){
                 BlockSetter.get().replaceBlock(this.zone, newBlockState, getGlobalX(), getGlobalY(), getGlobalZ());
             }
@@ -107,7 +102,7 @@ public class BlockEntityOmniumCalibrator extends BlockEntity implements IBlockEn
                 this.updateBlockState(true);
             }
 
-            if (this.progressTicks >= 64) {
+            if (this.progressTicks >= MAX_PROGRESS_TICKS) {
                 this.slotContainer.onProcessComplete();
                 this.progressTicks = 0;
             }

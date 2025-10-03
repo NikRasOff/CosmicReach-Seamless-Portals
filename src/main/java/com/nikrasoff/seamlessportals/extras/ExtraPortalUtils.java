@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.math.collision.OrientedBoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
@@ -558,5 +559,51 @@ public class ExtraPortalUtils {
         if (!GameSingletons.isClient || GameSingletons.client().getLocalPlayer() != player){
             ServerSingletons.getConnection(player).send(new ContainerSyncPacket(0, player.inventory));
         }
+    }
+
+    private static void initVectorArray(Vector3[] vector3s){
+        for(int i = 0; i < vector3s.length; ++i) {
+            vector3s[i] = new Vector3();
+        }
+    }
+
+    public static boolean intersectOrientedBounds(OrientedBoundingBox bounds1, BoundingBox bounds2){
+        // Curse you, multithreading!
+        // Had to do this abomination to get it to consistently work
+        Vector3[] tempAxes = new Vector3[15];
+        Vector3[] tmpVectors = new Vector3[9];
+        initVectorArray(tmpVectors);
+        Vector3[] aAxes = new Vector3[3];
+        initVectorArray(aAxes);
+        aAxes[0].set(bounds1.transform.val[0], bounds1.transform.val[1], bounds1.transform.val[2]).nor();
+        aAxes[1].set(bounds1.transform.val[4], bounds1.transform.val[5], bounds1.transform.val[6]).nor();
+        aAxes[2].set(bounds1.transform.val[8], bounds1.transform.val[9], bounds1.transform.val[10]).nor();
+        tempAxes[0] = aAxes[0];
+        tempAxes[1] = aAxes[1];
+        tempAxes[2] = aAxes[2];
+        tempAxes[3] = Vector3.X;
+        tempAxes[4] = Vector3.Y;
+        tempAxes[5] = Vector3.Z;
+        tempAxes[6] = tmpVectors[0].set(aAxes[0]).crs(Vector3.X);
+        tempAxes[7] = tmpVectors[1].set(aAxes[0]).crs(Vector3.Y);
+        tempAxes[8] = tmpVectors[2].set(aAxes[0]).crs(Vector3.Z);
+        tempAxes[9] = tmpVectors[3].set(aAxes[1]).crs(Vector3.X);
+        tempAxes[10] = tmpVectors[4].set(aAxes[1]).crs(Vector3.Y);
+        tempAxes[11] = tmpVectors[5].set(aAxes[1]).crs(Vector3.Z);
+        tempAxes[12] = tmpVectors[6].set(aAxes[2]).crs(Vector3.X);
+        tempAxes[13] = tmpVectors[7].set(aAxes[2]).crs(Vector3.Y);
+        tempAxes[14] = tmpVectors[8].set(aAxes[2]).crs(Vector3.Z);
+        Vector3[] aVertices = bounds1.getVertices();
+        Vector3[] bVertices = new Vector3[8];
+        initVectorArray(bVertices);
+        bounds2.getCorner000(bVertices[0]);
+        bounds2.getCorner001(bVertices[1]);
+        bounds2.getCorner010(bVertices[2]);
+        bounds2.getCorner011(bVertices[3]);
+        bounds2.getCorner100(bVertices[4]);
+        bounds2.getCorner101(bVertices[5]);
+        bounds2.getCorner110(bVertices[6]);
+        bounds2.getCorner111(bVertices[7]);
+        return Intersector.hasOverlap(tempAxes, aVertices, bVertices);
     }
 }

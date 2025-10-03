@@ -1,4 +1,4 @@
-package com.nikrasoff.seamlessportals.blockentities;
+package com.nikrasoff.seamlessportals.blocks.blockentities;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -7,10 +7,10 @@ import com.nikrasoff.seamlessportals.extras.IntVector3;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
 import com.nikrasoff.seamlessportals.items.containers.PortalGeneratorSlotContainer;
 import com.nikrasoff.seamlessportals.portals.Portal;
+import finalforeach.cosmicreach.blocks.blockentities.BlockEntity;
+import finalforeach.cosmicreach.blocks.blockentities.BlockEntityCreator;
+import finalforeach.cosmicreach.blocks.blockentities.IBlockEntityWithContainer;
 import finalforeach.cosmicreach.singletons.GameSingletons;
-import finalforeach.cosmicreach.blockentities.BlockEntity;
-import finalforeach.cosmicreach.blockentities.BlockEntityCreator;
-import finalforeach.cosmicreach.blockentities.IBlockEntityWithContainer;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.EntityUniqueId;
@@ -24,7 +24,6 @@ import finalforeach.cosmicreach.sounds.GameSound;
 import finalforeach.cosmicreach.world.BlockSetter;
 import finalforeach.cosmicreach.world.Zone;
 
-import java.util.HashMap;
 import java.util.function.Predicate;
 
 public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEntityWithContainer {
@@ -50,14 +49,12 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
 
     public void onRemove() {
         super.onRemove();
-        setTicking(false);
         this.isBeingDeleted = true;
         this.slotContainer.dropAllItems(this.zone, (float)this.getGlobalX() + 0.5F, (float)this.getGlobalY() + 0.5F, (float)this.getGlobalZ() + 0.5F);
     }
 
     @Override
     public void onCreate(BlockState blockState) {
-        setTicking(true);
         super.onCreate(blockState);
     }
 
@@ -75,11 +72,7 @@ public class BlockEntityPortalGenerator extends BlockEntity implements IBlockEnt
         if (isWorking) portalGenActivateSound.playGlobalSound3D(this.zone, new Vector3(this.getGlobalX(), this.getGlobalY(), this.getGlobalZ()));
         else portalGenDeactivateSound.playGlobalSound3D(this.zone, new Vector3(this.getGlobalX(), this.getGlobalY(), this.getGlobalZ()));
         BlockState currentBlockState = this.getBlockState();
-        String facing = currentBlockState.getParam("facing");
-        HashMap<String, String> newParams = new HashMap<>();
-        newParams.put("active", (isWorking ? "true" : "false"));
-        newParams.put("facing", facing);
-        BlockState newBlockState = currentBlockState.getVariantWithParams(newParams);
+        BlockState newBlockState = currentBlockState.getVariantWithParam("active", isWorking ? "true" : "false");
         if (newBlockState != currentBlockState){
             BlockSetter.get().replaceBlock(this.zone, newBlockState, getGlobalX(), getGlobalY(), getGlobalZ());
         }

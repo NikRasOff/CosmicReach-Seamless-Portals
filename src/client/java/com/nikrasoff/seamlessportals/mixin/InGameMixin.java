@@ -35,9 +35,6 @@ public abstract class InGameMixin implements IPortalIngame {
     @Shadow public abstract Camera getWorldCamera();
 
     @Shadow
-    static PlayerController playerController;
-
-    @Shadow
     public static Player getLocalPlayer() {
         return null;
     }

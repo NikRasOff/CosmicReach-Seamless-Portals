@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ChunkSaverMixin {
     @Inject(method = "saveWorld", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/io/ChunkSaver;saveWorldInfo(Lfinalforeach/cosmicreach/world/World;Z)V"))
     private static void savePortals(World world, CallbackInfo ci){
-        SeamlessPortals.LOGGER.info("Saved portal data");
         PortalSaveSystem.savePortals(world);
+        SeamlessPortals.LOGGER.info("Saved portal data");
     }
 }

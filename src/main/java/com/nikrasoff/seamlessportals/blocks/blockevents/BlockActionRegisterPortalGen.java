@@ -1,16 +1,12 @@
-package com.nikrasoff.seamlessportals.blockevents;
+package com.nikrasoff.seamlessportals.blocks.blockevents;
 
-import com.badlogic.gdx.math.Vector3;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.IntVector3;
 import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
-import finalforeach.cosmicreach.singletons.GameSingletons;
-import finalforeach.cosmicreach.blockevents.BlockEventArgs;
-import finalforeach.cosmicreach.blockevents.actions.ActionId;
-import finalforeach.cosmicreach.blockevents.actions.IBlockAction;
 import finalforeach.cosmicreach.blocks.BlockPosition;
-import finalforeach.cosmicreach.world.BlockSetter;
-import finalforeach.cosmicreach.blocks.BlockState;
+import finalforeach.cosmicreach.gameevents.ActionId;
+import finalforeach.cosmicreach.gameevents.blockevents.BlockEventArgs;
+import finalforeach.cosmicreach.gameevents.blockevents.actions.IBlockAction;
 import finalforeach.cosmicreach.world.Zone;
 
 @ActionId(

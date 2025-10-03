@@ -8,6 +8,7 @@
     "ChunkSaverMixin",
     "ItemStackMixin",
     "LangMixin",
+    "PlacementRulesMixin",
     "PlayerMixin",
     "PortalableEntityMixin",
     "PortalDespawnMixin",

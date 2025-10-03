@@ -32,9 +32,7 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
     @Shadow
     Camera playerCam;
     @Unique
-    public transient Quaternion cosmicReach_Seamless_Portals$upVectorRotation = new Quaternion();
-    @Unique
-    public transient Vector3 cosmicReach_Seamless_Portals$upVectorOffset = new Vector3();
+    public transient Vector3 cosmicReach_Seamless_Portals$rotatedUpVector = Vector3.Y.cpy();
 
     @Unique
     public transient ISPAnimation cosmicReach_Seamless_Portals$cameraRotationAnimation;
@@ -87,9 +85,8 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
             this.cosmicReach_Seamless_Portals$cameraRotationAnimation.update(Gdx.graphics.getDeltaTime());
         }
 
-        playerCameraOffset.mul(this.cosmicReach_Seamless_Portals$upVectorRotation);
-//        playerCameraOffset.add(this.cosmicReach_Seamless_Portals$upVectorOffset);
-        playerCamera.up.mul(this.cosmicReach_Seamless_Portals$upVectorRotation);
+        playerCameraOffset.set(this.cosmicReach_Seamless_Portals$rotatedUpVector).scl(this.player.getEntity().viewPositionOffset.len());
+        playerCamera.up.set(this.cosmicReach_Seamless_Portals$rotatedUpVector);
         playerCamera.position.set(curPlayerPos.add(playerCameraOffset));
 
         Vector3 checkCamPos = playerCamera.position;
@@ -132,14 +129,15 @@ public abstract class PlayerControllerMixin implements IPortalablePlayerControll
 
     @Override
     public void cosmicReach_Seamless_Portals$portalCurrentCameraTransform(Portal portal, Vector3 offset) {
-        Matrix4 upVectorTransform = new Matrix4();
-        upVectorTransform.set(this.cosmicReach_Seamless_Portals$upVectorOffset, this.cosmicReach_Seamless_Portals$upVectorRotation);
-        upVectorTransform.set(portal.getRotatedTransform(upVectorTransform));
-//        upVectorTransform.translate(offset);
-//        upVectorTransform.inv();
         SPAnimationSequence newAnim = new SPAnimationSequence(true);
-        newAnim.add(new QuaternionAnimation(upVectorTransform.getRotation(new Quaternion()), new Quaternion(), 0.5F, this.cosmicReach_Seamless_Portals$upVectorRotation));
-//        newAnim.add(new Vector3Animation(upVectorTransform.getTranslation(new Vector3()), new Vector3(), 0.5F, this.cosmicReach_Seamless_Portals$upVectorOffset));
+        Vector3Animation vecAnim = new Vector3Animation(portal.getPortaledVector(this.cosmicReach_Seamless_Portals$rotatedUpVector), Vector3.Y, 0.5f, this.cosmicReach_Seamless_Portals$rotatedUpVector);
+        vecAnim.slerpMode = true;
+        float c = playerCam.direction.dot(vecAnim.startingValue);
+        float nx = c * vecAnim.startingValue.x;
+        float ny = c * vecAnim.startingValue.y;
+        float nz = c * vecAnim.startingValue.z;
+        vecAnim.revolveAxis.set(playerCam.direction).sub(nx, ny, nz).nor();
+        newAnim.add(vecAnim);
         this.cosmicReach_Seamless_Portals$cameraRotationAnimation = newAnim;
     }
 }

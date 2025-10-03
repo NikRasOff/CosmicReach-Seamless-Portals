@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.nikrasoff.seamlessportals.SPClientConstants;
 import com.nikrasoff.seamlessportals.SeamlessPortalsItems;
-import com.nikrasoff.seamlessportals.blockentities.BlockEntityOmniumCalibrator;
+import com.nikrasoff.seamlessportals.blocks.blockentities.BlockEntityOmniumCalibrator;
 import com.nikrasoff.seamlessportals.items.containers.OmniumCalibratorSlotContainer;
 import com.nikrasoff.seamlessportals.ui.widgets.DoubleProgressTexture;
 import com.nikrasoff.seamlessportals.ui.widgets.FakeItemSlotWidget;

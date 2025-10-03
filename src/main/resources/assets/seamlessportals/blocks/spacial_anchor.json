@@ -1,17 +1,83 @@
 {
-    "stringId": "seamlessportals:spacial_anchor",
-    "blockEntityId": "seamlessportals:spacial_anchor",
-    "blockStates":
+  "stringId": "seamlessportals:spacial_anchor",
+  "blockEntityId": "seamlessportals:spacial_anchor",
+  "defaultParams":
+  {
+    "vertical": "false",
+    "direction": "PosZ"
+  },
+  "defaultProperties":
+  {
+    "modelName": "seamlessportals:models/blocks/spacial_anchor.json",
+    "tags": [
+      "tool_pickaxe_effective"
+    ],
+    "dropParams": {
+      "vertical": "false",
+      "direction": "PosZ"
+    },
+    "placementRules": "portal_gen",
+    "allowSwapping": false,
+    "catalogHidden": true
+  },
+  "blockStates":
+  {
+    "vertical=false,direction=PosZ":
     {
-        "default":
-        {
-            "modelName": "seamlessportals:models/blocks/spacial_anchor.json",
-            "blockEventsId": "seamlessportals:block_events_spacial_anchor",
-            "dropId": "seamlessportals:spacial_anchor[default]",
-            "stateGenerators": ["seamlessportals:directional_blocks"],
-            "tags": [
-                "tool_pickaxe_effective"
-            ]
-        }
+      "rotation": [0,0,0],
+      "catalogHidden": false
+    },
+    "vertical=false,direction=NegX":
+    {
+      "rotation": [0,90,0]
+    },
+    "vertical=false,direction=NegZ":
+    {
+      "rotation": [0,180,0]
+    },
+    "vertical=false,direction=PosX":
+    {
+      "rotation": [0,270,0]
+    },
+    "vertical=up,direction=PosZ":
+    {
+      "modelName": "seamlessportals:models/blocks/spacial_anchor_up.json",
+      "rotation": [0,0,0]
+    },
+    "vertical=up,direction=NegX":
+    {
+      "modelName": "seamlessportals:models/blocks/spacial_anchor_up.json",
+      "rotation": [0,90,0]
+    },
+    "vertical=up,direction=NegZ":
+    {
+      "modelName": "seamlessportals:models/blocks/spacial_anchor_up.json",
+      "rotation": [0,180,0]
+    },
+    "vertical=up,direction=PosX":
+    {
+      "modelName": "seamlessportals:models/blocks/spacial_anchor_up.json",
+      "rotation": [0,270,0]
+    },
+    "vertical=down,direction=PosZ":
+    {
+      "modelName": "seamlessportals:models/blocks/spacial_anchor_down.json",
+      "rotation": [0,0,0]
+    },
+    "vertical=down,direction=NegX":
+    {
+      "modelName": "seamlessportals:models/blocks/spacial_anchor_down.json",
+      "rotation": [0,90,0]
+    },
+    "vertical=down,direction=NegZ":
+    {
+      "modelName": "seamlessportals:models/blocks/spacial_anchor_down.json",
+      "rotation": [0,180,0]
+    },
+    "vertical=down,direction=PosX":
+    {
+      "modelName": "seamlessportals:models/blocks/spacial_anchor_down.json",
+      "rotation": [0,270,0]
     }
+  }
 }

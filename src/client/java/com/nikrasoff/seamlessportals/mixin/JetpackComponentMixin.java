@@ -21,7 +21,8 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(JetpackComponent.class)
 public abstract class JetpackComponentMixin implements IPortalRenderEntityComponent {
     @Shadow private IEntityModelInstancePlayer modelInstance;
-    @Shadow private static IEntityModel jetpackModel;
+    @Shadow
+    public static IEntityModel jetpackModel;
 
     @Override
     public void renderNoAnim(Entity entity, Camera worldCamera, Vector3 tmpRenderPos, Matrix4 tmpModelMatrix, boolean shouldRender) {

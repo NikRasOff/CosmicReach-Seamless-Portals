@@ -11,22 +11,32 @@ import com.nikrasoff.seamlessportals.extras.interfaces.IPortalZoneRenderer;
 import finalforeach.cosmicreach.rendering.BatchedZoneRenderer;
 import finalforeach.cosmicreach.rendering.ChunkBatch;
 import finalforeach.cosmicreach.world.Zone;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(BatchedZoneRenderer.class)
 public abstract class BatchedZoneRendererMixin implements IPortalZoneRenderer {
+    @Final
     @Shadow private IntArray layerNums;
+    @Final
     @Shadow private IntSet seenLayerNums;
+    @Final
     @Shadow private IntMap<Array<ChunkBatch>> layers;
+    @Final
     @Shadow private IntMap<Boolean> layerWritesToDepth;
     @Shadow public boolean drawDebugLines;
 
-    @Shadow abstract void getChunksToRender(Zone zone, Camera worldCamera);
-    @Shadow abstract void requestMeshes();
-    @Shadow abstract void disposeUnusedBatches(boolean unloadAll);
-    @Shadow abstract void addMeshDatasToChunkBatches();
-    @Shadow abstract void drawDebugLines(Camera worldCamera);
+    @Shadow
+    protected abstract void getChunksToRender(Zone zone, Camera worldCamera);
+    @Shadow
+    protected abstract void requestMeshes();
+    @Shadow
+    protected abstract void disposeUnusedBatches(boolean unloadAll);
+    @Shadow
+    protected abstract void addMeshDatasToChunkBatches();
+    @Shadow
+    protected abstract void drawDebugLines(Camera worldCamera);
 
     public void cosmicReach_Seamless_Portals$renderThroughPortal(Zone z, Camera camera){
         Gdx.gl.glEnable(2929);

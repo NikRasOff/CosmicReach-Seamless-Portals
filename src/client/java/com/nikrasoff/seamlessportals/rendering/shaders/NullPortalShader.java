@@ -1,9 +1,7 @@
 package com.nikrasoff.seamlessportals.rendering.shaders;
 
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.portals.Portal;
-import com.nikrasoff.seamlessportals.rendering.models.PortalModel;
 import com.nikrasoff.seamlessportals.rendering.models.PortalModelInstance;
 import finalforeach.cosmicreach.util.Identifier;
 

@@ -13,7 +13,7 @@
         ],
         "output":
         {
-            "item": "seamlessportals:spacial_anchor[default]",
+            "item": "seamlessportals:spacial_anchor[vertical=false,direction=PosZ]",
             "amount": 1
         }
     }

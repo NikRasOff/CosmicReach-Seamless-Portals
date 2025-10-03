@@ -6,7 +6,9 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
+import com.nikrasoff.seamlessportals.extras.ClientPortalExtras;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntity;
 import com.nikrasoff.seamlessportals.extras.interfaces.IModEntityModelInstance;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalRenderEntityComponent;
@@ -46,7 +48,8 @@ public abstract class EntityAnimationMixin implements IModEntity {
 
     @Shadow public transient BoundingBox globalBoundingBox;
 
-    @Shadow private transient Color modelLightColor;
+    @Shadow
+    public transient Color modelLightColor;
 
     @Shadow public float age;
 

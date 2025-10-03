@@ -12,7 +12,6 @@ import com.nikrasoff.seamlessportals.extras.PortalSpawnBlockInfo;
 import com.nikrasoff.seamlessportals.networking.packets.PortalAnimationPacket;
 import com.nikrasoff.seamlessportals.networking.packets.PortalDeletePacket;
 import finalforeach.cosmicreach.Threads;
-import finalforeach.cosmicreach.entities.components.LavaDamageComponent;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.blocks.BlockState;
@@ -27,7 +26,6 @@ import finalforeach.cosmicreach.savelib.crbin.CRBinDeserializer;
 import finalforeach.cosmicreach.savelib.crbin.CRBinSerializer;
 import finalforeach.cosmicreach.sounds.GameSound;
 import finalforeach.cosmicreach.util.ArrayUtils;
-import finalforeach.cosmicreach.world.EntityRegion;
 import finalforeach.cosmicreach.world.Zone;
 
 public class Portal extends Entity {
@@ -125,54 +123,54 @@ public class Portal extends Entity {
     public Portal(Vector2 size, String viewDir, Vector3 portalPos){
         this(new Vector2(size), new Vector3(0, 0, 1), new Vector3(0, 1, 0), portalPos);
         switch (viewDir){
-            case "negZ":
+            case "NegZ":
                 this.viewDirection.set(0, 0, -1);
                 this.position.z -= 1;
                 break;
-            case "posX":
+            case "PosX":
                 this.viewDirection.set(1, 0, 0);
                 this.position.x += 1;
                 break;
-            case "negX":
+            case "NegX":
                 this.viewDirection.set(-1, 0, 0);
                 this.position.x -= 1;
                 break;
-            case "posYposZ":
+            case "PosYPosZ":
                 this.viewDirection.set(0, 1, 0);
                 this.upVector.set(0, 0, -1);
                 this.position.y += 1;
                 break;
-            case "posYnegX":
+            case "PosYNegX":
                 this.viewDirection.set(0, 1, 0);
                 this.upVector.set(1, 0, 0);
                 this.position.y += 1;
                 break;
-            case "posYnegZ":
+            case "PosYNegZ":
                 this.viewDirection.set(0, 1, 0);
                 this.upVector.set(0, 0, 1);
                 this.position.y += 1;
                 break;
-            case "posYposX":
+            case "PosYPosX":
                 this.viewDirection.set(0, 1, 0);
                 this.upVector.set(-1, 0, 0);
                 this.position.y += 1;
                 break;
-            case "negYposZ":
+            case "NegYPosZ":
                 this.viewDirection.set(0, -1, 0);
                 this.upVector.set(0, 0, 1);
                 this.position.y -= 1;
                 break;
-            case "negYnegX":
+            case "NegYNegX":
                 this.viewDirection.set(0, -1, 0);
                 this.upVector.set(-1, 0, 0);
                 this.position.y -= 1;
                 break;
-            case "negYnegZ":
+            case "NegYNegZ":
                 this.viewDirection.set(0, -1, 0);
                 this.upVector.set(0, 0, -1);
                 this.position.y -= 1;
                 break;
-            case "negYposX":
+            case "NegYPosX":
                 this.viewDirection.set(0, -1, 0);
                 this.upVector.set(1, 0, 0);
                 this.position.y -= 1;
@@ -242,6 +240,7 @@ public class Portal extends Entity {
     }
 
     protected void tryLinking(){
+//        SeamlessPortals.LOGGER.info("trying to link portal {} to {}", this.uniqueId, this.linkedPortalID);
         Portal lPortal = null;
         if (GameSingletons.isHost){
             lPortal = SeamlessPortals.portalManager.getPortalWithGen(this.linkedPortalID, this.linkedPortalChunkCoords, this.zone.zoneId);
@@ -250,6 +249,7 @@ public class Portal extends Entity {
             lPortal = SeamlessPortals.portalManager.getPortal(this.linkedPortalID);
         }
         if (lPortal != null){
+//            SeamlessPortals.LOGGER.info("Successfully linked {} to {}", this.uniqueId, lPortal.uniqueId);
             this.linkPortal(lPortal);
             lPortal.linkPortal(this);
         }
@@ -271,19 +271,6 @@ public class Portal extends Entity {
     public OrientedBoundingBox getMeshBoundingBox(){
         Matrix4 pm = this.getPortalMatrix();
         return new OrientedBoundingBox(meshBB, pm.inv());
-    }
-
-    public Matrix4 getRotatedTransform(Matrix4 transform){
-        if (linkedPortal == null) return transform.cpy();
-        Matrix4 newTransform = transform.cpy();
-        Matrix4 thisPort = this.getPortalMatrix();
-        Matrix4 linkedPort = this.linkedPortal.getPortalMatrix();
-        thisPort.setTranslation(0, 0, 0);
-        linkedPort.setTranslation(0, 0, 0);
-        linkedPort.inv();
-        newTransform.mulLeft(thisPort);
-        newTransform.mulLeft(linkedPort);
-        return newTransform;
     }
 
     public Matrix4 getFullyPortaledTransform(Matrix4 transform){

@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -56,10 +55,15 @@ public class FakeItemStackWidget extends ItemStackWidget {
             itemViewport.setCamera(itemCam);
             itemViewport.apply();
             ItemModel model = ItemRenderer.getModel(drawnItem, true);
-            if (this.itemStack != null && model instanceof CosmicItemModelWrapper itemModel) {
-                itemModel.renderInSlot(null, this.itemStack, itemCam, identMat, false);
+            if (this.itemStack != null) {
+                if (model instanceof CosmicItemModelWrapper itemModel){
+                    itemModel.renderInSlot(null, this.itemStack, itemCam, identMat, false);
+                }
+                else{
+                    model.render(null, itemCam, identMat, false, false, this.itemStack);
+                }
             } else {
-                model.render(null, itemCam, identMat, false, false);
+                model.render(null, itemCam, identMat, false, false, null);
             }
         }
     }

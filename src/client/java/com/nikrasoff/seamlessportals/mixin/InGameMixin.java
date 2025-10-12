@@ -6,16 +6,13 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.nikrasoff.seamlessportals.SPClientConstants;
 import com.nikrasoff.seamlessportals.SeamlessPortals;
-import com.nikrasoff.seamlessportals.extras.ClientPortalEntityTools;
 import com.nikrasoff.seamlessportals.extras.ClientPortalExtras;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalIngame;
-import com.nikrasoff.seamlessportals.extras.interfaces.IPortalablePlayerController;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import com.nikrasoff.seamlessportals.rendering.models.ObjItemModel;
 import com.nikrasoff.seamlessportals.api.IPortalEntityRenderer;
 import finalforeach.cosmicreach.entities.Entity;
-import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.entities.PlayerController;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.gamestates.InGame;
@@ -27,8 +24,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.Map;
 
 @Mixin(InGame.class)
 public abstract class InGameMixin implements IPortalIngame {

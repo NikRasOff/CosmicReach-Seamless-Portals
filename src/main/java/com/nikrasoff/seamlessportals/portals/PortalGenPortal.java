@@ -28,7 +28,6 @@ public class PortalGenPortal extends Portal {
         PortalGenPortal portal = new PortalGenPortal();
         if (deserializer != null) {
             portal.read(deserializer);
-//            SeamlessPortals.LOGGER.info("Loading portal {}", portal.uniqueId);
             portal.sourceBlock.position.set(deserializer.readInt("sourceBlockX", 0), deserializer.readInt("sourceBlockY", 0), deserializer.readInt("sourceBlockZ", 0));
             portal.sourceBlock.zoneId = deserializer.readString("sourceBlockZone");
             portal.sourceBlock.blockState = deserializer.readString("sourceBlockParams");

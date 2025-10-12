@@ -6,6 +6,7 @@ import com.nikrasoff.seamlessportals.items.HandheldPortalGen;
 import com.nikrasoff.seamlessportals.items.UnstableHandheldPortalGen;
 import com.nikrasoff.seamlessportals.rendering.models.ObjItemModel;
 import finalforeach.cosmicreach.items.Item;
+import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.rendering.items.ItemModel;
 import finalforeach.cosmicreach.rendering.items.ItemRenderer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,12 +28,12 @@ public abstract class ItemRendererMixin{
     @Unique
     private static boolean cosmicReach_Seamless_Portals$isUnstableHpgEquipped = false;
 
-    @Inject(method = "renderHeldItem(Lcom/badlogic/gdx/math/Vector3;Lfinalforeach/cosmicreach/items/Item;Lcom/badlogic/gdx/graphics/PerspectiveCamera;)V", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/rendering/items/ItemRenderer;popUpHeldItem()V"))
-    private static void detectHpg(Vector3 worldPosition, Item heldItem, PerspectiveCamera worldCamera, CallbackInfo ci){
-        if (heldItem.getID().equals(HandheldPortalGen.hpgID)){
+    @Inject(method = "renderHeldItem", at = @At(value = "INVOKE", target = "Lfinalforeach/cosmicreach/rendering/items/ItemRenderer;popUpHeldItem()V"))
+    private static void detectHpg(Vector3 worldPosition, ItemStack heldItemStack, PerspectiveCamera worldCamera, CallbackInfo ci){
+        if (heldItemStack.getItem().getID().equals(HandheldPortalGen.hpgID)){
             cosmicReach_Seamless_Portals$isHpgEquipped = true;
             cosmicReach_Seamless_Portals$isUnstableHpgEquipped = false;
-        } else if (heldItem.getID().equals(UnstableHandheldPortalGen.hpgID)) {
+        } else if (heldItemStack.getItem().getID().equals(UnstableHandheldPortalGen.hpgID)) {
             cosmicReach_Seamless_Portals$isHpgEquipped = false;
             cosmicReach_Seamless_Portals$isUnstableHpgEquipped = true;
         } else{

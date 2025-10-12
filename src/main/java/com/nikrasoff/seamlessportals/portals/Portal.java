@@ -52,6 +52,8 @@ public class Portal extends Entity {
     @CRBSerialized
     private float endAnimationTimer = 0f;
 
+    private String pendingAnimation = "";
+
     private final BoundingBox meshBB = new BoundingBox();
     public static final Object lock = new Object();
     protected static final Array<BoundingBox> tempBounds = new Array<>(BoundingBox.class);
@@ -204,6 +206,11 @@ public class Portal extends Entity {
 
     public void playAnimation(String animName){
         if (this.isEndAnimationPlaying) return;
+        if (this.modelInstance == null){
+            this.pendingAnimation = animName;
+            return;
+        }
+        this.pendingAnimation = "";
         this.modelInstance.addAnimation(animName);
     }
 
@@ -370,8 +377,15 @@ public class Portal extends Entity {
     }
 
     public void render(Camera worldCamera) {
-        if (this.linkedPortal != this.pendingLinkedPortal) this.linkedPortal = this.pendingLinkedPortal;
+        if (this.linkedPortal != this.pendingLinkedPortal) {
+            this.linkedPortal = this.pendingLinkedPortal;
+            this.shouldLink = false;
+        }
+        if (!GameSingletons.isHost && this.shouldLink){
+            this.tryLinking();
+        }
         if (this.modelInstance != null) {
+            if (!this.pendingAnimation.isEmpty()) this.playAnimation(this.pendingAnimation);
             tmpModelMatrix.setToLookAt(this.position, this.position.cpy().add(this.viewDirection), this.upVector);
             this.renderModelAfterMatrixSet(worldCamera, true);
         }

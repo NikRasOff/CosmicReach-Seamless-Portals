@@ -19,9 +19,11 @@ public abstract class PlayerEntityAnimationMixin extends EntityAnimationMixin im
     @Shadow private transient Player player;
     @Shadow String currentMovementAnimation;
 
-    @Shadow abstract boolean isLocalPlayer();
+    @Shadow
+    protected abstract boolean isLocalPlayer();
     @Shadow abstract protected void updateSkin();
-    @Shadow abstract void switchMovementAnimation(String animName);
+    @Shadow
+    protected abstract void switchMovementAnimation(String animName);
     @Shadow abstract public Player getPlayer();
 
     @Override
@@ -119,7 +121,7 @@ public abstract class PlayerEntityAnimationMixin extends EntityAnimationMixin im
                 this.switchMovementAnimation("basic_idle_cycle");
             }
 
-            String nextMovementAnim = this.currentMovementAnimation;
+            String nextMovementAnim;
             nextMovementAnim = "basic_idle_cycle";
             if (horizSpeed > 0.5F) {
                 if (this.player.getEntity().isNoClip()) {

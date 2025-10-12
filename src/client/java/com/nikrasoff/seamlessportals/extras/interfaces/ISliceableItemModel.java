@@ -8,6 +8,5 @@ import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.items.ItemStack;
 
 public interface ISliceableItemModel {
-    void renderAsSlicedEntity(Vector3 position, Camera renderCamera, Matrix4 modelMatrix, Portal portal, boolean isDuplicate);
-    default void renderAsSlicedPuzzleEntity(Vector3 position, ItemStack stack, Camera renderCamera, Matrix4 modelMatrix, Portal portal, boolean isDuplicate){}
+    void renderAsSlicedEntity(Vector3 position, ItemStack stack, Camera renderCamera, Matrix4 modelMatrix, Portal portal, boolean isDuplicate);
 }

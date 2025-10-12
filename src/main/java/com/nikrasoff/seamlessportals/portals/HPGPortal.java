@@ -117,9 +117,9 @@ public class HPGPortal extends Portal {
         super.update(zone, deltaTime);
         if (this.isPortalInAWall(zone) || !this.isPortalOnValidSurface(zone)){
             if (this.linkedPortal != null){
-                this.linkedPortal.linkedPortal = null;
                 this.linkedPortal.pendingLinkedPortal = null;
-                if (GameSingletons.isClient) {
+                this.linkedPortal.linkedPortal = null;
+                if (GameSingletons.isClient && this.linkedPortal != null) {
                     this.linkedPortal.playAnimation("rebind");
                 }
                 if (GameSingletons.isHost && ServerSingletons.SERVER != null){
@@ -146,7 +146,7 @@ public class HPGPortal extends Portal {
                 this.convEventSmallTimer += 1;
                 if (this.convEventSmallTimer >= 20){
                     this.convEventSmallTimer = 0;
-                    if (MathUtils.random(1000) == 0){
+                    if (MathUtils.random(499) == 0){
                         this.convergenceEventTimer = 0;
                         this.convEventHappening = true;
                         this.convEventLifetime = 0;

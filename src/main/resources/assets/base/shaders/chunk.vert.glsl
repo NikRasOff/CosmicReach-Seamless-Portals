@@ -8,7 +8,8 @@ uniform vec3 cameraPosition;
 
 uniform bool u_fixCameraPos = false;
 
-out vec2 v_texCoord0;
+out vec2 texCoordDiffuse;
+out vec2 texCoordEmission;
 out vec3 worldPos;
 out vec4 blocklight;
 out vec3 faceNormal;
@@ -21,8 +22,9 @@ void main()
     vec3 trueWorldPos = worldPos + cameraPosition;
 	
 	blocklight = a_lighting;
-	
-	v_texCoord0 = GET_TEX_COORDS;
+
+    texCoordDiffuse = GET_TEX_COORDS;
+    texCoordEmission = GET_EMISSION_TEX_COORDS;
 
 	faceNormal = GET_FACE_NORMAL;
 

@@ -1,7 +1,6 @@
 package com.nikrasoff.seamlessportals.rendering.shaders;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.portals.HPGPortal;

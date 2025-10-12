@@ -7,7 +7,7 @@ plugins {
 loom {
     splitEnvironmentSourceSets()
     mods {
-        "cosmicsigns" {
+        "${id}" {
             sourceSet sourceSets.main
             sourceSet sourceSets.client
         }
@@ -19,7 +19,8 @@ repositories {
     mavenCentral()
     maven {
         url "https://jitpack.io"
-    }
+        }
+    maven { url "https://maven.bawnorton.com/releases" }
 }
 
 dependencies {

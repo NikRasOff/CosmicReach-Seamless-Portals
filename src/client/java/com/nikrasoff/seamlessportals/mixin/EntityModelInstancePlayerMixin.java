@@ -3,7 +3,6 @@ package com.nikrasoff.seamlessportals.mixin;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
-import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.rendering.entities.instances.EntityModelInstancePlayer;
@@ -11,9 +10,6 @@ import finalforeach.cosmicreach.util.GameMath;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityModelInstancePlayer.class)
 public abstract class EntityModelInstancePlayerMixin extends EntityModelInstanceMixin{

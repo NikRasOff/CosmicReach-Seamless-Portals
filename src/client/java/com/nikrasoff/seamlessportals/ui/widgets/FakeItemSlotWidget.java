@@ -1,15 +1,12 @@
 package com.nikrasoff.seamlessportals.ui.widgets;
 
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import finalforeach.cosmicreach.items.*;
-import finalforeach.cosmicreach.rendering.items.ItemRenderer;
 import finalforeach.cosmicreach.ui.widgets.ContainerSlotWidget;
-import finalforeach.cosmicreach.ui.widgets.ItemStackWidget;
 
 import java.util.function.Supplier;
 

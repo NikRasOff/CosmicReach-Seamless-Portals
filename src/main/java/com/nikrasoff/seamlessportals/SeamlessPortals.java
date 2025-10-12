@@ -22,6 +22,7 @@ import dev.puzzleshq.puzzleloader.loader.mod.entrypoint.common.PreModInit;
 import dev.puzzleshq.puzzleloader.loader.util.PuzzleEntrypointUtil;
 import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.blocks.blockentities.BlockEntity;
+import finalforeach.cosmicreach.gameevents.GameEvents;
 import finalforeach.cosmicreach.gameevents.blockevents.BlockEvents;
 import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.blocks.Block;
@@ -47,14 +48,14 @@ public class SeamlessPortals implements PreModInit, ModInit, PostModInit {
     public static final Logger LOGGER = LogManager.getLogger(SeamlessPortalsConstants.MOD_ID);
 
     static String[] blockIds = {
+            "ore_omnium",
             "portal_generator",
             "portal_destabiliser",
             "omnium_block",
             "omnium_calibrator",
             "spacial_anchor",
             "portal_disruption_block",
-            "portal_conductor_block",
-            "ore_omnium"
+            "portal_conductor_block"
     };
 
     static String[] recipeIds = {
@@ -138,26 +139,36 @@ public class SeamlessPortals implements PreModInit, ModInit, PostModInit {
             }
         });
         for (String id: blockEventIds){
-            BlockEvents.loadGameEventsFromAsset(BlockEvents.class, GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "block_events/" + id + ".json")));
+            GameSingletons.loadingQueue.addLast(() -> GameEvents.loadGameEventsFromAsset(BlockEvents.class, GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "block_events/" + id + ".json"))));
         }
 
         for (String id: blockIds){
-            Block.loadBlock(GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "blocks/" + id + ".json")));
+            GameSingletons.loadingQueue.addLast(() -> {
+                Block.loadBlock(GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "blocks/" + id + ".json")));
+            });
         }
-        Loot.loadLoot(GameAssetLoader.loadJson("seamlessportals:loot/ore_omnium.json"));
-        json = new Json();
+        GameSingletons.loadingQueue.addLast(() -> {
+            Loot.loadLoot(GameAssetLoader.loadJson("seamlessportals:loot/ore_omnium.json"));
+        });
+        Json newjson = new Json();
         for (String id : recipeIds){
-            CraftingRecipes.loadRecipe(Identifier.of(SeamlessPortalsConstants.MOD_ID, id), json, GameAssetLoader.loadJson(GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "recipes/" + id + ".json"))));
+            GameSingletons.loadingQueue.addLast(() -> {
+                CraftingRecipes.loadRecipe(Identifier.of(SeamlessPortalsConstants.MOD_ID, id), newjson, GameAssetLoader.loadJson(GameAssetLoader.loadAsset(Identifier.of(SeamlessPortalsConstants.MOD_ID, "recipes/" + id + ".json"))));
+            });
         }
         BlockEntityOmniumCalibrator.registerBlockEntityCreator();
         BlockEntitySpacialAnchor.registerBlockEntityCreator();
         BlockEntityPortalGenerator.registerBlockEntityCreator();
-        oreOmnium = (new Ore(Block.getById(Identifier.of(SeamlessPortalsConstants.MOD_ID, "ore_omnium")).getDefaultBlockState(), GameTag.get("ore_replaceable"))).setMaxElevation(-32).setMaxOresPerCluster(5).setAttemptsPerColumn(3);
+        GameSingletons.loadingQueue.addLast(this::createOmniumOre);
         PuzzleEntrypointUtil.invoke("portalInteractionSolver", IPortalSolverInitialiser.class, IPortalSolverInitialiser::initPortalInteractionSolvers);
     }
 
     @Override
     public void onPreInit() {
         SeamlessPortalsBlockEvents.registerSeamlessPortalsBlockEvents();
+    }
+
+    public void createOmniumOre() {
+        oreOmnium = (new Ore(Block.getById(Identifier.of(SeamlessPortalsConstants.MOD_ID, "ore_omnium")).getDefaultBlockState(), GameTag.get("ore_replaceable"))).setMaxElevation(-32).setMaxOresPerCluster(5).setAttemptsPerColumn(3);
     }
 }

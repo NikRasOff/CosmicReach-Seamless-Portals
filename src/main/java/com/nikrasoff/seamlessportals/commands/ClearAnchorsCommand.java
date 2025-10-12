@@ -24,6 +24,6 @@ public class ClearAnchorsCommand extends Command {
 
     @Override
     public String getShortDescription() {
-        return "";
+        return "anchorClear: Clears spacial anchor data";
     }
 }

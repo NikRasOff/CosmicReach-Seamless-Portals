@@ -4,8 +4,6 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.nikrasoff.seamlessportals.SeamlessPortals;
-import com.nikrasoff.seamlessportals.SeamlessPortalsConstants;
 import com.nikrasoff.seamlessportals.extras.ClientPortalExtras;
 import com.nikrasoff.seamlessportals.extras.interfaces.ISliceableItemModel;
 import com.nikrasoff.seamlessportals.extras.interfaces.ISpecialItemModel;
@@ -13,6 +11,7 @@ import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.entities.Entity;
 import finalforeach.cosmicreach.gamestates.InGame;
+import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.rendering.items.ItemModelBlock;
 import finalforeach.cosmicreach.rendering.meshes.IGameMesh;
 import finalforeach.cosmicreach.rendering.shaders.GameShader;
@@ -70,7 +69,7 @@ public abstract class ItemModelBlockMixin implements ISliceableItemModel, ISpeci
     }
 
     @Override
-    public void renderAsSlicedEntity(Vector3 position, Camera renderCamera, Matrix4 modelMatrix, Portal portal, boolean isDuplicate) {
+    public void renderAsSlicedEntity(Vector3 position, ItemStack stack, Camera renderCamera, Matrix4 modelMatrix, Portal portal, boolean isDuplicate) {
         if (this.mesh != null) {
             this.shader.bind(renderCamera);
 

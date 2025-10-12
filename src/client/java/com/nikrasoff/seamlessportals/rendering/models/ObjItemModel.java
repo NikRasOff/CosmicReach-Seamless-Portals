@@ -11,7 +11,9 @@ import com.nikrasoff.seamlessportals.extras.interfaces.ISliceableItemModel;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import com.nikrasoff.seamlessportals.rendering.SeamlessPortalsRenderUtil;
 import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.entities.ItemEntity;
 import finalforeach.cosmicreach.items.Item;
+import finalforeach.cosmicreach.items.ItemStack;
 import finalforeach.cosmicreach.rendering.items.HeldItemRenderParams;
 import finalforeach.cosmicreach.rendering.items.ItemModel;
 import finalforeach.cosmicreach.util.Identifier;
@@ -71,7 +73,7 @@ public class ObjItemModel extends ItemModel implements ISliceableItemModel {
     }
 
     @Override
-    public void render(Vector3 vector3, Camera camera, Matrix4 matrix4, boolean useAmbientLighting, boolean applyFog) {
+    public void render(Vector3 vector3, Camera camera, Matrix4 matrix4, boolean useAmbientLighting, boolean applyFog, ItemStack itemStack) {
         if (this.modelInstance == null) return;
         tmpMat4.set(matrix4);
         modelInstance.transform.set(tmpMat4);
@@ -102,15 +104,15 @@ public class ObjItemModel extends ItemModel implements ISliceableItemModel {
             SeamlessPortalsRenderUtil.renderModel(viewModelInstance, heldItemCamera, worldPosition, true, true);
         }
         else{
-            this.render(worldPosition, heldItemCamera, heldModelMatrix, true, true);
+            this.render(worldPosition, heldItemCamera, heldModelMatrix, true, true, null);
         }
     }
 
     @Override
-    public void renderAsItemEntity(Vector3 worldPosition, Camera worldCamera, Matrix4 modelMat) {
+    public void renderAsItemEntity(Vector3 worldPosition, Camera worldCamera, Matrix4 modelMat, ItemEntity itemEntity) {
         tmpMat4.set(modelMat);
         tmpMat4.mul(this.onGroundModelMatrix);
-        this.render(worldPosition, worldCamera, tmpMat4, true, true);
+        this.render(worldPosition, worldCamera, tmpMat4, true, true, itemEntity.getItemStack());
     }
 
     static {
@@ -119,7 +121,7 @@ public class ObjItemModel extends ItemModel implements ISliceableItemModel {
     }
 
     @Override
-    public void renderAsSlicedEntity(Vector3 position, Camera renderCamera, Matrix4 modelMatrix, Portal portal, boolean isDuplicate) {
+    public void renderAsSlicedEntity(Vector3 position, ItemStack stack, Camera renderCamera, Matrix4 modelMatrix, Portal portal, boolean isDuplicate) {
         tmpMat4.set(modelMatrix);
         tmpMat4.mul(this.onGroundModelMatrix);
         if (this.modelInstance == null) return;

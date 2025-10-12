@@ -37,7 +37,7 @@ public class ListAnchorsCommand extends Command {
 
     @Override
     public String getShortDescription() {
-        return "";
+        return "anchorList: Lists all currently existing spacial anchors";
     }
 
 }

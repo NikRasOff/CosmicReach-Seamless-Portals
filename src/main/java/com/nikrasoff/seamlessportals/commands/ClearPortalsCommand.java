@@ -11,15 +11,19 @@ public class ClearPortalsCommand extends Command {
         super.run(chat);
         Portal[] portals = SeamlessPortals.portalManager.getPortalArray();
         for (Portal portal : portals){
-            if (portal.zone == null) continue;
-            portal.zone.removeEntity(portal);
+            if (portal.zone != null) continue;
+            chat.addMessage(null, "Clearing data for portal: " + portal.uniqueId);
+            if (portal.currentChunk != null){
+                portal.currentChunk.removeEntity(portal);
+                portal.currentChunk = null;
+            }
+            SeamlessPortals.portalManager.removePortal(portal);
         }
-        SeamlessPortals.portalManager.createdPortals.clear();
-        chat.addMessage(null, "All portal data cleared");
+        chat.addMessage(null, "All broken portal data cleared");
     }
 
     @Override
     public String getShortDescription() {
-        return "";
+        return "portalClear: Deletes all improperly loaded portals";
     }
 }

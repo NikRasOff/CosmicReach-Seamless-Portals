@@ -12,7 +12,6 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.utils.Array;
-import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.extras.ExtraPortalUtils;
 import com.nikrasoff.seamlessportals.extras.RaycastOutput;
 import com.nikrasoff.seamlessportals.extras.interfaces.IPortalBlockSelection;

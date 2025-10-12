@@ -17,7 +17,6 @@ import com.nikrasoff.seamlessportals.SeamlessPortals;
 import finalforeach.cosmicreach.blocks.BlockPosition;
 import finalforeach.cosmicreach.blocks.BlockState;
 import finalforeach.cosmicreach.entities.Entity;
-import finalforeach.cosmicreach.entities.EntityUniqueId;
 import finalforeach.cosmicreach.entities.components.IUpdateEntityComponent;
 import finalforeach.cosmicreach.world.Chunk;
 import finalforeach.cosmicreach.world.Zone;
@@ -27,8 +26,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.Map;
 
 @Mixin(Entity.class)
 public abstract class PortalableEntityMixin implements IPortalableEntity{

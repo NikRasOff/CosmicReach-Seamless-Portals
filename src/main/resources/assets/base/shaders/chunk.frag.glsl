@@ -10,12 +10,14 @@ uniform vec3 worldAmbientColor;
 
 #import "base:shaders/common/renderDistance.glsl"
 
-in vec2 v_texCoord0;
+in vec2 texCoordDiffuse;
+in vec2 texCoordEmission;
 in vec3 worldPos;
 in vec4 blocklight;
 in vec3 faceNormal;
 
 uniform sampler2D texDiffuse;
+uniform sampler2D texEmission;
 uniform vec3 u_sunDirection;
 
 uniform vec3 u_portalNormal;
@@ -37,9 +39,10 @@ void main()
             discard;
         }
     }
-    vec2 tilingTexCoords = v_texCoord0;
+    vec2 tilingTexCoords = texCoordDiffuse;
 
-    vec4 texColor = texture(texDiffuse, v_texCoord0);
+    vec4 texColor = texture(texDiffuse, texCoordDiffuse);
+    vec4 texColorEmission = texture(texEmission, texCoordEmission);
 
     float fadeOutDistance = (u_renderDistanceInChunks - 1) * 16;
     float fadeOutFactor = clamp((fadeOutDistance - length(worldPos.xz - cameraPosition.xz))/16.0, 0, 1);
@@ -64,7 +67,9 @@ void main()
     //lightTint = max(lightTint, vec3(0.1));
     //texColor = vec4(1);
 
-    outColor = tintColor * vec4(texColor.rgb * lightTint, texColor.a);
+    outColor = vec4(texColor.rgb * lightTint, texColor.a);
+    outColor.rgb = max(outColor.rgb, texColorEmission.rgb * texColorEmission.a);
+    outColor = tintColor * outColor;
 
     vec3 fogColor = skyAmbientColor;//vec3(1) - pow(vec3(1) - skyAmbientColor, vec3(2));
     fogColor = getFogColor(fogColor, blocklight.rgb, u_fogDensity, worldPos, cameraPosition);

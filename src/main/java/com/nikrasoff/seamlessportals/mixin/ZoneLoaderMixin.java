@@ -113,9 +113,7 @@ public abstract class ZoneLoaderMixin{
             start = -columnVertRenderDist;
         }
 
-        int end = columnVertRenderDist;
-
-        for(int v = start; v <= end; ++v) {
+        for(int v = start; v <= columnVertRenderDist; ++v) {
             int chunkY = (Math.floorDiv(portalChunkY, 16) + v) * 16;
             if (this.isSaveRequested()) {
                 return playerNeedsLoading;
@@ -179,7 +177,7 @@ public abstract class ZoneLoaderMixin{
     @Inject(method = "needToGenDifferentChunks", at = @At("HEAD"), cancellable = true)
     void checkForUnloadedPortals(Zone zone, int localGenRadiusInChunks, CallbackInfoReturnable<Boolean> cir){
         Portal[] portals = SeamlessPortals.portalManager.getPortalArray();
-        if (ArrayUtils.any(portals, (portal -> portal.zone == null))){
+        if (ArrayUtils.any(portals, (portal -> (portal.zone == null && portal.linkedPortal != null && portal.linkedPortal.zone != null)))){
             cir.setReturnValue(true);
         }
     }

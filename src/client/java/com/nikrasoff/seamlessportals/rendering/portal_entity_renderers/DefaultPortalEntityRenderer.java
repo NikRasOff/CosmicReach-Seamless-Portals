@@ -1,11 +1,8 @@
 package com.nikrasoff.seamlessportals.rendering.portal_entity_renderers;
 
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.math.collision.BoundingBox;
-import com.nikrasoff.seamlessportals.SeamlessPortals;
 import com.nikrasoff.seamlessportals.api.IPortalEntityRenderer;
 import com.nikrasoff.seamlessportals.extras.ClientPortalEntityTools;
-import com.nikrasoff.seamlessportals.extras.ClientPortalExtras;
 import com.nikrasoff.seamlessportals.portals.Portal;
 import finalforeach.cosmicreach.entities.Entity;
 
